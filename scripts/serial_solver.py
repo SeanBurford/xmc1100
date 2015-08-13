@@ -1,5 +1,9 @@
 #!/usr/bin/python
-"""Calculate usic parameters for 9600 and 115200 baud."""
+"""Calculate usic parameters for 9600 and 115200 baud.
+
+THere was a bit of related discussion here:
+http://www.infineonforums.com/threads/2368-Defines-for-common-baud-rate
+"""
 
 def SolveForLinear(fsys):
   for restart_val in range(1, 0x400):
