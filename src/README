@@ -1,0 +1,23 @@
+The driver program is set up to drive an ultrasonic transducer:
+main.c
+
+Peripheral support code (see the "XMC1000 Family Reference Manual" for details).
+The usic code also draws from disassembly of the factory installed blinky app
+on the XMC2Go kit:
+ccu.c     - Capture compare unit 4.
+ccu.h
+gpio.c    - General purpose IO.
+gpio.h
+nvic.c    - Nested vectored interrupt controller.
+nvic.h
+systick.c - System Timer.
+systick.h
+usic.h    - Universal serial interface channel.
+usic.c
+
+The following files are based on Frank Duignan's work at
+http://eleceng.dit.ie/frank/arm/BareMetalXMC2Go/index.html:
+Makefile
+xmc1100.h
+init.c
+linker_script.ld
