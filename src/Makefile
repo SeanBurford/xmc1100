@@ -17,7 +17,7 @@ AS=arm-none-eabi-as
 # Specity the linker to use
 LD=arm-none-eabi-ld
 
-CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall
+CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror
 
 # List the object files involved in this project
 OBJS=	init.o \

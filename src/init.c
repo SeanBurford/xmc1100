@@ -8,7 +8,7 @@
 // http://eleceng.dit.ie/frank and follow the links
 // Author: Frank Duignan
 
-void init(void);
+static void init(void);
 extern int main();
 
 // Weak interrupt handler definitions.  Declaring another function of the
@@ -169,7 +169,7 @@ inline void JumpTable(void)
 	asm(" mov PC,R0 ");
 };
 
-void init()
+static void init()
 {
 	// do global/static data initialization
 	// This is will also copy the jump table for remapped IRQ vectors

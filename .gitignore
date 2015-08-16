@@ -30,7 +30,8 @@
 
 # Debug files
 *.dSYM/
-<<<<<<< HEAD
+*.bin
+*.map
 
 # Documentation
 *.pdf
