@@ -11,8 +11,7 @@ void systickEnable(void) {
 	SYST_CSR |= BIT0 | BIT1 | BIT2;
 }
 
-void systickHandler(void) __attribute__((interrupt("IRQ")));
-void systickHandler(void) {
+void __attribute__((interrupt("IRQ"))) systickHandler(void) {
 	// Toggle LED P1.1.
 	togglePinP1(1);
 }

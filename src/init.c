@@ -13,44 +13,43 @@ extern int main();
 
 // Weak interrupt handler definitions.  Declaring another function of the
 // same name will override the default unhandledIRQ handler for that interrupt.
-void unhandledIRQ(void) __attribute__((interrupt("IRQ")));
-void unhandledIRQ(void) {
+void __attribute__((interrupt("IRQ"))) unhandledIRQ(void) {
 	static unsigned int unhandled_interrupts;
 	unhandled_interrupts++;
 }
-void systickHandler(void) __attribute__((weak, alias("unhandledIRQ")));
-void SC_SR0(void) __attribute__((weak, alias("unhandledIRQ")));
-void SC_SR1(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ02(void) __attribute__((weak, alias("unhandledIRQ")));
-void ERU_SR0(void) __attribute__((weak, alias("unhandledIRQ")));
-void ERU_SR1(void) __attribute__((weak, alias("unhandledIRQ")));
-void ERU_SR2(void) __attribute__((weak, alias("unhandledIRQ")));
-void ERU_SR3(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ07(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ08(void) __attribute__((weak, alias("unhandledIRQ")));
-void USIC_SR0(void)__attribute__((weak, alias("unhandledIRQ")));
-void USIC_SR1(void) __attribute__((weak, alias("unhandledIRQ")));
-void USIC_SR2(void) __attribute__((weak, alias("unhandledIRQ")));
-void USIC_SR3(void) __attribute__((weak, alias("unhandledIRQ")));
-void USIC_SR4(void) __attribute__((weak, alias("unhandledIRQ")));
-void USIC_SR5(void) __attribute__((weak, alias("unhandledIRQ")));
-void VADC0_SR0(void) __attribute__((weak, alias("unhandledIRQ")));
-void VADC0_SR1(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ17(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ18(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ19(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ20(void) __attribute__((weak, alias("unhandledIRQ")));
-void CCU40_SR0(void) __attribute__((weak, alias("unhandledIRQ")));
-void CCU40_SR1(void) __attribute__((weak, alias("unhandledIRQ")));
-void CCU40_SR2(void) __attribute__((weak, alias("unhandledIRQ")));
-void CCU40_SR3(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ25(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ26(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ27(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ28(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ29(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ30(void) __attribute__((weak, alias("unhandledIRQ")));
-void IRQ31(void) __attribute__((weak, alias("unhandledIRQ")));
+void __attribute__((weak, alias("unhandledIRQ"))) systickHandler(void);
+void __attribute__((weak, alias("unhandledIRQ"))) SC_SR0(void);
+void __attribute__((weak, alias("unhandledIRQ"))) SC_SR1(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ02(void);
+void __attribute__((weak, alias("unhandledIRQ"))) ERU_SR0(void);
+void __attribute__((weak, alias("unhandledIRQ"))) ERU_SR1(void);
+void __attribute__((weak, alias("unhandledIRQ"))) ERU_SR2(void);
+void __attribute__((weak, alias("unhandledIRQ"))) ERU_SR3(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ07(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ08(void);
+void __attribute__((weak, alias("unhandledIRQ"))) USIC_SR0(void);
+void __attribute__((weak, alias("unhandledIRQ"))) USIC_SR1(void);
+void __attribute__((weak, alias("unhandledIRQ"))) USIC_SR2(void);
+void __attribute__((weak, alias("unhandledIRQ"))) USIC_SR3(void);
+void __attribute__((weak, alias("unhandledIRQ"))) USIC_SR4(void);
+void __attribute__((weak, alias("unhandledIRQ"))) USIC_SR5(void);
+void __attribute__((weak, alias("unhandledIRQ"))) VADC0_SR0(void);
+void __attribute__((weak, alias("unhandledIRQ"))) VADC0_SR1(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ17(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ18(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ19(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ20(void);
+void __attribute__((weak, alias("unhandledIRQ"))) CCU40_SR0(void);
+void __attribute__((weak, alias("unhandledIRQ"))) CCU40_SR1(void);
+void __attribute__((weak, alias("unhandledIRQ"))) CCU40_SR2(void);
+void __attribute__((weak, alias("unhandledIRQ"))) CCU40_SR3(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ25(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ26(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ27(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ28(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ29(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ30(void);
+void __attribute__((weak, alias("unhandledIRQ"))) IRQ31(void);
 
 // The following are 'declared' in the linker script
 extern unsigned char  INIT_DATA_VALUES;

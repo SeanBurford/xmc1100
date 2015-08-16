@@ -64,8 +64,7 @@ void usicBufferSendCh0(const char *msg) {
 	usicSendCh0(ch0TxBuffer[ch0TxBufferStart++]);
 }
 
-void USIC_SR1(void) __attribute__((interrupt("IRQ")));
-void USIC_SR1(void) {
+void __attribute__((interrupt("IRQ"))) USIC_SR1(void) {
 	// USIC0_CH0_PSR;
 	// USIC0_CH0_TRBSR;
 	if (ch0TxBufferStart < ch0TxBufferEnd) {
