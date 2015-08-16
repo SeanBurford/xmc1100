@@ -64,25 +64,11 @@ void usicBufferSendCh0(const char *msg) {
 	usicSendCh0(ch0TxBuffer[ch0TxBufferStart++]);
 }
 
-void USIC0_SR0(void) {
-}
-
-void USIC0_SR1(void) {
+void USIC_SR1(void) __attribute__((interrupt("IRQ")));
+void USIC_SR1(void) {
 	// USIC0_CH0_PSR;
 	// USIC0_CH0_TRBSR;
 	if (ch0TxBufferStart < ch0TxBufferEnd) {
 		usicSendCh0(ch0TxBuffer[ch0TxBufferStart++]);
 	}
-}
-
-void USIC0_SR2(void) {
-}
-
-void USIC0_SR3(void) {
-}
-
-void USIC0_SR4(void) {
-}
-
-void USIC0_SR5(void) {
 }

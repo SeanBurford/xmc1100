@@ -110,6 +110,7 @@ void ccuConfigureSlice1(void) {
 
 unsigned int capture_vals[128];
 unsigned int capture_head = 0;
+void CCU40_SR0(void) __attribute__((interrupt("IRQ")));
 void CCU40_SR0(void) {
 	// Check CCU4_CC41INTS to determine where the interrupt came from.
 	if (CCU4_CC40INTS) {
@@ -142,11 +143,3 @@ void CCU40_SR0(void) {
 	}
 }
 
-void CCU40_SR1(void) {
-}
-
-void CCU40_SR2(void) {
-}
-
-void CCU40_SR3(void) {
-}

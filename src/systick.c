@@ -2,8 +2,7 @@
 #include "gpio.h"
 #include "systick.h"
 
-void systickEnable(void)
-{
+void systickEnable(void) {
 	// Set the reload register (timebase in effect)
 	// Clock = 64MHz so 8000000-1 is 8 systicks/second.
 	SYST_RVR = 8000000 - 1; // generate 1/8 second time base
@@ -12,8 +11,8 @@ void systickEnable(void)
 	SYST_CSR |= BIT0 | BIT1 | BIT2;
 }
 
-void systickHandler(void)
-{
+void systickHandler(void) __attribute__((interrupt("IRQ")));
+void systickHandler(void) {
 	// Toggle LED P1.1.
 	togglePinP1(1);
 }
