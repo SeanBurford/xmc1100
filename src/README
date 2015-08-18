@@ -4,15 +4,17 @@ main.c
 Peripheral support code (see the "XMC1000 Family Reference Manual" for details).
 The usic code also draws from disassembly of the factory installed blinky app
 on the XMC2Go kit:
-ccu.c     - Capture compare unit 4.
+ccu.c         - Capture compare unit 4.
 ccu.h
-gpio.c    - General purpose IO.
+gpio.c        - General purpose IO.
 gpio.h
-nvic.c    - Nested vectored interrupt controller.
+nvic.c        - Nested vectored interrupt controller.
 nvic.h
-systick.c - System Timer.
+systick.c     - System Timer.
 systick.h
-usic.h    - Universal serial interface channel.
+usic_buffer.h - Basic message buffering for the USIC
+usic_buffer.c
+usic.h        - Universal serial interface channel.
 usic.c
 
 The following files are based on Frank Duignan's work at

@@ -2,6 +2,7 @@
 #include "ccu.h"
 #include "gpio.h"
 #include "usic.h"
+#include "usic_buffer.h"
 #include "systick.h"
 
 unsigned int postReset(void)
@@ -58,7 +59,7 @@ int main()
 
 	ccuStartSlices();
 
-	usicBufferSendCh0("Ready\r\n");
+	usicBufferSendCh0("Ready.\r\n");
 	while(1)
 	{
 		asm("wfi");

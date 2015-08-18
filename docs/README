@@ -1,6 +1,9 @@
 Baremetal programming of the Infineon XMC2Go
 http://eleceng.dit.ie/frank/arm/BareMetalXMC2Go/index.html
 
+ARMv6-M Architecture Reference Manual
+DDI0419C_arm_architecture_v6m_reference_manual.pdf
+
 XMC2Go Board Users Manual
 Board_Users_Manual_XMC_2Go_Kit_with_XMC1100_R1.0.pdf
 http://www.infineon.com/dgdl/Board_Users_Manual_XMC_2Go_Kit_with_XMC1100_R1.0.pdf?folderId=5546d4694909da4801490a0745e10595&fileId=db3a3043444ee5dc014453d6c75078c6&ack=t
