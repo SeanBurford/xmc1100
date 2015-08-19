@@ -16,22 +16,31 @@ CC=arm-none-eabi-gcc
 AS=arm-none-eabi-as
 LD=arm-none-eabi-ld
 
-# List the source files involved in this project
-SRCS=init.c ccu.c gpio.c nvic.c systick.c usic.c usic_buffer.c main.c 
+SRCS=init.c ccu.c gpio.c nvic.c systick.c usic.c usic_buffer.c
 OBJS=$(SRCS:.c=.o)
 
-# The default 'target' (output) is main.elf and it depends on the object files
-# being there. These object files are linked together to create main.elf
-main.elf : $(OBJS)
-	$(LD) $(OBJS) $(LIBSPEC) -T linker_script.ld -lc --cref -Map main.map -nostartfiles -o main.elf
+all:	main.elf speed_test.elf
+	@echo "done"
+
+main.elf:	$(OBJS) main.o
+	$(LD) $(OBJS) main.o $(LIBSPEC) -T linker_script.ld -lc --cref \
+	      -Map main.map -nostartfiles -o main.elf
 	arm-none-eabi-objcopy -O binary main.elf main.bin
 	objcopy -O ihex main.elf main.hex
-	@echo "done"
+
+speed_test.elf:	init.o nvic.o usic.o speed_test.o
+	$(LD) init.o gpio.o nvic.o usic.o speed_test.o \
+	      $(LIBSPEC) -T linker_script.ld -lc --cref -Map speed_test.map \
+	      -nostartfiles -o $@
+
+main.o:	main.c
+	$(CC) -c $(CCFLAGS) $< -o $@
+
+speed_test.o:	speed_test.c
+	$(CC) -c $(CCFLAGS) $< -o $@
 
 .c.o:	
 	$(CC) -c $(CCFLAGS) $< -o $@
 
-# if someone types in 'make clean' then remove all object files and executables
-# associated with this project
 clean: 
-	rm $(OBJS) main.elf main.bin 
+	rm *.o *.elf main.bin main.hex main.map

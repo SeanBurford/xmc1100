@@ -138,12 +138,11 @@ void __attribute__((interrupt("IRQ"))) USIC_SR1(void) {
 	// Check that this is a standard transmit buffer event
 	if (USIC0_CH0_TRBSR & BIT8) {
 		// Check that the TX buffer is not full and we have data to send
-		if (!(USIC0_CH0_TRBSR & BIT12)) {
-			if (usicCh0TransmitDone && usicCh0Transmit &&
-			    !usicCh0TransmitDone()) {
-				// Transmit a byte.
-				*USIC0_CH0_IN = usicCh0Transmit();
-			}
+		if (!(USIC0_CH0_TRBSR & BIT12) &&
+		    usicCh0TransmitDone && usicCh0Transmit &&
+		    !usicCh0TransmitDone()) {
+			// Transmit a byte.
+			*USIC0_CH0_IN = usicCh0Transmit();
 		}
 	}
 
