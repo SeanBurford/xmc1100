@@ -27,7 +27,7 @@ void configureClock(void)
 	SCU_PASSWD = 0x00C3;
 }
 
-static volatile unsigned int txcount = 0;
+static unsigned int txcount = 0;
 
 void usicCh0Receive(unsigned int val) {
         val = val & 0xFF;
