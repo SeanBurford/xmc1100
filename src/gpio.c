@@ -20,7 +20,7 @@ void togglePinP2(const unsigned int pin) {
 	P2_OMR = 0x00010001 << pin;
 }
 
-void setPin(const unsigned int port, const unsigned int pin) {
+void clearPin(const unsigned int port, const unsigned int pin) {
 	const unsigned int bits = 0x00010000 << pin;
 	switch (port) {
 	case 0:	P0_OMR = bits;
@@ -32,7 +32,7 @@ void setPin(const unsigned int port, const unsigned int pin) {
 	}
 }
 
-void clearPin(const unsigned int port, const unsigned int pin) {
+void setPin(const unsigned int port, const unsigned int pin) {
 	const unsigned int bits = 0x00000001 << pin;
 	switch (port) {
 	case 0:	P0_OMR = bits;
