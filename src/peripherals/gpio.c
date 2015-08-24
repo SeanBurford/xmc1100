@@ -75,16 +75,17 @@ int enablePin(const unsigned int port, const unsigned int pin,
 		break;
 	case 2:	rc = setPinMode(p2_iocr, pin, mode);
 		P2_PPS &= mask;  // Clear power save
-		P2_PDISC &= mask;  // Enable digital pad
+		P2_PDISC &= mask;  // Enable both analog and digital paths
 		break;
 	}
 	return rc;
 
 }
 
-void disablePin(const unsigned int port, const unsigned int pin) {
+int disablePin(const unsigned int port, const unsigned int pin) {
 	unsigned int mask = 1 << pin;
 	clearPin(port, pin);
 	P1_PPS |= mask;  // Set power save
+	return 0;
 }
 

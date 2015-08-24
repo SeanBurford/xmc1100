@@ -1,12 +1,4 @@
-void togglePinP0(const unsigned int pin);
-void togglePinP1(const unsigned int pin);
-void togglePinP2(const unsigned int pin);
-void setPin(const unsigned int port, const unsigned int pin);
-void clearPin(const unsigned int port, const unsigned int pin);
-int enablePin(const unsigned int port, const unsigned int pin,
-              const unsigned int mode);
-void disablePin(const unsigned int port, const unsigned int pin);
-
+// Modes for enablePin
 // Mode: Input
 #define GPIO_IN_FLOAT		0x00
 #define GPIO_IN_PD		0x08
@@ -37,3 +29,11 @@ void disablePin(const unsigned int port, const unsigned int pin);
 #define GPIO_OUT_OD_ALT6	0xf0
 #define GPIO_OUT_OD_ALT7	0xf8
 
+void togglePinP0(const unsigned int pin);
+void togglePinP1(const unsigned int pin);
+void togglePinP2(const unsigned int pin);
+void setPin(const unsigned int port, const unsigned int pin);
+void clearPin(const unsigned int port, const unsigned int pin);
+int enablePin(const unsigned int port, const unsigned int pin,
+              const unsigned int mode);
+int disablePin(const unsigned int port, const unsigned int pin);
