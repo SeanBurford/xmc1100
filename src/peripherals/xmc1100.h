@@ -50,6 +50,7 @@
 #define  REGISTER_32(ADDRESS) (*((volatile unsigned int *)(ADDRESS)))
 #define  REGISTER_16(ADDRESS) (*((volatile unsigned int *)(ADDRESS)))
 #define  PTR_32(ADDRESS) (((volatile unsigned int *)(ADDRESS)))
+
 // Macros to enable/disable global interrupts
 #define enable_interrupts() asm(" cpsie i ")
 #define disable_interrupts() asm(" cpsid i ")
@@ -141,14 +142,9 @@
 #define RTC_TIM1		REGISTER_32(RTC_BASE + 0x24)
 
 // SCU (difficult to decipher in reference manual)
-// VERIF: 0x101ed083   0x00011062 0x00f1c001
-//        SCU_DBGROMID SCU_IDCHIP SCU_ID
 #define SCU_GCU_BASE 	(SCU_BASE + 0)
 #define SCU_PCU_BASE 	(SCU_BASE + 0x200)
 #define SCU_CCU_BASE 	(SCU_BASE + 0x300)
-// VERIF: 0x3ff00400 0x00000000 0x000007ff 0x00000000 0x00000000 0x00000000 0x00000018
-//        CLKCR
-//        idiv 4 8MHz
 #define SCU_RCU_BASE 	(SCU_BASE + 0x400)
 #define SCU_RTC_BASE 	(SCU_BASE + 0xa00)
 #define SCU_ANACTRL_BASE (SCU_BASE + 0x1000)
@@ -186,7 +182,6 @@
 #define PRNG_WORD		REGISTER_32(PRNG_BASE + 0x00)
 #define PRNG_CHK		REGISTER_32(PRNG_BASE + 0x04)
 #define PRNG_CTRL		REGISTER_32(PRNG_BASE + 0x0c)
-
 
 // USIC0
 #define USIC0_ID		REGISTER_32(USIC0_CH0_BASE + 0x08)
@@ -375,7 +370,6 @@
 #define CCU4_CC41ECRD1 		REGISTER_32(CCU40_BASE + 0x02bc)
 
 // CCU4_SLICE2
-
 #define CCU4_CC42INS		REGISTER_32(CCU40_BASE + 0x0300)
 #define CCU4_CC42CMC		REGISTER_32(CCU40_BASE + 0x0304)
 #define CCU4_CC42TST		REGISTER_32(CCU40_BASE + 0x0308)
@@ -450,7 +444,6 @@
 #define P0_HWSEL			REGISTER_32(P0_BASE + 0x0078)
 
 // P1
-
 #define P1_OUT				REGISTER_32(P1_BASE + 0x0000)
 #define P1_OMR				REGISTER_32(P1_BASE + 0x0004)
 #define P1_IOCR0			REGISTER_32(P1_BASE + 0x0010)
@@ -465,7 +458,6 @@
 #define P1_HWSEL			REGISTER_32(P1_BASE + 0x0078)
 
 // P2
-
 #define P2_OUT				REGISTER_32(P2_BASE + 0x0000)
 #define P2_OMR				REGISTER_32(P2_BASE + 0x0004)
 #define P2_IOCR0			REGISTER_32(P2_BASE + 0x0010)
