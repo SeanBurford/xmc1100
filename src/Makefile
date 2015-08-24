@@ -16,7 +16,7 @@ CC=arm-none-eabi-gcc
 AS=arm-none-eabi-as
 LD=arm-none-eabi-ld
 
-SRCS=init.c ccu.c gpio.c nvic.c systick.c usic.c usic_buffer.c
+SRCS=init.c ccu.c gpio.c nvic.c scu.c systick.c usic.c usic_buffer.c
 OBJS=$(SRCS:.c=.o)
 
 all:	main.elf speed_test.elf
@@ -29,7 +29,7 @@ main.elf:	$(OBJS) main.o
 	objcopy -O ihex main.elf main.hex
 
 speed_test.elf:	init.o nvic.o usic.o speed_test.o
-	$(LD) init.o gpio.o nvic.o usic.o speed_test.o \
+	$(LD) init.o gpio.o nvic.o usic.o scu.o speed_test.o \
 	      $(LIBSPEC) -T linker_script.ld -lc --cref -Map speed_test.map \
 	      -nostartfiles -o $@
 

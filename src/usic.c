@@ -1,5 +1,6 @@
 #include "xmc1100.h"
 #include "nvic.h"
+#include "scu.h"
 #include "usic.h"
 
 // Serial inputs from the pins to the protocol processor:
@@ -47,10 +48,7 @@
 
 void usicEnable(void) {
 	// Clear gating of USIC in SCU_CGATCLR0
-	SCU_PASSWD = 0xC0;
-	SCU_CGATCLR0 = BIT3;
-	SCU_PASSWD = 0xC3;
-        while (SCU_CLKCR & (BIT30 | BIT31)); // wait for vccp to stabilise.
+	scuUngatePeripheralClock(CGATCLR0_USIC0);
 }
 
 void usicConfigureCh0(void) {

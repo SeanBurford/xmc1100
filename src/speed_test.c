@@ -1,30 +1,15 @@
 #include "xmc1100.h"
 #include "gpio.h"
 #include "nvic.h"
+#include "scu.h"
 #include "usic.h"
 
 unsigned int postReset(void)
 {
-	// 12.4.2 Reset Status
-	unsigned int status;
-	status = SCU_RSTSTAT & 0x3FF;
-	SCU_RSTCLR = BIT0;
-	// Reset on ECC error, loss of clock.
-	SCU_RSTCON = BIT1 | BIT0;
-	return status;
-}
-
-void configureClock(void)
-{
-	SCU_PASSWD = 0xC0;
-	// CNTADJ = 1024 clock cycles
-	// RTC gets clock from standby source
-	// PCLK = 2 * MCLK (64MHz) (fdiv=00/256, idiv=01 (32MHz))
-	// MCLK = 32MHz
-	SCU_CLKCR = 0x3FF10100;
-	// SCU_CLKCR = 0x3ff00400;  // 8MHz
-	while (SCU_CLKCR & (BIT30 | BIT31)); // wait for vccp to stabilise.
-	SCU_PASSWD = 0x00C3;
+	unsigned int reason = scuResetReason();
+	scuResetControl(RSTCON_ALL);
+	scuClockControl(CLKCR_M32_P64);
+	return reason;
 }
 
 static unsigned int txcount = 0;
@@ -65,7 +50,6 @@ int main()
 {
 	disable_interrupts();
 	postReset();
-	configureClock();
 
         enablePin(1, 0, GPIO_OUT_PP);  // LED
 	enablePin(1, 1, GPIO_OUT_PP);  // LED

@@ -1,6 +1,7 @@
 #include "xmc1100.h"
 #include "ccu.h"
 #include "nvic.h"
+#include "scu.h"
 
 // Slice 0: 40kHz 50% PWM.
 //   Event 1: Start signal from SCU.
@@ -31,12 +32,7 @@ void ccuStopSlices(void) {
 
 void ccuEnable(void) {
 	// CCU4 clock is SCU fPCLK.
-	// Disable gating of the CCU40 clock.
-	// Also controls ADC, USIC, WDT, RTC.
-	SCU_PASSWD = 0x00C0;
-	SCU_CGATCLR0 = BIT2;  // Enable CCU4 clock.
-	SCU_PASSWD = 0x00C3;
-	while (SCU_CLKCR & (BIT30 | BIT31)); // wait for vccp to stabilise.
+	scuUngatePeripheralClock(CGATCLR0_CCU40);
 
 	// Deassert synchronised start signal.
 	SCU_CCUCON = 0;
