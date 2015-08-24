@@ -1,10 +1,10 @@
-#include "xmc1100.h"
-#include "ccu.h"
-#include "gpio.h"
-#include "usic.h"
+#include "peripherals/xmc1100.h"
+#include "peripherals/ccu.h"
+#include "peripherals/gpio.h"
+#include "peripherals/usic.h"
+#include "peripherals/scu.h"
+#include "peripherals/systick.h"
 #include "usic_buffer.h"
-#include "scu.h"
-#include "systick.h"
 
 unsigned int postReset(void)
 {

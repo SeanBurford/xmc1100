@@ -1,8 +1,8 @@
-#include "xmc1100.h"
-#include "gpio.h"
-#include "nvic.h"
-#include "scu.h"
-#include "usic.h"
+#include "peripherals/xmc1100.h"
+#include "peripherals/gpio.h"
+#include "peripherals/nvic.h"
+#include "peripherals/scu.h"
+#include "peripherals/usic.h"
 
 unsigned int postReset(void)
 {

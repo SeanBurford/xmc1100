@@ -1,5 +1,5 @@
-#include "xmc1100.h"
-#include "usic.h"
+#include "peripherals/xmc1100.h"
+#include "peripherals/usic.h"
 
 static char ch0TxBuff[128];
 static unsigned int ch0TxBuffStart = 0;

@@ -34,4 +34,3 @@ void adcDisable(void) {
 	// Gate the ADC in SCU_CGATCLR0
 	scuGatePeripheralClock(CGATCLR0_VADC);
 }
-
