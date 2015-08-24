@@ -46,4 +46,4 @@ speed_test.o:	speed_test.c
 	$(CC) -c $(CCFLAGS) $< -o $@
 
 clean: 
-	rm *.o *.elf main.bin main.hex main.map
+	rm *.o *.elf *.map main.bin main.hex
