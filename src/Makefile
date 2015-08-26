@@ -9,7 +9,7 @@
 # it accordingly.
 # Tell the linker where to find the libraries -> important: use thumb versions
 LIBSPEC=-L /usr/lib/arm-none-eabi/newlib/armv6-m
-CCFLAGS=-c -mcpu=cortex-m0 -mthumb -g -Wall -Werror
+CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror
 
 # Specify the compiler, assembler and linker to use
 CC=arm-none-eabi-gcc

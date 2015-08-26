@@ -1,1 +1,1 @@
-void systickEnable(void);
+void systickEnable(const unsigned int period);

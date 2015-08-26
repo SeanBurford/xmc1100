@@ -37,7 +37,8 @@ int main()
 	enablePin(0, 6, GPIO_OUT_OD_ALT4);  // P0.6 alt4 is CCU4.OUT0
         enablePin(0, 7, GPIO_IN_PU);
 
-	systickEnable();
+	// Clock = 64MHz so 8000000 - 1 is 8 systicks/second.
+	systickEnable(8000000 - 1);
 
 	enable_interrupts();
 
@@ -50,4 +51,9 @@ int main()
 	}
 
 	return 0;
+}
+
+void __attribute__((interrupt("IRQ"))) systickHandler(void) {
+        // Toggle LED P1.1.
+        togglePinP1(1);
 }
