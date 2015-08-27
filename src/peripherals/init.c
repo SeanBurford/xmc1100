@@ -86,8 +86,8 @@ const void * FlashVectors[] __attribute__((section(".vectors"))) ={
 inline void JumpTable(void) __attribute__(( section(".remapped_vectors")));
 inline void JumpTable(void) 
 {
-	asm(" .long 0 "); // -15 reserved
-	asm(" .long 0 "); // -14 reserved
+	asm(" .long 0 "); // -15 Power up and warm reset
+	asm(" .long 0 "); // -14 NMI
 	asm(" .long 0 "); // -13 HardFault
 	asm(" .long 0 "); // -12 reserved
 	asm(" .long 0 "); // -11 reserved
@@ -97,7 +97,7 @@ inline void JumpTable(void)
 	asm(" .long 0 "); // -7 reserved
 	asm(" .long 0 "); // -6 reserved
 	asm(" .long 0 "); // -5 SVCall
-	asm(" .long 0 "); // -4 reserved 
+	asm(" .long 0 "); // -4 Debug monitor 
 	asm(" .long 0 "); // -3 reserved 
 	asm(" .long 0 "); // -2 SVCall
 	asm(" ldr R0,=(systickHandler) "); // -1 Systick handler
