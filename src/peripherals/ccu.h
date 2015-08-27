@@ -1,5 +1,96 @@
-void ccuEnable(void);
-void ccuConfigureSlice0(void);
-void ccuConfigureSlice1(void);
-void ccuStopSlices(void);
-void ccuStartSlices(void);
+// CCU4xINS event 0 input selection
+#define EV0IS_INyA (0x0000 << 0)
+#define EV0IS_INyB (0x0001 << 0)
+#define EV0IS_INyC (0x0002 << 0)
+#define EV0IS_INyD (0x0003 << 0)
+#define EV0IS_INyE (0x0004 << 0)
+#define EV0IS_INyF (0x0005 << 0)
+#define EV0IS_INyG (0x0006 << 0)
+#define EV0IS_INyH (0x0007 << 0)
+#define EV0IS_INyI (0x0008 << 0)
+#define EV0IS_INyJ (0x0009 << 0)
+#define EV0IS_INyK (0x000a << 0)
+#define EV0IS_INyL (0x000b << 0)
+#define EV0IS_INyM (0x000c << 0)
+#define EV0IS_INyN (0x000d << 0)
+#define EV0IS_INyO (0x000e << 0)
+#define EV0IS_INyP (0x000f << 0)
+// CCU4xINS event 0 edge selection
+#define EV0EM_NONE (0x00 << 16)
+#define EV0EM_RISING (0x01 << 16)
+#define EV0EM_FALLING (0x02 << 16)
+#define EV0EM_BOTH (0x03 << 16)
+// CCU4xINS event 0 level selection
+#define EV0LM_HIGH (0x00 << 22)
+#define EV0LM_LOW (0x01 << 22)
+// CCU4xINS event 0 low pass filter selection
+#define LPF0M_NONE (0x00 << 25)
+#define LPF0M_3 (0x01 << 25)
+#define LPF0M_5 (0x02 << 25)
+#define LPF0M_7 (0x03 << 25)
+// CCU4xINS event 1 input selection
+#define EV1IS_INyA (0x0000 << 4)
+#define EV1IS_INyB (0x0001 << 4)
+#define EV1IS_INyC (0x0002 << 4)
+#define EV1IS_INyD (0x0003 << 4)
+#define EV1IS_INyE (0x0004 << 4)
+#define EV1IS_INyF (0x0005 << 4)
+#define EV1IS_INyG (0x0006 << 4)
+#define EV1IS_INyH (0x0007 << 4)
+#define EV1IS_INyI (0x0008 << 4)
+#define EV1IS_INyJ (0x0009 << 4)
+#define EV1IS_INyK (0x000a << 4)
+#define EV1IS_INyL (0x000b << 4)
+#define EV1IS_INyM (0x000c << 4)
+#define EV1IS_INyN (0x000d << 4)
+#define EV1IS_INyO (0x000e << 4)
+#define EV1IS_INyP (0x000f << 4)
+// CCU4xINS event 1 edge selection
+#define EV1EM_NONE (0x00 << 18)
+#define EV1EM_RISING (0x01 << 18)
+#define EV1EM_FALLING (0x02 << 18)
+#define EV1EM_BOTH (0x03 << 18)
+// CCU4xINS event 1 level selection
+#define EV1LM_HIGH (0x00 << 23)
+#define EV1LM_LOW (0x01 << 23)
+// CCU4xINS event 1 low pass filter selection
+#define LPF1M_NONE (0x00 << 27)
+#define LPF1M_3 (0x01 << 27)
+#define LPF1M_5 (0x02 << 27)
+#define LPF1M_7 (0x03 << 27)
+// CCU4xINS event 2 input selection
+#define EV2IS_INyA (0x0000 << 8)
+#define EV2IS_INyB (0x0001 << 8)
+#define EV2IS_INyC (0x0002 << 8)
+#define EV2IS_INyD (0x0003 << 8)
+#define EV2IS_INyE (0x0004 << 8)
+#define EV2IS_INyF (0x0005 << 8)
+#define EV2IS_INyG (0x0006 << 8)
+#define EV2IS_INyH (0x0007 << 8)
+#define EV2IS_INyI (0x0008 << 8)
+#define EV2IS_INyJ (0x0009 << 8)
+#define EV2IS_INyK (0x000a << 8)
+#define EV2IS_INyL (0x000b << 8)
+#define EV2IS_INyM (0x000c << 8)
+#define EV2IS_INyN (0x000d << 8)
+#define EV2IS_INyO (0x000e << 8)
+#define EV2IS_INyP (0x000f << 8)
+// CCU4xINS event 2 edge selection
+#define EV2EM_NONE (0x00 << 20)
+#define EV2EM_RISING (0x01 << 20)
+#define EV2EM_FALLING (0x02 << 20)
+#define EV2EM_BOTH (0x03 << 20)
+// CCU4xINS event 2 level selection
+#define EV2LM_HIGH (0x00 << 24)
+#define EV2LM_LOW (0x01 << 24)
+// CCU4xINS event 2 low pass filter selection
+#define LPF2M_NONE (0x00 << 29)
+#define LPF2M_3 (0x01 << 29)
+#define LPF2M_5 (0x02 << 29)
+#define LPF2M_7 (0x03 << 29)
+
+unsigned int ccuEnable(void);
+void ccuConfigureSlice0(const unsigned int input_selector);
+void ccuConfigureSlice1(const unsigned int input_selector);
+void ccuStopSlices(const unsigned int slices);
+void ccuStartSlices(const unsigned int slices);

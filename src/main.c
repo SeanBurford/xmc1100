@@ -28,8 +28,12 @@ int main()
 	usicConfigureCh0();
 
 	ccuEnable();
-	ccuConfigureSlice0();
-	ccuConfigureSlice1();
+	// INS Event 1: active high, rising edge, input I (SCU)
+	ccuConfigureSlice0(EV1IS_INyI | EV1EM_RISING);
+	// INS Event 0: 3 clock LPF, active high, rising edge, input B (P0.7)
+	// INS Event 1: active high, rising edge, input I (SCU.GSC40)
+	ccuConfigureSlice1(EV0IS_INyB | EV0EM_RISING | LPF0M_3 |
+	                   EV1IS_INyI | EV1EM_RISING);
 	// CCU40 OUT0 is connected to P0.0, P0.5, P0.6, P1.0, P2.0.
         // Set P0.7 to pull up input (wire up to P0.6 CCU4.OUT0)
 	// P0.7 is configured in ccuConfigureSlice1 as the capture trigger.
@@ -42,7 +46,8 @@ int main()
 
 	enable_interrupts();
 
-	ccuStartSlices();
+	// Start CCU slices 0 and 1
+	ccuStartSlices(BIT1 | BIT0);
 
 	usicBufferSendCh0("Ready.\r\n");
 	while(1)

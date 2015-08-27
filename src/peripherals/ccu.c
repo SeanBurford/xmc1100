@@ -12,43 +12,72 @@
 //   Event 1: Start signal from SCU.
 //   P0.7 pull up input to trigger capture.
 
-void ccuStartSlices(void) {
-	CCU4_CC40TCSET = BIT0; // set timer slice 0 run bit.
-	CCU4_CC41TCSET = BIT0; // set timer slice 1 run bit.
+// Start requested slices.
+// Uses SCU.GSC40 to start slices simultaneously if CCU4_CC4xINS and
+// CCU4_CC4xCMC have been configured to start the slices on an SCU event.
+//   slices is a bit field of slices to start (0=slice 0 .. 3=slice3).
+void ccuStartSlices(const unsigned int slices) {
+	CCU4_GIDLS = BIT9;  // clear the prescaler and load PVAL.
+	if (slices & BIT0) {
+		CCU4_CC40TCSET = BIT0; // set timer slice 0 run bit.
+	}
+	if (slices & BIT1) {
+		CCU4_CC41TCSET = BIT0;
+	}
+	if (slices & BIT2) {
+		CCU4_CC42TCSET = BIT0;
+	}
+	if (slices & BIT3) {
+		CCU4_CC43TCSET = BIT0;
+	}
 	// Remove the (default) idle mode from the timer slices (17.7.1).
-	CCU4_GIDLC = BIT1 | BIT0;
+	// BIT8 enables the prescaler run bit for the CCU.
+	CCU4_GIDLC = BIT8 | slices;
 	// Start CCU40 timers that have been configured (INS and CMC registers)
 	// to use SCU.GSC40 as a start event.
 	SCU_CCUCON = BIT0;
 }
 
-void ccuStopSlices(void) {
-	CCU4_CC40TCCLR = BIT0 | BIT1;  // Clear slice 0 run bit(0) and timer(1).
-	CCU4_CC41TCCLR = BIT0 | BIT1;  // Clear slice 1 run bit(0) and timer(1).
-	CCU4_CC42TCCLR = BIT0 | BIT1;  // Clear slice 2 run bit(0) and timer(1).
-	CCU4_CC43TCCLR = BIT0 | BIT1;  // Clear slice 3 run bit(0) and timer(1).
-	CCU4_GIDLS = BIT3 | BIT2 | BIT1 | BIT0;  // put all slices into idle.
+// Put requested slices into idle (clock stopped, registers not cleared).
+//   slices is a bit field of slices to stop (0=slice 0 .. 3=slice3).
+void ccuStopSlices(const unsigned int slices) {
+	CCU4_GIDLS = slices;  // Put requested slices into idle.
 }
 
-void ccuEnable(void) {
+unsigned int  ccuEnable(void) {
+	// Check module identification
+	if ((CCU4_MIDR >> 8) != 0x0000A6C0) {
+		return 1;
+	}
+
+	// Enable interrupt node 21-24 at priority 64
+	enableInterrupt(21, 64);
+	enableInterrupt(22, 64);
+	enableInterrupt(23, 64);
+	enableInterrupt(24, 64);
+
 	// CCU4 clock is SCU fPCLK.
 	scuUngatePeripheralClock(CGATCLR0_CCU40);
 
+	// Stop any slices that were previously running.
+	ccuStopSlices(BIT3 | BIT2 | BIT1 | BIT0);
+
 	// Deassert synchronised start signal.
 	SCU_CCUCON = 0;
-	ccuStopSlices();
 
-	// Enable prescaler block (SPRB = 1).  17.7.1
-	// Writing a BIT8 enables the prescaler run bit for the CCU.
-	CCU4_GIDLC = BIT8;
 	// Configure the global CCU4 register.  17.7.1
 	// Request shadow transfer of period and compare registers.
 	// Module clock is prescaler clock.
 	// Prescaler cleared by software only.
+	// Suspend is ignored.
 	CCU4_GCTRL = 0;
+
+	return 0;
 }
 
-void ccuConfigureSlice0(void) {
+//  input_selector configures input events.  It's a bitwise or of
+//    EVyIS | EVyEM | EVyLM | LPFyM for each event y.
+void ccuConfigureSlice0(const unsigned int input_selector) {
 	// Prescaler frequency is Fccu/(PSC^2). 0=/1, 1 = /2, 2=/4, 3=/8 etc.
 	CCU4_CC40PSC = 4;  // 64 / 16 = 4MHz
 	// Set CAPCOM timer to compare mode (CMOD=0, default) and timer counting
@@ -66,13 +95,12 @@ void ccuConfigureSlice0(void) {
 	// output = value ^ PSL
 	CCU4_CC40PSL = 0;  //Set PSL bit to request passive low.
 
-	// Event 1: active high, rising edge, input I (SCU)
-	CCU4_CC40INS = (1 << 18) | (8 << 4);
+	CCU4_CC40INS = input_selector;
 	CCU4_CC40CMC = 2;  // Start on event 1
 	CCU4_CC40INTE = 0;  // No interrupts
 }
 
-void ccuConfigureSlice1(void) {
+void ccuConfigureSlice1(const unsigned int input_selector) {
 	CCU4_CC41PSC = 4;  // 64 / 16 = 4MHz
 	CCU4_CC41TC = 0;
 	CCU4_CC41PSL = 0;  // Set PSL bit to request passive low.
@@ -81,33 +109,19 @@ void ccuConfigureSlice1(void) {
 	CCU4_CC41CRS = 0xFFFF;
 	CCU4_GCSS = BIT4;  // Request transfer of PRS and CRS (slice 1)
 
-	// To select an external capture signal, one should map one of the
-	// events (output of the input selector) to a specific input signal,
-	// by setting the required value in the CC4yINS.EVxIS register and
-	// indicating the active edge of the signal on the CC4yINS.EVxEM
-	// register. This event should be then mapped to the capture
-	// functionality by setting the CC4yCMC.CAP0S/CC4yCMC.CAP1S with
-	// the proper value.
-	// Event 0: 3 clock LPF, active high, rising edge, input B (P0.7)
-	// Event 1: active high, rising edge, input I (SCU.GSC40)
-	CCU4_CC41INS = (1 << 25) | (1 << 18) | (1 << 16) | (8 << 4) | (1);
+	CCU4_CC41INS = input_selector;
 	CCU4_CC41CMC = (1 << 4) | 2;  // Event 0=capture 0, event 1=start.
 
 	CCU4_CC41SWR = 0x00000f0f;  // Clear interrupt flags.
 	CCU4_CC41SRS = (0 << 2);  // Event 0 generates CC40.SR0 (shared).
 	CCU4_CC41INTE = (1 << 8);  // Event 0 interrupt enable
 
-	// Enable interrupt node 21-24 at priority 64
-	enableInterrupt(21, 64);
-	enableInterrupt(22, 64);
-	enableInterrupt(23, 64);
-	enableInterrupt(24, 64);
 }
 
 unsigned int capture_vals[128];
 unsigned int capture_head = 0;
 void __attribute__((interrupt("IRQ"))) CCU40_SR0(void) {
-	// Check CCU4_CC41INTS to determine where the interrupt came from.
+	// Check CCU4_CC41INTS to determine which slice the interrupt came from.
 	if (CCU4_CC40INTS) {
 		// This will occur due to slice 0 activity, no interrupts
 		// are actually generated/expected.
@@ -138,3 +152,6 @@ void __attribute__((interrupt("IRQ"))) CCU40_SR0(void) {
 	}
 }
 
+void __attribute__((alias("CCU40_SR0"))) CCU40_SR1(void);
+void __attribute__((alias("CCU40_SR0"))) CCU40_SR2(void);
+void __attribute__((alias("CCU40_SR0"))) CCU40_SR3(void);
