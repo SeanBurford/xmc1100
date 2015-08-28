@@ -3,15 +3,6 @@
 #include "nvic.h"
 #include "scu.h"
 
-// Slice 0: 40kHz 50% PWM.
-//   Event 1: Start signal from SCU.
-//   P0.6: open drain PWM output.
-//   P1.0: push pull PWM output (LED).
-// Slice 1: Capture.
-//   Event 0: SR0 (IRQ 21) on capture.
-//   Event 1: Start signal from SCU.
-//   P0.7 pull up input to trigger capture.
-
 // Start requested slices.
 // Uses SCU.GSC40 to start slices simultaneously if CCU4_CC4xINS and
 // CCU4_CC4xCMC have been configured to start the slices on an SCU event.
@@ -44,7 +35,7 @@ void ccuStopSlices(const unsigned int slices) {
 	CCU4_GIDLS = slices;  // Put requested slices into idle.
 }
 
-unsigned int  ccuEnable(void) {
+unsigned int ccuEnable(void) {
 	// Check module identification
 	if ((CCU4_MIDR >> 8) != 0x0000A6C0) {
 		return 1;
