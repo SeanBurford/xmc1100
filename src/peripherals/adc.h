@@ -1,3 +1,22 @@
+unsigned int enableADCPin(const unsigned int port, const unsigned int pin,
+                          const unsigned int mode);
+unsigned int disableADCPin(const unsigned int port, const unsigned int pin);
+void adcCalibrate(int wait);
+unsigned int adcEnable(const unsigned int sample_time,
+                       const unsigned int conversion_mode,
+                       const unsigned int data_reduction,
+                       const unsigned int result_interrupt,
+                       const unsigned int result_node,
+                       const unsigned int source_interrupt,
+                       const unsigned int source_node,
+                       const unsigned int trigger_level,
+                       const unsigned int trigger_input,
+                       const unsigned int gate_enable,
+                       const unsigned int gate_input);
+unsigned int adcDisable(void);
+void adcRequest(unsigned int group_channel);
+unsigned int adcGetResult(unsigned int wait);
+
 // VADC0_GLOBICLASSx STCS sample time values
 #define STCS_2 0x00
 #define STCS_3 0x01
@@ -93,13 +112,3 @@
 #define G1CH5_P2_3  0x00050000
 #define G1CH6_P2_4  0x00060000
 #define G1CH7_P2_5  0x00070000
-
-unsigned int enableADCPin(const unsigned int port, const unsigned int pin,
-                          const unsigned int mode);
-unsigned int disableADCPin(const unsigned int port, const unsigned int pin);
-void adcCalibrate(int wait);
-unsigned int adcEnable(void);
-unsigned int adcDisable(void);
-void adcRequest(void);
-unsigned int adcGetResult(unsigned int wait);
-

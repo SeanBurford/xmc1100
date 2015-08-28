@@ -28,12 +28,20 @@ int main()
 	usicConfigureCh0();
 
 	ccuEnable();
-	// INS Event 1: active high, rising edge, input I (SCU)
-	ccuConfigureSlice0(EV1IS_INyI | EV1EM_RISING);
-	// INS Event 0: 3 clock LPF, active high, rising edge, input B (P0.7)
-	// INS Event 1: active high, rising edge, input I (SCU.GSC40)
+	// Event 1: active high, rising edge, input I (SCU)
+	// Clear the timer (STRM) and start on event 1
+	// Transfer shadow registers on timer clear
+	ccuConfigureSlice0(EV1IS_INyI | EV1EM_RISING,
+                           STRTS_EV1,
+	                   CMOD_COMPARE | CLST_ENABLE | STRM_BOTH);
+	// Event 0: 3 clock LPF, active high, rising edge, input B (P0.7)
+	// Capture on event 0.
+	// Event 1: active high, rising edge, input I (SCU.GSC40)
+	// Clear the timer (STRM) and start on event 1.
 	ccuConfigureSlice1(EV0IS_INyB | EV0EM_RISING | LPF0M_3 |
-	                   EV1IS_INyI | EV1EM_RISING);
+	                   EV1IS_INyI | EV1EM_RISING,
+	                   CAP0S_EV0 | STRTS_EV1,
+	                   CMOD_CAPTURE | STRM_BOTH);
 	// CCU40 OUT0 is connected to P0.0, P0.5, P0.6, P1.0, P2.0.
         // Set P0.7 to pull up input (wire up to P0.6 CCU4.OUT0)
 	// P0.7 is configured in ccuConfigureSlice1 as the capture trigger.

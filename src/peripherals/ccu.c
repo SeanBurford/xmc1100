@@ -18,6 +18,12 @@
 //   slices is a bit field of slices to start (0=slice 0 .. 3=slice3).
 void ccuStartSlices(const unsigned int slices) {
 	CCU4_GIDLS = BIT9;  // clear the prescaler and load PVAL.
+	// BIT8 enables the prescaler run bit for the CCU.
+	CCU4_GIDLC = BIT8 | slices;
+	// Start CCU40 timers that have been configured (INS and CMC registers)
+	// to use SCU.GSC40 as a start event.
+	SCU_CCUCON = BIT0;
+	// Remove idle mode from the timer slices that were not started above.
 	if (slices & BIT0) {
 		CCU4_CC40TCSET = BIT0; // set timer slice 0 run bit.
 	}
@@ -30,12 +36,6 @@ void ccuStartSlices(const unsigned int slices) {
 	if (slices & BIT3) {
 		CCU4_CC43TCSET = BIT0;
 	}
-	// Remove the (default) idle mode from the timer slices (17.7.1).
-	// BIT8 enables the prescaler run bit for the CCU.
-	CCU4_GIDLC = BIT8 | slices;
-	// Start CCU40 timers that have been configured (INS and CMC registers)
-	// to use SCU.GSC40 as a start event.
-	SCU_CCUCON = BIT0;
 }
 
 // Put requested slices into idle (clock stopped, registers not cleared).
@@ -77,13 +77,23 @@ unsigned int  ccuEnable(void) {
 
 //  input_selector configures input events.  It's a bitwise or of
 //    EVyIS | EVyEM | EVyLM | LPFyM for each event y.
-void ccuConfigureSlice0(const unsigned int input_selector) {
+//  connections configures the connection matrix. Bitwise or of
+//    STRTS | ENDS | CAP0S | CAP1S | CAP2S | GATES | UDS | LDS | CNTS | OFS |
+//    TS | MOS | TCE
+//  timer_control configures timer behaviour. See 'CCU4yTC timer control'
+//    in ccu.h (there are lots of flags here).
+void ccuConfigureSlice0(const unsigned int input_selector,
+                        const unsigned int connections,
+                        const unsigned int timer_control) {
 	// Prescaler frequency is Fccu/(PSC^2). 0=/1, 1 = /2, 2=/4, 3=/8 etc.
 	CCU4_CC40PSC = 4;  // 64 / 16 = 4MHz
-	// Set CAPCOM timer to compare mode (CMOD=0, default) and timer counting
-	// mode to edge aligned.
-        // BIT2: Shadow transfer on clear.
-	CCU4_CC40TC = BIT2;
+	CCU4_CC40TC = timer_control;
+	CCU4_CC40INS = input_selector;
+	CCU4_CC41CMC = connections;  // Set after timer_control.
+	// Set external output to passive low external high.
+	// output = value ^ PSL
+	CCU4_CC40PSL = 0;  //Set PSL bit to request passive low.
+
 	// Set the period match and compare level shadow registers.
 	// Request transfer of shadow registers to the normal registers.
 	// Using PRS blocks out C2V and C3V capture registers.
@@ -91,31 +101,26 @@ void ccuConfigureSlice0(const unsigned int input_selector) {
 	CCU4_CC40PRS = 99;  // 40kHz
 	CCU4_CC40CRS = 50;
 	CCU4_GCSS = BIT0;  // Request transfer of PRS and CRS (slice 0)
-	// Set external output to passive low external high.
-	// output = value ^ PSL
-	CCU4_CC40PSL = 0;  //Set PSL bit to request passive low.
 
-	CCU4_CC40INS = input_selector;
-	CCU4_CC40CMC = 2;  // Start on event 1
 	CCU4_CC40INTE = 0;  // No interrupts
 }
 
-void ccuConfigureSlice1(const unsigned int input_selector) {
+void ccuConfigureSlice1(const unsigned int input_selector,
+                        const unsigned int connections,
+                        const unsigned int timer_control) {
 	CCU4_CC41PSC = 4;  // 64 / 16 = 4MHz
-	CCU4_CC41TC = 0;
-	CCU4_CC41PSL = 0;  // Set PSL bit to request passive low.
+	CCU4_CC41TC = timer_control;
+	CCU4_CC41INS = input_selector;
+	CCU4_CC41CMC = connections;  // Set after timer_control.
+	CCU4_CC41PSL = 0;
 
 	CCU4_CC41PRS = 0xFFFF;
 	CCU4_CC41CRS = 0xFFFF;
 	CCU4_GCSS = BIT4;  // Request transfer of PRS and CRS (slice 1)
 
-	CCU4_CC41INS = input_selector;
-	CCU4_CC41CMC = (1 << 4) | 2;  // Event 0=capture 0, event 1=start.
-
 	CCU4_CC41SWR = 0x00000f0f;  // Clear interrupt flags.
 	CCU4_CC41SRS = (0 << 2);  // Event 0 generates CC40.SR0 (shared).
 	CCU4_CC41INTE = (1 << 8);  // Event 0 interrupt enable
-
 }
 
 unsigned int capture_vals[128];

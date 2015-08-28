@@ -156,7 +156,8 @@ void __attribute__((interrupt("IRQ"))) VADC0_SR0(void) {
 	}
 	if (globeflag & BIT8) {
 		// Result event
-		unsigned int result = adcGetResult(0);
+		adcGetResult(0);
+		// TODO: Use result.
 	}
 	// Clear flags
 	VADC0_GLOBEFLAG = BIT16 | BIT24;
