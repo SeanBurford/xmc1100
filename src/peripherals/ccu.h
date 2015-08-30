@@ -1,11 +1,42 @@
 unsigned int ccuEnable(void);
+
+// Configure a CCU slice
+//  input_selector configures input events.  It's a bitwise or of
+//    EVyIS | EVyEM | EVyLM | LPFyM for each event y.
+//  connections configures the connection matrix. Bitwise or of
+//    STRTS | ENDS | CAP0S | CAP1S | CAP2S | GATES | UDS | LDS | CNTS | OFS |
+//    TS | MOS | TCE
+//  timer_control configures timer behaviour. See 'CCU4yTC timer control'
+//    in ccu.h (there are lots of flags here).
+//  prescaler: count frequency is Fccu/(2^PSC). 0=/1, 1 = /2, 2=/4, 3=/8 etc.
+//  period, compare: 16 bit values for timer period and compare.
+//  interrupt_enable is an or of INTE_ values (eg. INTE_E0AE_ENABLE)
+//  interrupt_route is an or of SRS_ values (eg. INTE_E0AE_ENABLE)
 void ccuConfigureSlice0(const unsigned int input_selector,
                         const unsigned int connections,
-                        const unsigned int timer_control);
+                        const unsigned int timer_control,
+                        const unsigned int prescaler,
+                        const unsigned int period,
+                        const unsigned int compare,
+                        const unsigned int interrupt_enable,
+                        const unsigned int interrupt_route);
 void ccuConfigureSlice1(const unsigned int input_selector,
                         const unsigned int connections,
-                        const unsigned int timer_control);
+                        const unsigned int timer_control,
+                        const unsigned int prescaler,
+                        const unsigned int period,
+                        const unsigned int compare,
+                        const unsigned int interrupt_enable,
+                        const unsigned int interrupt_route);
+
+// Put requested slices into idle (clock stopped, registers not cleared).
+//   slices is a bit field of slices to stop (0=slice 0 .. 3=slice3).
 void ccuStopSlices(const unsigned int slices);
+
+// Start requested slices.
+// Uses SCU.GSC40 to start slices simultaneously if CCU4_CC4xINS and
+// CCU4_CC4xCMC have been configured to start the slices on an SCU event.
+//   slices is a bit field of slices to start (0=slice 0 .. 3=slice3).
 void ccuStartSlices(const unsigned int slices);
 
 // TODO: A lot of the stuff below should be structs and enums.
@@ -191,3 +222,41 @@ void ccuStartSlices(const unsigned int slices);
 // CCU4yMCME multi channel mode enable
 #define MCME_ENABLE BIT25
 
+// CCU4yINTE interrupt enable.
+// PME period match while counting up generates an interrupt
+#define INTE_PME_ENABLE BIT0
+// OME one match while counting down generates an interrupt
+#define INTE_OME_ENABLE BIT1
+// CMUE compare match while counting up generates an interrupt
+#define INTE_CMUE_ENABLE BIT2
+// CMDE compare match while counting down generates an interrupt
+#define INTE_CMDE_ENABLE BIT3
+// Event 0 generates an interrupt
+#define INTE_E0AE_ENABLE BIT8
+#define INTE_E1AE_ENABLE BIT9
+#define INTE_E2AE_ENABLE BIT10
+
+// CCU4ySRS interrupt request selector.
+// POSR period/one match service request selector
+#define SRS_POSR_SR0 (0x00 << 0)
+#define SRS_POSR_SR1 (0x01 << 0)
+#define SRS_POSR_SR2 (0x02 << 0)
+#define SRS_POSR_SR3 (0x03 << 0)
+// CMSR compare match service request selector
+#define SRS_CMSR_SR0 (0x00 << 2)
+#define SRS_CMSR_SR1 (0x01 << 2)
+#define SRS_CMSR_SR2 (0x02 << 2)
+#define SRS_CMSR_SR3 (0x03 << 2)
+// E0SR event 0 service request selector
+#define SRS_E0SR_SR0 (0x00 << 8)
+#define SRS_E0SR_SR1 (0x01 << 8)
+#define SRS_E0SR_SR2 (0x02 << 8)
+#define SRS_E0SR_SR3 (0x03 << 8)
+#define SRS_E1SR_SR0 (0x00 << 10)
+#define SRS_E1SR_SR1 (0x01 << 10)
+#define SRS_E1SR_SR2 (0x02 << 10)
+#define SRS_E1SR_SR3 (0x03 << 10)
+#define SRS_E2SR_SR0 (0x00 << 12)
+#define SRS_E2SR_SR1 (0x01 << 12)
+#define SRS_E2SR_SR2 (0x02 << 12)
+#define SRS_E2SR_SR3 (0x03 << 12)
