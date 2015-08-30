@@ -20,6 +20,9 @@
 #define CGATCLR0_WDT BIT9
 #define CGATCLR0_RTC BIT10
 
+// Convenience function to get reset reason and set clock speed.
+unsigned int scuPostReset(const unsigned int clkcr);
+
 // Get reason for previous reset.
 unsigned int scuResetReason(void);
 // Set reset triggers.

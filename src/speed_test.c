@@ -4,14 +4,6 @@
 #include "peripherals/scu.h"
 #include "peripherals/usic.h"
 
-unsigned int postReset(void)
-{
-	unsigned int reason = scuResetReason();
-	scuResetControl(RSTCON_ALL);
-	scuClockControl(CLKCR_M32_P64);
-	return reason;
-}
-
 static unsigned int txcount = 0;
 
 void usicCh0Receive(unsigned int val) {
@@ -48,8 +40,7 @@ unsigned char usicCh0Transmit(void) {
 
 int main()
 {
-	disable_interrupts();
-	postReset();
+	scuPostReset(CLKCR_M32_P64);
 
         enablePin(1, 0, GPIO_OUT_PP);  // LED
 	enablePin(1, 1, GPIO_OUT_PP);  // LED

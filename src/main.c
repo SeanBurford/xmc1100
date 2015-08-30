@@ -6,18 +6,9 @@
 #include "peripherals/systick.h"
 #include "usic_buffer.h"
 
-unsigned int postReset(void)
-{
-	unsigned int reason = scuResetReason();
-	scuResetControl(RSTCON_ALL);
-	scuClockControl(CLKCR_M32_P64);
-	return reason;
-}
-
 int main()
 {
-	disable_interrupts();
-	postReset();
+	scuPostReset(CLKCR_M32_P64);
 
         enablePin(1, 0, GPIO_OUT_PP);  // LED
 	enablePin(1, 1, GPIO_OUT_PP);  // LED

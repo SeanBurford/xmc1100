@@ -1,4 +1,5 @@
 #include "xmc1100.h"
+#include "scu.h"
 
 // Bit protection scheme enable and disable.
 #define PASSWD_MODE_DISABLED 0x00C0
@@ -7,6 +8,15 @@
 // Clock control register.
 #define CLKCR_VDDC2HIGH BIT31
 #define CLKCR_VDDC2LOW BIT30
+
+// Convenience function to get reset reason and set clock speed.
+unsigned int scuPostReset(const unsigned int clkcr)
+{
+        unsigned int reason = scuResetReason();
+        scuResetControl(RSTCON_ALL);
+        scuClockControl(clkcr);
+        return reason;
+}
 
 // Get reason for previous reset (12.4.2)
 unsigned int scuResetReason(void)
