@@ -27,7 +27,7 @@ int main()
 	ccuConfigureSlice0(EV1IS_INyI | EV1EM_RISING,
                            STRTS_EV1,
 	                   CMOD_COMPARE | CLST_ENABLE | STRM_BOTH,
-	                   4,  // Prescaler: 64MHz / (2^4) = 4MHz
+	                   PSC_FCCU_16,  // Prescaler: 64MHz / 16 = 4MHz
 	                   99, 50,  // 40kHz 50%
 	                   0, 0);  // No interrupts
 	// Slice 1: Capture.
@@ -39,7 +39,7 @@ int main()
 	                   EV1IS_INyI | EV1EM_RISING,
 	                   CAP0S_EV0 | STRTS_EV1,
 	                   CMOD_CAPTURE | STRM_BOTH,
-	                   4,  // Prescaler: 64MHz / (2^4) = 4MHz
+	                   PSC_FCCU_16,  // Prescaler: 64MHz / 16 = 4MHz
 	                   0xffff, 0xffff,
 	                   INTE_E0AE_ENABLE,
 	                   SRS_E0SR_SR0);  // Event 0 generates interrupt SR0

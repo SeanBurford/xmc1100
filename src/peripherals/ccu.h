@@ -8,7 +8,7 @@ unsigned int ccuEnable(void);
 //    TS | MOS | TCE
 //  timer_control configures timer behaviour. See 'CCU4yTC timer control'
 //    in ccu.h (there are lots of flags here).
-//  prescaler: count frequency is Fccu/(2^PSC). 0=/1, 1 = /2, 2=/4, 3=/8 etc.
+//  prescaler: count frequency is Fccu/(2^PSC). PSC_FCCU values enumerate this.
 //  period, compare: 16 bit values for timer period and compare.
 //  interrupt_enable is an or of INTE_ values (eg. INTE_E0AE_ENABLE)
 //  interrupt_route is an or of SRS_ values (eg. INTE_E0AE_ENABLE)
@@ -221,6 +221,24 @@ void ccuStartSlices(const unsigned int slices);
 #define EMT_ENABLE BIT24
 // CCU4yMCME multi channel mode enable
 #define MCME_ENABLE BIT25
+
+// CCU4yPSC prescaler divisors.
+#define PSC_FCCU 0x00
+#define PSC_FCCU_2 0x01
+#define PSC_FCCU_4 0x02
+#define PSC_FCCU_8 0x03
+#define PSC_FCCU_16 0x04
+#define PSC_FCCU_32 0x05
+#define PSC_FCCU_64 0x06
+#define PSC_FCCU_128 0x07
+#define PSC_FCCU_256 0x08
+#define PSC_FCCU_512 0x08
+#define PSC_FCCU_1024 0x0a
+#define PSC_FCCU_2048 0x0b
+#define PSC_FCCU_4096 0x0c
+#define PSC_FCCU_8192 0x0d
+#define PSC_FCCU_16384 0x0e
+#define PSC_FCCU_32768 0x0f
 
 // CCU4yINTE interrupt enable.
 // PME period match while counting up generates an interrupt
