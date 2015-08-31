@@ -29,7 +29,8 @@ int main()
 	                   CMOD_COMPARE | CLST_ENABLE | STRM_BOTH,
 	                   PSC_FCCU_16,  // Prescaler: 64MHz / 16 = 4MHz
 	                   99, 50,  // 40kHz 50%
-	                   0, 0);  // No interrupts
+	                   0, 0,    // No interrupts
+	                   0);      // Passive level low
 	// Slice 1: Capture.
 	// Event 0: 3 clock LPF, active high, rising edge, input B (P0.7)
 	// Capture on event 0.
@@ -42,7 +43,8 @@ int main()
 	                   PSC_FCCU_16,  // Prescaler: 64MHz / 16 = 4MHz
 	                   0xffff, 0xffff,
 	                   INTE_E0AE_ENABLE,
-	                   SRS_E0SR_SR0);  // Event 0 generates interrupt SR0
+	                   SRS_E0SR_SR0,  // Event 0 generates interrupt SR0
+	                   0);  // Passive level low
 	// CCU40 OUT0 is connected to P0.0, P0.5, P0.6, P1.0, P2.0.
 	// P0.6: open drain PWM output. (CCU4.OUT0)
 	// P1.0: push pull PWM output (LED). (CCU4.OUT0)

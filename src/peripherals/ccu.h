@@ -31,7 +31,8 @@ void ccuConfigureSlice0(const unsigned int input_selector,
                         const unsigned int period,
                         const unsigned int compare,
                         const unsigned int interrupt_enable,
-                        const unsigned int interrupt_route);
+                        const unsigned int interrupt_route,
+                        const unsigned int passive_level);
 void ccuConfigureSlice1(const unsigned int input_selector,
                         const unsigned int connections,
                         const unsigned int timer_control,
@@ -39,7 +40,8 @@ void ccuConfigureSlice1(const unsigned int input_selector,
                         const unsigned int period,
                         const unsigned int compare,
                         const unsigned int interrupt_enable,
-                        const unsigned int interrupt_route);
+                        const unsigned int interrupt_route,
+                        const unsigned int passive_level);
 
 // Put requested slices into idle (clock stopped, registers not cleared).
 //   slices is a bit field of slices to stop (0=slice 0 .. 3=slice3).

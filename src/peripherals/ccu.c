@@ -67,14 +67,14 @@ void ccuConfigureSlice0(const unsigned int input_selector,
                         const unsigned int period,     // 0x0000 - 0xffff)
                         const unsigned int compare,    // 0x0000 - 0xffff)
                         const unsigned int interrupt_enable,
-                        const unsigned int interrupt_route) {
+                        const unsigned int interrupt_route,
+                        const unsigned int passive_level) {
 	CCU4_CC40PSC = prescaler;
 	CCU4_CC40TC = timer_control;
 	CCU4_CC40INS = input_selector;
 	CCU4_CC40CMC = connections;  // Set after timer_control.
-	// Set external output to passive low external high.
-	// output = value ^ PSL
-	CCU4_CC40PSL = 0;  //Set PSL bit to request passive low.
+	// Set external output passive level.  output = value ^ PSL
+	CCU4_CC40PSL = passive_level;
 
 	// Set the period match and compare level shadow registers.
 	// Request transfer of shadow registers to the normal registers.
@@ -98,12 +98,13 @@ void ccuConfigureSlice1(const unsigned int input_selector,
                         const unsigned int period,     // 0x0000 - 0xffff)
                         const unsigned int compare,    // 0x0000 - 0xffff)
                         const unsigned int interrupt_enable,
-                        const unsigned int interrupt_route) {
+                        const unsigned int interrupt_route,
+                        const unsigned int passive_level) {
 	CCU4_CC41PSC = prescaler;
 	CCU4_CC41TC = timer_control;
 	CCU4_CC41INS = input_selector;
 	CCU4_CC41CMC = connections;  // Set after timer_control.
-	CCU4_CC41PSL = 0;
+	CCU4_CC41PSL = passive_level;
 
 	CCU4_CC41PRS = period;
 	CCU4_CC41CRS = compare;
