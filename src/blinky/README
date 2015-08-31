@@ -2,3 +2,4 @@ Programs that blink the LEDs
 
 blinky_cpu.c:      Use a busy loop to blink LEDs
 blinky_systick.c:  Use the systick timer IRQ to blink LEDs.
+blinky_ccu.c:      Use the capture/compare unit to blink LEDs (slow PWM).

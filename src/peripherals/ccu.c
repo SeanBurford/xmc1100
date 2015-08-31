@@ -29,8 +29,12 @@ void ccuStopSlices(const unsigned int slices) {
 	CCU4_GIDLS = slices;  // Put requested slices into idle.
 }
 
-unsigned int ccuEnable(void) {
+unsigned int ccuEnable(const unsigned int global_control) {
+	// CCU4 clock is SCU fPCLK.
+	scuUngatePeripheralClock(CGATCLR0_CCU40);
+
 	// Check module identification
+	// This is not available before peripheral clock starts.
 	if ((CCU4_MIDR >> 8) != 0x0000A6C0) {
 		return 1;
 	}
@@ -40,9 +44,6 @@ unsigned int ccuEnable(void) {
 	enableInterrupt(22, 64);
 	enableInterrupt(23, 64);
 	enableInterrupt(24, 64);
-
-	// CCU4 clock is SCU fPCLK.
-	scuUngatePeripheralClock(CGATCLR0_CCU40);
 
 	// Stop any slices that were previously running.
 	ccuStopSlices(BIT3 | BIT2 | BIT1 | BIT0);
@@ -54,8 +55,7 @@ unsigned int ccuEnable(void) {
 	// Request shadow transfer of period and compare registers.
 	// Module clock is prescaler clock.
 	// Prescaler cleared by software only.
-	// Suspend is ignored.
-	CCU4_GCTRL = 0;
+	CCU4_GCTRL = global_control;
 
 	return 0;
 }

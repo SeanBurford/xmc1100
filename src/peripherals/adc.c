@@ -61,13 +61,13 @@ unsigned int adcEnable(const unsigned int sample_time,
                        const unsigned int trigger_input,
                        const unsigned int gate_enable,
                        const unsigned int gate_input) {
+	// Clear gating of ADC in SCU_CGATCLR0
+	scuUngatePeripheralClock(CGATCLR0_VADC);
+
 	// Check the module ID
 	if (SHS0_ID  >> 8 != 0x000099c0) {
 		return 1;
 	}
-
-	// Clear gating of ADC in SCU_CGATCLR0
-	scuUngatePeripheralClock(CGATCLR0_VADC);
 
 	// Configure analog settings in SHS.
 	// AREF = internal reference, upper supply range (BIT1)

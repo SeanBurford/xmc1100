@@ -1,4 +1,16 @@
-unsigned int ccuEnable(void);
+// Enable and perform global configuration of the CCU peripheral.
+//  global_control is an or of GCTRL values.
+unsigned int ccuEnable(const unsigned int global_control);
+
+// GCTRL suspend configuration.
+// Ignore suspend requests, module never suspends.
+#define GCTRL_SUSCFG_IGNORE (0x00 << 8)
+// Stop all slices immediately, does not use safe stop.
+#define GCTRL_SUSCFG_HALT (0x01 << 8)
+// Safe stops the block immediatele and clamps outputs to passive state.
+#define GCTRL_SUSCFG_PASSIVE (0x02 << 8)
+// Safe stops the block after rollover and clamps outputs to passive state.
+#define GCTRL_SUSCFG_ROLLOVER (0x03 << 8)
 
 // Configure a CCU slice
 //  input_selector configures input events.  It's a bitwise or of

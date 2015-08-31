@@ -1,17 +1,13 @@
 # xmc1100
 Code for Infineon XMC1000 and XMC4000 series microcontrollers
 
-src/
-GCC compilable source code.
+src/ contains code to make use of the peripherals along with examples.
+It is all gcc compatible and uses standard Makefiles.
 
-disassembly/
 I had some trouble working out the serial port details from the manual
-so I disassembled the blinky app that comes with the board.  Here's the
-result.
+so I disassembled the blinky app that comes with the board.  The result
+is in disassembly/
 
-docs/
-Useful documentation from Infineon and other sources.  A good place to
-start if you're planning on programming for this chip family.
+docs/ contains useful documentation from Infineon and other sources.
 
-scripts/
-Scripts to make things easier, such as calculating serial port parameters.
+scripts/ makes things easier, such as calculating serial port parameters.
