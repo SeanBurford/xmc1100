@@ -18,8 +18,8 @@ void __attribute__((interrupt("IRQ"))) unhandledIRQ(void) {
 	unhandled_interrupts++;
 }
 void __attribute__((weak, alias("unhandledIRQ"))) systickHandler(void);
-void __attribute__((weak, alias("unhandledIRQ"))) SC_SR0(void);
-void __attribute__((weak, alias("unhandledIRQ"))) SC_SR1(void);
+void __attribute__((weak, alias("unhandledIRQ"))) SCU_SR0(void);
+void __attribute__((weak, alias("unhandledIRQ"))) SCU_SR1(void);
 void __attribute__((weak, alias("unhandledIRQ"))) IRQ02(void);
 void __attribute__((weak, alias("unhandledIRQ"))) ERU_SR0(void);
 void __attribute__((weak, alias("unhandledIRQ"))) ERU_SR1(void);
@@ -102,9 +102,9 @@ inline void JumpTable(void)
 	asm(" .long 0 "); // -2 SVCall
 	asm(" ldr R0,=(systickHandler) "); // -1 Systick handler
 	asm(" mov PC,R0 ");
-	asm(" ldr R0,=(SC_SR0) ");     // 00: System Control SR0 (critical)
+	asm(" ldr R0,=(SCU_SR0) ");     // 00: System Control SR0 (critical)
 	asm(" mov PC,R0 ");
-	asm(" ldr R0,=(SC_SR1) ");     // 01: System Control SR1 (common)
+	asm(" ldr R0,=(SCU_SR1) ");     // 01: System Control SR1 (common)
 	asm(" mov PC,R0 ");
 	asm(" ldr R0,=(IRQ02) ");      // 02: Reserved
 	asm(" mov PC,R0 ");

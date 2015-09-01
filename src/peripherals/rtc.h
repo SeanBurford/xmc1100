@@ -17,7 +17,7 @@ unsigned int rtcGetDateTime(unsigned int *year,
                             unsigned int *hour,
                             unsigned int *minute,
                             unsigned int *second);
-unsigned int rtcSetPeriodicEvent(const unsigned int mask) {
+unsigned int rtcSetPeriodicEvent(const unsigned int mask);
 unsigned int rtcClearPeriodicEvent(void);
 unsigned int rtcSetAlarm(const unsigned int year,
                          const unsigned int month,
@@ -35,4 +35,6 @@ unsigned int rtcClearAlarm(void);
 #define MSKSR_MPDA BIT3
 #define MSKSR_MPMO BIT5
 #define MSKSR_MPYE BIT6
-#define MSKSR_MAI  BIT7
+#define MSKSR_MPALL (MSKSR_MPYE | MSKSR_MPMO | MSKSR_MPDA | MSKSR_MPHO | \
+                     MSKSR_MPMI | MSKSR_MPSE)
+#define MSKSR_MAI  BIT8

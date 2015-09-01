@@ -19,7 +19,7 @@ int main()
 	usicConfigureCh0();
 
 	// Capture compare unit config
-	ccuEnable();
+	ccuEnable(GCTRL_SUSCFG_ROLLOVER);
 	// Slice 0: 40kHz 50% PWM.
 	// Event 1: active high, rising edge, input I (SCU)
 	// Clear the timer (STRM) and start on event 1
