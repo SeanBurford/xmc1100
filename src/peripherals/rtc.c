@@ -1,5 +1,6 @@
 #include "xmc1100.h"
 #include "rtc.h"
+#include "nvic.h"
 #include "scu.h"
 
 // Wait for the SCU to complete existing serial transfers with the RTC.
@@ -75,6 +76,7 @@ unsigned int rtcGetDateTime(unsigned int *year,
 
 unsigned int rtcSetPeriodicEvent(const unsigned int mask) {
 	RTC_MSKSR = mask;
+	enableInterrupt(1, 65);
 	return 0;
 }
 
@@ -96,6 +98,7 @@ unsigned int rtcSetAlarm(const unsigned int year,
 	RTC_ATIM0 = TIME0(day, hour, minute, second);
 	RTC_ATIM1 = TIME1(year, month);
 	RTC_MSKSR |= MSKSR_MAI;  // Unmask the alarm
+	enableInterrupt(1, 65);
 	return 0;
 }
 
@@ -105,14 +108,15 @@ unsigned int rtcClearAlarm(void) {
 	return 0;
 }
 
-void __attribute__((interrupt("IRQ"))) SCU_SR1(void) {
-	unsigned int stssr = RTC_STSSR;
-	if (stssr & MSKSR_MPALL) {
-		// Periodic service request
-	}
-	if (stssr & MSKSR_MAI) {
-		// Alarm
-	}
-	// Clear event bits.
-	RTC_CLRSR = MSKSR_MAI | MSKSR_MPALL;
-}
+// Interrupt handler for the RTC
+// void __attribute__((interrupt("IRQ"))) SCU_SR1(void) {
+//	unsigned int stssr = RTC_STSSR;
+//	if (stssr & MSKSR_MPALL) {
+//		// Periodic service request
+//	}
+//	if (stssr & MSKSR_MAI) {
+//		// Alarm
+//	}
+//	// Clear event bits.
+//	RTC_CLRSR = MSKSR_MAI | MSKSR_MPALL;
+//}

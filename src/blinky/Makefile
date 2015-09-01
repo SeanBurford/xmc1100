@@ -3,7 +3,7 @@ CC=arm-none-eabi-gcc
 AS=arm-none-eabi-as
 LD=arm-none-eabi-ld
 
-all:	blinky_cpu.elf blinky_systick.elf blinky_ccu.elf
+all:	blinky_cpu.elf blinky_systick.elf blinky_ccu.elf blinky_rtc.elf
 	@echo "done"
 
 CPU_LIBS=../peripherals/init.o ../peripherals/scu.o ../peripherals/gpio.o
@@ -23,6 +23,12 @@ blinky_ccu.elf:	$(CCU_LIBS) blinky_ccu.o
 	$(LD) $(CCU_LIBS) blinky_ccu.o \
 	      -T ../linker_script.ld --cref \
 	      -Map blinky_ccu.map -nostartfiles -o $@
+
+RTC_LIBS=$(CPU_LIBS) ../peripherals/rtc.o ../peripherals/nvic.o
+blinky_rtc.elf:	$(RTC_LIBS) blinky_rtc.o
+	$(LD) $(RTC_LIBS) blinky_rtc.o \
+	      -T ../linker_script.ld --cref \
+	      -Map blinky_rtc.map -nostartfiles -o $@
 
 .c.o:	
 	$(CC) -c $(CCFLAGS) $< -o $@
