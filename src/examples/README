@@ -1,0 +1,10 @@
+Code for Infineon XMC1000 and XMC4000 series microcontrollers
+
+In this directory there are a couple of examples:
+  ultrasonic is a driver program is set up to drive an ultrasonic transducer
+       using the capture compare unit.
+  speed_test sends characters to/from the debug serial port.
+
+The following files are based on Frank Duignan's work at
+http://eleceng.dit.ie/frank/arm/BareMetalXMC2Go/index.html:
+  Makefile
