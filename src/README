@@ -1,18 +1,8 @@
 Code for Infineon XMC1000 and XMC4000 series microcontrollers
 
 blinky/ contains examples that blink the LEDs using different peripherals.
-
-In this directory there are a couple of examples:
-  main is a driver program is set up to drive an ultrasonic transducer
-       using the capture compare unit.
-  speed_test sends characters to/from the debug serial port.
-
+examples/ contains examples that don't blink the LEDs.
 peripherals/ contains the peripheral support code.
-
-The following files are based on Frank Duignan's work at
-http://eleceng.dit.ie/frank/arm/BareMetalXMC2Go/index.html:
-  Makefile
-  linker_script.ld
 
 I find it useful to run three terminals in addition to development terminals:
 1) ./JLinkGDBServer -device XMC1100-0064 -speed 4000 -if SWD
@@ -24,3 +14,7 @@ Useful flashing commands in gdb are:
   load
   mon reset
   mon go (or run if you have some breakpoints)
+
+The following files are based on Frank Duignan's work at
+http://eleceng.dit.ie/frank/arm/BareMetalXMC2Go/index.html:
+  linker_script.ld

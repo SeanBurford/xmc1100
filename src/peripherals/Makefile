@@ -1,5 +1,5 @@
 CC=arm-none-eabi-gcc
-CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror
+CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror -fPIC
 
 SRCS=init.c adc.c ccu.c gpio.c nvic.c rtc.c scu.c systick.c usic.c
 OBJS=$(SRCS:.c=.o)
