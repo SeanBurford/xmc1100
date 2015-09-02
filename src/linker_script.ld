@@ -19,14 +19,13 @@ SECTIONS
 	  INIT_DATA_VALUES = LOADADDR(.data);
 	  INIT_DATA_START = .;
 		*(.remapped_vectors);
+		*(.sram_text);
 	    *(.data);
 	  INIT_DATA_END = .;
         } >ram AT>flash
 	BSS_START = .;
 	.bss : {
-	  
 	    *(.bss);
-	  
 	} > ram
 	BSS_END = .;
 }

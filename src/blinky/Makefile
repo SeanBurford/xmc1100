@@ -3,7 +3,13 @@ CC=arm-none-eabi-gcc
 AS=arm-none-eabi-as
 LD=arm-none-eabi-ld
 
-all:	blinky_cpu.elf blinky_systick.elf blinky_ccu.elf blinky_rtc.elf
+ELF=blinky_cpu.elf \
+    blinky_systick.elf \
+    blinky_ccu.elf \
+    blinky_rtc.elf \
+    blinky_rtc_deepsleep.elf
+
+all:	$(ELF)
 	@echo "done"
 
 CPU_LIBS=../peripherals/init.o ../peripherals/scu.o ../peripherals/gpio.o
