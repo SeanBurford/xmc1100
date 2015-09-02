@@ -1,9 +1,9 @@
 #ifndef PERIPHERALS_GPIO_H
 #define PERIPHERALS_GPIO_H
 
-void togglePinP0(const unsigned int pin);
-void togglePinP1(const unsigned int pin);
-void togglePinP2(const unsigned int pin);
+#define togglePinP0(pin) P0_OMR = 0x00010001 << pin;
+#define togglePinP1(pin) P1_OMR = 0x00010001 << pin;
+#define togglePinP2(pin) P2_OMR = 0x00010001 << pin;
 void setPin(const unsigned int port, const unsigned int pin);
 void clearPin(const unsigned int port, const unsigned int pin);
 int enablePin(const unsigned int port, const unsigned int pin,

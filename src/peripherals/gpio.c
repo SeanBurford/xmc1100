@@ -8,18 +8,6 @@ static const unsigned int iocr_masks[] = {
 	0xffffff00, 0xffff00ff, 0xff00ffff, 0x00ffffff
 };
 
-void togglePinP0(const unsigned int pin) {
-	P0_OMR = 0x00010001 << pin;
-}
-
-void togglePinP1(const unsigned int pin) {
-	P1_OMR = 0x00010001 << pin;
-}
-
-void togglePinP2(const unsigned int pin) {
-	P2_OMR = 0x00010001 << pin;
-}
-
 void clearPin(const unsigned int port, const unsigned int pin) {
 	const unsigned int bits = 0x00010000 << pin;
 	switch (port) {
