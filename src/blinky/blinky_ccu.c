@@ -1,3 +1,8 @@
+// Blink the LEDs using two slices of the capture/compare unit PWM at 0.5Hz.
+// Slices 0 and 1 are wired to alt outputs for the LED pins P1.0 and P1.1.
+// Both slices run with the same configuration except that slice 1's output
+// has been set to inverted.
+
 #include "peripherals/xmc1100.h"
 #include "peripherals/ccu.h"
 #include "peripherals/gpio.h"
