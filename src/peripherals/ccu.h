@@ -1,3 +1,6 @@
+#ifndef PERIPHERALS_CCU_H
+#define PERIPHERALS_CCU_H
+
 // Enable and perform global configuration of the CCU peripheral.
 //  global_control is an or of GCTRL values.
 unsigned int ccuEnable(const unsigned int global_control);
@@ -292,3 +295,5 @@ void ccuStartSlices(const unsigned int slices);
 #define SRS_E2SR_SR1 (0x01 << 12)
 #define SRS_E2SR_SR2 (0x02 << 12)
 #define SRS_E2SR_SR3 (0x03 << 12)
+
+#endif

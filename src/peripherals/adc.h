@@ -1,3 +1,6 @@
+#ifndef PERIPHERALS_ADC_H
+#define PERIPHERALS_ADC_H
+
 unsigned int enableADCPin(const unsigned int port, const unsigned int pin,
                           const unsigned int mode);
 unsigned int disableADCPin(const unsigned int port, const unsigned int pin);
@@ -112,3 +115,5 @@ unsigned int adcGetResult(unsigned int wait);
 #define G1CH5_P2_3  0x00050000
 #define G1CH6_P2_4  0x00060000
 #define G1CH7_P2_5  0x00070000
+
+#endif

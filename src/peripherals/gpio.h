@@ -1,3 +1,6 @@
+#ifndef PERIPHERALS_GPIO_H
+#define PERIPHERALS_GPIO_H
+
 void togglePinP0(const unsigned int pin);
 void togglePinP1(const unsigned int pin);
 void togglePinP2(const unsigned int pin);
@@ -37,3 +40,5 @@ int disablePin(const unsigned int port, const unsigned int pin);
 #define GPIO_OUT_OD_ALT5	0xe8
 #define GPIO_OUT_OD_ALT6	0xf0
 #define GPIO_OUT_OD_ALT7	0xf8
+
+#endif

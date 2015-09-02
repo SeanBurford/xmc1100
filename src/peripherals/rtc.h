@@ -1,3 +1,6 @@
+#ifndef PERIPHERALS_RTC_H
+#define PERIPHERALS_RTC_H
+
 unsigned int rtcEnable(const unsigned int year,
                        const unsigned int month,
                        const unsigned int day,
@@ -38,3 +41,5 @@ unsigned int rtcClearAlarm(void);
 #define MSKSR_MPALL (MSKSR_MPYE | MSKSR_MPMO | MSKSR_MPDA | MSKSR_MPHO | \
                      MSKSR_MPMI | MSKSR_MPSE)
 #define MSKSR_MAI  BIT8
+
+#endif

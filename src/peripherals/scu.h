@@ -1,3 +1,6 @@
+#ifndef PERIPHERALS_SCU_H
+#define PERIPHERALS_SCU_H
+
 // Reset trigger enables.
 #define RSTCON_ECCRSTEN BIT0
 #define RSTCON_LOCRSTEN BIT1
@@ -36,3 +39,4 @@ void scuUngatePeripheralClock(const unsigned int peripheral);
 // Disable specified peripheral clock.
 void scuGatePeripheralClock(const unsigned int peripheral);
 
+#endif

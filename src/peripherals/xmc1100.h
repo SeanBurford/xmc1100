@@ -13,6 +13,9 @@
 // for any application
 // Define some bitmasks
 
+#ifndef PERIPHERALS_XMC1100_H
+#define PERIPHERALS_XMC1100_H
+
 #define BIT0 (1 << 0)
 #define BIT1 (1 << 1)
 #define BIT2 (1 << 2)
@@ -470,3 +473,5 @@
 #define P2_PDISC			REGISTER_32(P2_BASE + 0x0060)
 #define P2_PPS				REGISTER_32(P2_BASE + 0x0070)
 #define P2_HWSEL			REGISTER_32(P2_BASE + 0x0078)
+
+#endif
