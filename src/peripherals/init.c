@@ -11,6 +11,31 @@
 static void init(void);
 extern int main();
 
+// The following are 'declared' in the linker script
+extern unsigned char INIT_DATA_VALUES;
+extern unsigned char INIT_DATA_START;
+extern unsigned int INIT_DATA_SIZE;
+extern unsigned char BSS_START;
+extern unsigned int BSS_SIZE;
+
+// The XMC1100 remaps interrupt vectors to RAM.  The boot loader
+// looks for the program entry address at 0x10001004 and the
+// initial stack pointer as 0x10001000.  These are defined in
+// the "vectors" section below.  The section "vectors" is 
+// placed at the beginning of flash by the linker script
+// Another useful feature of this chip is that you can 
+// pre-program startup considtions such as CPU speed and 
+// which periperals.  This is done by writing values in to
+// CLK_VAL1 and CLK_VAL2 below
+const void *FlashVectors[] __attribute__((section(".vectors"))) ={
+	(void *)0x20004000,	/* Top of stack  0x10001000 */ 
+	init,			/* Reset Handler 0x10001004 */
+	(void *)0	,	/* 0x10001008 */
+	(void *)0,		/* 0x1000100c */
+	(void *)0xffffffff,	/* CLK_VAL1   0x10001010 */
+	(void *)0xffffffff	/* CLK_VAL2   0x10001014 */
+};
+
 // Weak interrupt handler definitions.  Declaring another function of the
 // same name will override the default unhandledIRQ handler for that interrupt.
 void __attribute__((interrupt("IRQ"))) unhandledIRQ(void) {
@@ -50,31 +75,6 @@ void __attribute__((weak, alias("unhandledIRQ"))) IRQ28(void);
 void __attribute__((weak, alias("unhandledIRQ"))) IRQ29(void);
 void __attribute__((weak, alias("unhandledIRQ"))) IRQ30(void);
 void __attribute__((weak, alias("unhandledIRQ"))) IRQ31(void);
-
-// The following are 'declared' in the linker script
-extern unsigned char  INIT_DATA_VALUES;
-extern unsigned char  INIT_DATA_START;
-extern unsigned char  INIT_DATA_END;
-extern unsigned char  BSS_START;
-extern unsigned char  BSS_END;
-
-// The XMC1100 remaps interrupt vectors to RAM.  The boot loader
-// looks for the program entry address at 0x10001004 and the
-// initial stack pointer as 0x10001000.  These are defined in
-// the "vectors" section below.  The section "vectors" is 
-// placed at the beginning of flash by the linker script
-// Another useful feature of this chip is that you can 
-// pre-program startup considtions such as CPU speed and 
-// which periperals.  This is done by writing values in to
-// CLK_VAL1 and CLK_VAL2 below
-const void * FlashVectors[] __attribute__((section(".vectors"))) ={
-	(void *)0x20004000,	/* Top of stack  0x10001000 */ 
-	init,			/* Reset Handler 0x10001004 */
-	(void *)0	,	/* 0x10001008 */
-	(void *)0,		/* 0x1000100c */
-	(void *)0xffffffff,	/* CLK_VAL1   0x10001010 */
-	(void *)0xffffffff	/* CLK_VAL2   0x10001014 */
-};
 
 // The remaining interrupt vectors are relocated to RAM where a jump
 // table should be placed to the actual interrupt handlers.  The jump 
@@ -173,16 +173,16 @@ static void init()
 	// do global/static data initialization
 	// This is will also copy the jump table for remapped IRQ vectors
 	// to RAM.
-	unsigned char *src = &INIT_DATA_VALUES;
-	unsigned char *dest = &INIT_DATA_START;
-	unsigned len= &INIT_DATA_END-&INIT_DATA_START;
-	while (len--)
-		*dest++ = *src++;
+	unsigned char *const src = &INIT_DATA_VALUES;
+	unsigned char *const dest = &INIT_DATA_START;
+	int len;
+	for(len=(int)&INIT_DATA_SIZE; len >= 0; len--)
+		dest[len] = src[len];
+
 	// zero out the uninitialized global/static variables
-	dest = &BSS_START;
-	len = &BSS_END - &BSS_START;
-	while (len--)
-		*dest++=0;
+	unsigned char *const bss = &BSS_START;
+	for(len=(int)&BSS_SIZE; len >= 0; len--)
+		bss[len] = 0;
 
 	main();
 }
