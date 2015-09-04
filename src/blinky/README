@@ -1,5 +1,6 @@
 Programs that blink the LEDs
-  blinky_cpu.c:      Use a busy loop.
-  blinky_systick.c:  Use the systick timer IRQ with one systick per second.
-  blinky_ccu.c:      Use two slices of the capture/compare unit PWM at 0.5Hz.
-  blinky_rtc.c:      Use per second periodic event interrupts from the RTC.
+  blinky_cpu.c:           A busy loop.
+  blinky_systick.c:       Systick timer IRQ with one systick per second.
+  blinky_ccu.c:           Two slices of the capture/compare unit PWM at 0.5Hz.
+  blinky_rtc.c:           Per second periodic event interrupts from the RTC.
+  blinky_rtc_deepsleep.c: Same as RTC with the CPU in deep sleep and flash off.

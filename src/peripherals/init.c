@@ -42,6 +42,14 @@ void __attribute__((interrupt("IRQ"))) unhandledIRQ(void) {
 	static unsigned int unhandled_interrupts;
 	unhandled_interrupts++;
 }
+
+void __attribute__((interrupt("IRQ"))) hardfaultDefault(void) {
+	while(1) {
+		asm("wfi");
+	}
+}
+
+void __attribute__((weak, alias("hardfaultDefault"))) hardfaultHandler(void);
 void __attribute__((weak, alias("unhandledIRQ"))) systickHandler(void);
 void __attribute__((weak, alias("unhandledIRQ"))) SCU_SR0(void);
 void __attribute__((weak, alias("unhandledIRQ"))) SCU_SR1(void);
@@ -88,7 +96,8 @@ inline void JumpTable(void)
 {
 	asm(" .long 0 "); // -15 Power up and warm reset
 	asm(" .long 0 "); // -14 NMI
-	asm(" .long 0 "); // -13 HardFault
+	asm(" ldr R0,=(hardfaultHandler) "); // -13 HardFault handler
+	asm(" mov PC,R0");
 	asm(" .long 0 "); // -12 reserved
 	asm(" .long 0 "); // -11 reserved
 	asm(" .long 0 "); // -10 reserved

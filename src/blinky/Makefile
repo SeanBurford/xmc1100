@@ -36,6 +36,11 @@ blinky_rtc.elf:	$(RTC_LIBS) blinky_rtc.o
 	      -T ../linker_script.ld --cref \
 	      -Map blinky_rtc.map -nostartfiles -o $@
 
+blinky_rtc_deepsleep.elf:	$(RTC_LIBS) blinky_rtc_deepsleep.o
+	$(LD) $(RTC_LIBS) blinky_rtc_deepsleep.o \
+	      -T ../linker_script.ld --cref \
+	      -Map blinky_rtc_deepsleep.map -nostartfiles -o $@
+
 .c.o:	
 	$(CC) -c $(CCFLAGS) $< -o $@
 
