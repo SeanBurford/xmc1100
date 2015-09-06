@@ -1,6 +1,6 @@
 // Blink two LEDs using the RTC while the CPU is generally in deep sleep.
 //
-// Functions in section .data are loaded into SRAM by peripherals/init.c init() 
+// Functions in section .stext are loaded into SRAM by peripherals/init.c 
 // which means flash does not need to be turned on for their execution provided
 // we're careful to only call other functions in SRAM from them.
 
@@ -9,8 +9,8 @@
 #include "peripherals/scu.h"
 #include "peripherals/rtc.h"
 
-// This loop might become active from deep sleep so we put it in .data.
-void __attribute__((section(".data"))) sleep(
+// This loop might become active from deep sleep so we put it in .stext.
+void __attribute__((section(".stext"))) sleep(
     const unsigned int disable_flash,
     const unsigned int deep_sleep) {
 	if (disable_flash) {
@@ -37,8 +37,8 @@ void __attribute__((section(".data"))) sleep(
 } 
 
 // Interrupt handler for the RTC.
-// This should become active from deep sleep so we put it in .data.
-void __attribute__((interrupt("IRQ"), section(".data"))) SCU_SR1(void) {
+// This should become active from deep sleep so we put it in .stext.
+void __attribute__((interrupt("IRQ"), section(".stext"))) SCU_SR1(void) {
 	unsigned int stssr = RTC_STSSR;
 	if (stssr & MSKSR_MPALL) {
 		// Periodic service request
@@ -53,7 +53,7 @@ void __attribute__((interrupt("IRQ"), section(".data"))) SCU_SR1(void) {
 }
 
 // Insurance in case we mess up.
-void __attribute__((interrupt("IRQ"), section(".data"))) hardfaultHandler(void)
+void __attribute__((interrupt("IRQ"), section(".stext"))) hardfaultHandler(void)
 {
         // Turn flash on (if it's off) and wait for it to become active.
         // Unnecessary unless we've used NVMCONF to turn off flash.

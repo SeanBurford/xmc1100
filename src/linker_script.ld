@@ -17,7 +17,7 @@ SECTIONS
 	} >flash
 	. = ORIGIN(ram);
 	.data : {	  
-		*(.remapped_vectors .data);
+		*(.stext .remapped_vectors .data);
 	} >ram AT>flash
 	.bss : {
 		*(.bss);
