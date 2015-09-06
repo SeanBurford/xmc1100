@@ -4,6 +4,7 @@
 #include "scu.h"
 
 // Wait for the SCU to complete existing serial transfers with the RTC.
+// Note that SCU_SRMSK can enable interrupts on RTC register events.
 #define WAIT_FOR_SERIAL while (SCU_MIRRSTS);
 #define TIME0(day, hour, minute, second) \
 	((day << 24) | (hour << 16) | (minute << 8) | second)
