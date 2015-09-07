@@ -2,12 +2,12 @@
 // All TSE events are handled through interrupt SCU_SR1.
 
 #include "xmc1100.h"
+#include "nvic.h"
 #include "temperature.h"
 
-// SCU_SRMSK mask values for temperature sensor events.
-#define TSE_DONE BIT29
-#define TSE_HIGH BIT30
-#define TSE_LOW BIT31
+// Firmware routines
+typedef unsigned long (*_CalcTemperaturePtr)(void);
+static _CalcTemperaturePtr *_CalcTemperature = (_CalcTemperaturePtr *)0x0000010c;
 
 unsigned int tseEnable(void) {
 	// Enable the temperature sensor.  BIT0 = TSE_EN
@@ -21,6 +21,9 @@ unsigned int tseEnable(void) {
 	// _CalcTSEVAR calculates the values to use here.
 	// SRRAW.TSE_HIGH and SRRAW.TSE_LOW indicate high/low temperature
 	// events.
+
+	// Enable the shared SCU SR1 interrupt.
+	enableInterrupt(1, 65);
 
 	return 0;
 }
@@ -43,6 +46,6 @@ unsigned long tseRead(void) {
 	// unsigned short raw_temp = TSE_ANATSEMON;
 
 	// Get calibrated temperature in kelvin.
-	return _CalcTemperature();
+	return (*_CalcTemperature)();
 }
 

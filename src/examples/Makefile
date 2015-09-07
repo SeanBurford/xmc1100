@@ -8,7 +8,7 @@ AS=arm-none-eabi-as
 LD=arm-none-eabi-ld
 CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror -I..
 
-all:	ultrasonic.elf speed_test.elf temperature.elf
+all:	ultrasonic.elf speed_test.elf temp.elf
 	@echo "done"
 
 MAIN_LIBS=../peripherals/init.o ../peripherals/scu.o \
@@ -32,8 +32,8 @@ TEMPERATURE_LIBS=../peripherals/init.o ../peripherals/scu.o \
                  ../peripherals/gpio.o ../peripherals/nvic.o \
                  ../peripherals/systick.o ../peripherals/usic.o \
                  usic_buffer.o ../peripherals/temperature.o
-temperature.elf:	$(TEMPERATURE_LIBS) temperature.o
-	$(LD) $^ -T ../linker_script.ld --cref -Map temperature.map \
+temp.elf:	$(TEMPERATURE_LIBS) temp.o
+	$(LD) $^ -T ../linker_script.ld --cref -Map temp.map \
 	      -nostartfiles -o $@
 
 .c.o:	

@@ -36,6 +36,9 @@ int main()
 
 void __attribute__((interrupt("IRQ"))) systickHandler(void) {
         // Toggle LED P1.1.
+	static unsigned long temperature = 0;
+	temperature = tseRead();
+	temperature += 1;
         togglePinP1(1);
 }
 

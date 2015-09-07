@@ -12,10 +12,10 @@ static void init(void);
 extern int main();
 
 // The following are 'declared' in the linker script
-extern unsigned char INIT_DATA_VALUES;
-extern unsigned char INIT_DATA_START;
+extern unsigned int INIT_DATA_VALUES;
+extern unsigned int INIT_DATA_START;
 extern unsigned int INIT_DATA_SIZE;
-extern unsigned char BSS_START;
+extern unsigned int BSS_START;
 extern unsigned int BSS_SIZE;
 
 // The XMC1100 remaps interrupt vectors to RAM.  The boot loader
@@ -182,15 +182,15 @@ static void init()
 	// do global/static data initialization
 	// This is will also copy the jump table for remapped IRQ vectors
 	// to RAM.
-	unsigned char *const src = &INIT_DATA_VALUES;
-	unsigned char *const dest = &INIT_DATA_START;
+	const unsigned int *src = (unsigned int *)&INIT_DATA_VALUES;
+	unsigned int *dest = (unsigned int *)&INIT_DATA_START;
 	int len;
-	for(len=(int)&INIT_DATA_SIZE; len >= 0; len--)
+	for(len=(int)&INIT_DATA_SIZE / 4; len >= 0; len--)
 		dest[len] = src[len];
 
 	// zero out the uninitialized global/static variables
-	unsigned char *const bss = &BSS_START;
-	for(len=(int)&BSS_SIZE; len >= 0; len--)
+	unsigned int *const bss = &BSS_START;
+	for(len=(int)&BSS_SIZE / 4; len >= 0; len--)
 		bss[len] = 0;
 
 	main();
