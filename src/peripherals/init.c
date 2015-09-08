@@ -182,8 +182,8 @@ static void init()
 	// do global/static data initialization
 	// This is will also copy the jump table for remapped IRQ vectors
 	// to RAM.
-	const unsigned int *src = (unsigned int *)&INIT_DATA_VALUES;
-	unsigned int *dest = (unsigned int *)&INIT_DATA_START;
+	const unsigned int *src = &INIT_DATA_VALUES;
+	unsigned int *dest = &INIT_DATA_START;
 	int len;
 	for(len=(int)&INIT_DATA_SIZE / 4; len >= 0; len--)
 		dest[len] = src[len];

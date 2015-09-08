@@ -6,7 +6,7 @@
 
 unsigned int tseEnable(void);
 unsigned int tseDisable(void);
-unsigned long tseRead(void);
+unsigned int tseRead(void);
 
 // SCU_SRMSK and SCU_SRRAW mask values for temperature sensor events.
 #define TSE_DONE BIT29

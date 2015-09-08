@@ -3,15 +3,24 @@
 
 #include "xmc1100.h"
 #include "nvic.h"
+#include "scu.h"
 #include "temperature.h"
 
 // Firmware routines
-typedef unsigned long (*_CalcTemperaturePtr)(void);
-static _CalcTemperaturePtr *_CalcTemperature = (_CalcTemperaturePtr *)0x0000010c;
+typedef unsigned int (*_CalcTemperaturePtr)(void);
+static _CalcTemperaturePtr *_CalcTemperature = (_CalcTemperaturePtr *)0x000010c;
 
 unsigned int tseEnable(void) {
 	// Enable the temperature sensor.  BIT0 = TSE_EN
-	TSE_ANATSECTRL = BIT1;
+	// Following access to SCU/ANACTRL SFRs result in an AHB/APB error
+	// response:
+	//  Read or write access to undefined address
+	//  Write access to read-only registers
+	//  Write access to startup protected registers
+	// It is a mystery how we can detect that.  The PAU bridges to the
+	// APB, so it probably has the relevant regs in one of the reserved
+	// SFR regions.
+	TSE_ANATSECTRL = BIT0;
 
 	// Enable the tse done interrupt.
 	SCU_SRMSK |= TSE_DONE;
@@ -40,7 +49,7 @@ unsigned int tseDisable(void) {
 	return 0;
 }
 
-unsigned long tseRead(void) {
+unsigned int tseRead(void) {
 
 	// Get the latest raw value
 	// unsigned short raw_temp = TSE_ANATSEMON;
