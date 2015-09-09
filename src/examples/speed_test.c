@@ -1,3 +1,5 @@
+// Send characters to/from the debug serial port.
+
 #include "peripherals/xmc1100.h"
 #include "peripherals/gpio.h"
 #include "peripherals/nvic.h"

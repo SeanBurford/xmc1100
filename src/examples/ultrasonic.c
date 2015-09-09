@@ -1,3 +1,5 @@
+// Drive an ultrasonic transducer using the capture compare unit.
+
 #include "peripherals/xmc1100.h"
 #include "peripherals/ccu.h"
 #include "peripherals/gpio.h"
