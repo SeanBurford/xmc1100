@@ -42,11 +42,13 @@ unsigned int tseDisable(void) {
 }
 
 unsigned int tseRead(void) {
+#ifdef ERRATA_SCU_CM_014
 	// Get the latest raw value
 	unsigned int temperature = TSE_ANATSEMON;
-
+#else
 	// Get calibrated temperature in kelvin.
-	// unsigned int temperature = (*_CalcTemperature)();
+	unsigned int temperature = (*_CalcTemperature)();
+#endif
 
 	return temperature;
 }
