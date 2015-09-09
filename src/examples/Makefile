@@ -7,6 +7,7 @@ CC=arm-none-eabi-gcc
 AS=arm-none-eabi-as
 LD=arm-none-eabi-ld
 CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror -I..
+LIBC=-L /usr/lib/arm-none-eabi/newlib/armv6-m -lc
 
 all:	ultrasonic.elf speed_test.elf temp.elf
 	@echo "done"
@@ -28,10 +29,11 @@ speed_test.elf:	$(SPEED_TEST_LIBS) speed_test.o
 	$(LD) $^ -T ../linker_script.ld --cref -Map speed_test.map \
 	      -nostartfiles -o $@
 
-TEMPERATURE_LIBS=../peripherals/init.o ../peripherals/scu.o \
-                 ../peripherals/gpio.o ../peripherals/nvic.o \
-                 ../peripherals/systick.o ../peripherals/usic.o \
-                 usic_buffer.o ../peripherals/temperature.o
+TEMPERATURE_LIBS=../peripherals/init.o ../peripherals/ccu.o \
+                 ../peripherals/scu.o ../peripherals/gpio.o \
+                 ../peripherals/nvic.o ../peripherals/systick.o \
+                 ../peripherals/usic.o usic_buffer.o \
+                 ../peripherals/temperature.o
 temp.elf:	$(TEMPERATURE_LIBS) temp.o
 	$(LD) $^ -T ../linker_script.ld --cref -Map temp.map \
 	      -nostartfiles -o $@

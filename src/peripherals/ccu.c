@@ -60,6 +60,17 @@ unsigned int ccuEnable(const unsigned int global_control) {
 	return 0;
 }
 
+void ccuSetPeriodCompareSlice0(const unsigned int period,
+                               const unsigned int compare) {
+	// Set the period match and compare level shadow registers.
+	// Request transfer of shadow registers to the normal registers.
+	// Using PRS blocks out C2V and C3V capture registers.
+	// Using CRS blocks out C0V and C1V capture registers.
+	CCU4_CC40PRS = period;
+	CCU4_CC40CRS = compare;
+	CCU4_GCSS = BIT0;  // Request transfer of PRS and CRS (slice 0)
+}
+
 void ccuConfigureSlice0(const unsigned int input_selector,
                         const unsigned int connections,
                         const unsigned int timer_control,
@@ -76,13 +87,7 @@ void ccuConfigureSlice0(const unsigned int input_selector,
 	// Set external output passive level.  output = value ^ PSL
 	CCU4_CC40PSL = passive_level;
 
-	// Set the period match and compare level shadow registers.
-	// Request transfer of shadow registers to the normal registers.
-	// Using PRS blocks out C2V and C3V capture registers.
-	// Using CRS blocks out C0V and C1V capture registers.
-	CCU4_CC40PRS = period;
-	CCU4_CC40CRS = compare;
-	CCU4_GCSS = BIT0;  // Request transfer of PRS and CRS (slice 0)
+	ccuSetPeriodCompareSlice0(period, compare);
 
 	CCU4_CC40INTE = interrupt_enable;
 	if (interrupt_enable) {

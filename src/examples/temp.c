@@ -1,4 +1,7 @@
+// Make LED P1.0 brighter as the CPU temperature rises.
+
 #include "peripherals/xmc1100.h"
+#include "peripherals/ccu.h"
 #include "peripherals/gpio.h"
 #include "peripherals/usic.h"
 #include "peripherals/scu.h"
@@ -8,7 +11,7 @@
 
 int main()
 {
-	scuPostReset(CLKCR_M32_P64);
+	scuPostReset(CLKCR_M8_P8);
 
         enablePin(1, 0, GPIO_OUT_PP);  // LED
 	enablePin(1, 1, GPIO_OUT_PP);  // LED
@@ -18,10 +21,20 @@ int main()
 	usicEnable();
 	usicConfigureCh0();
 
+	// Enable the temperature sensor.
 	tseEnable();
 
-	// Clock = 64MHz so 8000000 - 1 is 8 systicks/second.
-	systickEnable(8000000 - 1);
+	// PWM LED P1.0 using CCU slice 0.
+	ccuEnable(GCTRL_SUSCFG_PASSIVE);
+	ccuConfigureSlice0(
+	    // Reset count and start on event 0 (Input I: SCU CCU start event)
+	    EV0IS_INyI | EV0EM_RISING, STRTS_EV0,
+	    CMOD_COMPARE | CLST_ENABLE | STRM_BOTH,
+	    PSC_FCCU_512,  // Prescaler 8MHz / 512 = 15,625Hz
+	    100, 50,       // 50%
+	    0, 0, 0);      // Generate no interrupts. passive level low.
+	enablePin(1, 0, GPIO_OUT_PP_ALT2);  // LED P1.0 alt2 is CCU4.OUT0
+	ccuStartSlices(BIT0);
 
 	enable_interrupts();
 
@@ -34,22 +47,24 @@ int main()
 	return 0;
 }
 
-void __attribute__((interrupt("IRQ"))) systickHandler(void) {
-        // Toggle LED P1.1.
-	static unsigned int temperature = 0;
-	temperature = tseRead();
-	temperature += 1;
-        togglePinP1(1);
-}
-
 void __attribute__((interrupt("IRQ"))) SCU_SR1(void) {
-	static unsigned int temperature;
+	static unsigned int min, max;
 	if (SCU_SRRAW & TSE_DONE) {
-		temperature = tseRead();
-		temperature = temperature + 1;
+		const unsigned int temperature = tseRead();
+		if ((min == 0) || (temperature < min)) {
+			min = temperature;
+		}
+		if (temperature > max) {
+			max = temperature;
+		}
+		if (min < max) {
+			const unsigned int range = max - min;
+			const unsigned int ratio = range - (temperature - min);
+			ccuSetPeriodCompareSlice0(range, ratio);
+		}
+
 		// Clear the event bit in SCU_SRRAW
 		SCU_SRCLR = TSE_DONE;
-        	togglePinP1(0);
 	}
 }
 

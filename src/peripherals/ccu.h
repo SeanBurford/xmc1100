@@ -15,6 +15,9 @@ unsigned int ccuEnable(const unsigned int global_control);
 // Safe stops the block after rollover and clamps outputs to passive state.
 #define GCTRL_SUSCFG_ROLLOVER (0x03 << 8)
 
+void ccuSetPeriodCompareSlice0(const unsigned int period,
+                               const unsigned int compare);
+
 // Configure a CCU slice
 //  input_selector configures input events.  It's a bitwise or of
 //    EVyIS | EVyEM | EVyLM | LPFyM for each event y.
