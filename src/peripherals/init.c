@@ -39,6 +39,11 @@ const void *FlashVectors[] __attribute__((section(".vectors"))) ={
 // Weak interrupt handler definitions.  Declaring another function of the
 // same name will override the default unhandledIRQ handler for that interrupt.
 void __attribute__((interrupt("IRQ"))) unhandledIRQ(void) {
+	// IPSR holds the ISR number.
+	// Special return addresses:
+	//   0xFFFFFFF1: Return to handler mode (main stack, use MSP).
+	//   0xFFFFFFF9: Return to thread mode (MSP, MSP).
+	//   0xFFFFFFFD: Return to thread mode (PSP, PSP).
 	static unsigned int unhandled_interrupts;
 	unhandled_interrupts++;
 }
