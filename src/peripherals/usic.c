@@ -46,12 +46,12 @@
 //   Alternate Rx FIFO event ARBI  RBCTR.ARBIEN+RBCTR.ARBINP
 //   Rx FIFO error event     RBERI RBCTR.RBERIEN+RBCTR.ARBINP
 
-void usicEnable(void) {
+unsigned int usicEnable(void) {
 	// Clear gating of USIC in SCU_CGATCLR0
-	scuUngatePeripheralClock(CGATCLR0_USIC0);
+	return scuUngatePeripheralClock(CGATCLR0_USIC0);
 }
 
-void usicConfigureCh0(void) {
+unsigned int usicConfigureCh0(void) {
 	// Enable USIC module clock and functionality.
 	USIC0_CH0_KSCFG = BIT1 | BIT0;
 	USIC0_CH0_CCR = 0x00000000;  // USIC CH0 is now disabled, idle.
@@ -100,6 +100,8 @@ void usicConfigureCh0(void) {
 	// USIC0.SR1 (TX FIFO) is interrupt node 10.
 	enableInterrupt(9, 129);
 	enableInterrupt(10, 128);
+
+	return 0;
 }
 
 void __attribute__((interrupt("IRQ"))) USIC_SR0(void) {

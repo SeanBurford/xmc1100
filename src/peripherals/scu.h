@@ -35,8 +35,8 @@ void scuResetControl(const unsigned int rstcon);
 void scuClockControl(const unsigned int clkcr);
 
 // Enable specified peripheral clock.
-void scuUngatePeripheralClock(const unsigned int peripheral);
+unsigned int scuUngatePeripheralClock(const unsigned int peripheral);
 // Disable specified peripheral clock.
-void scuGatePeripheralClock(const unsigned int peripheral);
+unsigned int scuGatePeripheralClock(const unsigned int peripheral);
 
 #endif

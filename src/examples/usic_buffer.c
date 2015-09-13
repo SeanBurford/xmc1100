@@ -5,6 +5,13 @@ static char ch0TxBuff[128];
 static unsigned int ch0TxBuffStart = 0;
 static unsigned int ch0TxBuffEnd = 0;
 
+unsigned int usicBufferEnable(void) {
+	if (usicEnable() != 0) {
+		return 1;
+	}
+	return usicConfigureCh0();
+}
+
 void usicBufferSendCh0(const char *msg) {
         unsigned int i;
         for(i=0; msg[i] != '\0'; i++) {

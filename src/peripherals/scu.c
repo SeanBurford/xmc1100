@@ -44,19 +44,21 @@ void scuClockControl(const unsigned int clkcr) {
 }
 
 // Enable specified peripheral clock.
-void scuUngatePeripheralClock(const unsigned int peripheral) {
+unsigned int scuUngatePeripheralClock(const unsigned int peripheral) {
 	SCU_PASSWD = PASSWD_MODE_DISABLED;
 	SCU_CGATCLR0 = peripheral;
 	SCU_PASSWD = PASSWD_MODE_ENABLED;
 	// wait for vccp to stabilise.
 	while (SCU_CLKCR & (CLKCR_VDDC2HIGH | CLKCR_VDDC2LOW));
+	return 0;
 }
 
 // Disable specified peripheral clock.
-void scuGatePeripheralClock(const unsigned int peripheral) {
+unsigned int scuGatePeripheralClock(const unsigned int peripheral) {
 	SCU_PASSWD = PASSWD_MODE_DISABLED;
 	SCU_CGATSET0 = peripheral;
 	SCU_PASSWD = PASSWD_MODE_ENABLED;
 	// wait for vccp to stabilise.
 	while (SCU_CLKCR & (CLKCR_VDDC2HIGH | CLKCR_VDDC2LOW));
+	return 0;
 }
