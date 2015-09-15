@@ -3,7 +3,6 @@
 #include "peripherals/xmc1100.h"
 #include "peripherals/ccu.h"
 #include "peripherals/gpio.h"
-#include "peripherals/usic.h"
 #include "peripherals/scu.h"
 #include "peripherals/systick.h"
 #include "usic_buffer.h"
@@ -17,8 +16,7 @@ int main()
         enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
         enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
 
-	usicEnable();
-	usicConfigureCh0();
+	usicBufferEnable();
 
 	// Capture compare unit config
 	ccuEnable(GCTRL_SUSCFG_ROLLOVER);
