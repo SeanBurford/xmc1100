@@ -1,0 +1,198 @@
+761 19-10
+0x00000000 - 0x1FFFFFFF Code (ROM, Flash)
+  0x00000000 - 0x10000000 ROM
+    0x00000000 - 0x00000AFF ROM (user readable)
+      0x00000100 _NvmErase() pointer
+      0x00000104 _NvmProgVerify() pointer
+      0x00000108 _BmiInstallationReq() pointer
+      0x0000010c _CalcTemperature() pointer
+      0x00000120 _CalcTSEVAR() pointer
+    0x00000B00 - 0x00001FFF ROM (non user readable)
+    0x00002000 - 0x0FFFFFFF Reserved
+  0x10000000 - 0x20000000 Flash
+    0x10000000 - 0x10000DFF Flash sector 0 (non user readable) 
+    0x10000E00 - 0x10000FFF Flash sector 0 (user readable) 
+      0x10000E00 - 0x10000E01 BMI Boot Mode Index
+      0x10000E10 - 0x10000E11 BMI Boot Mode Index Inverse
+      0x10000F00 - 0x10000F03 Chip ID
+      0x10000F04 - 0x10000F1F Chip Variant
+      0x10000F20 - 0x10000F2F TSE constant data 1
+      0x10000F30 - 0x10000F33 DCO temperature calibration constants
+      0x10000F34 - 0x10000FD6 TSE constant data 2
+      0x10000FF0 - 0x10000FFF Unique Chip ID
+    0x10001000 - 0x10010FFF Flash 64K
+      0x10001000 - 0x10001003 Initial SP after SSW
+      0x10001004 - 0x10001007 Start Address after SSW
+      0x10001010 - 0x10001013 CLK_VAL1
+      0x10001014 - 0x10001017 CLK_VAL2
+    0x10011000 - 0x1FFFFFFF Reserved
+0x20000000 - 0x3FFFFFFF SRAM (SRAM)
+  0x20000000 - 0x20000FFF SRAM block 0
+    0x20000000 - 0x200000BF Vectors
+    0x200000C0 - 0x200001FF Boot up stack and data
+  0x20001000 - 0x20001FFF SRAM block 1
+  0x20002000 - 0x20002FFF SRAM block 2
+  0x20003000 - 0x20003FFF SRAM block 3
+  0x20004000 - 0x3FFFFFFF Reserved
+0x40000000 - 0x5FFFFFFF Peripheral                 (execute never)
+  0x40000000 - 0x47FFFFFF System Peripherals
+    0x40000000 - 0x4000FFFF PAU Peripheral Access Unit
+      0x40000000 - 0x400007FF Memory Control
+        AVAIL0-3, PRIVDIS0-1, ROMSIZE, FLSIZE, RAM0SIZE
+      0x40000800 - 0x4000FFFF Reserved
+    0x40010000 - 0x4001FFFF SCU inc. RTC
+      0x40010000 - 0x400101FF GCU General Control Unit
+        SCU_PASSWD, ID, IDCHIP, DBGROMID, SSW0, CCUCON, SRRAW, SRMSK, SRCLR
+        SRSET, MIRRSTS, PMTSR
+        ANATSECTRL, ANATSEIH, ANATSEIL, ANATSEMON (via APB bus)
+      0x40010200 - 0x400102FF PCU Power Control Unit
+        VDESR
+      0x40010300 - 0x400103FF CCU Clock Control Unit
+        CLKCR, PWRSVCR, CGATSTAT0, CGATSET0, CGATCLR0, OSCCSR
+      0x40010400 - 0x400104FF RCU Reset Control Unit
+        RSTSTAT, RSTSET, RSTCLR, RSTCON
+      0x40010500 - 0x400105FF Reserved
+      0x40010600 - 0x400106FF ERU
+        EXISEL, EXICON0-3, EXOCON0-3
+      0x40010700 - 0x400109FF Reserved
+      0x40010A00 - 0x40010AFF RTC
+        ID, CTR, RAWSTAT, STSSR, MSKSR, CLRSR, ATIM0, ATIM1, TIM0, TIM1
+      0x40010B00 - 0x40010FFF Reserved
+      0x40011000 - 0x4001107F ANACTRL Analog Control (cause AHB/APB access)
+        ANAVDEL, ANAOFFSET
+      0x40011080 - 0x4001FFFF Reserved
+    0x40020000 - 0x4002001F WDT
+      ID, CTR, SRV, TIM, WLB, WUB, WDTSTS, WDTCLR
+    0x40020020 - 0x4003FFFF Reserved
+    0x40040000 - 0x4004007F GPIO Port 0
+      PnOUT, PnOMR, PnIOCR0-12, PnIN, PnPHCR0-1, PnPDISC, PnPPS, PnHWSEL
+    0x40040080 - 0x400400FF Reserved
+    0x40040100 - 0x4004017F GPIO Port 1
+    0x40040180 - 0x400401FF Reserved
+    0x40040200 - 0x4004027F GPIO Port 2
+    0x40040280 - 0x4004FFFF Reserved
+    0x40050000 - 0x400500DF Flash Registers
+      NVMSTATUS, NVMPROG, NVMCONF
+    0x400500E0 - 0x47FFFFFF Reserved
+  0x48000000 - 0x4FFFFFFF Central Peripherals
+    0x48000000 - 0x480001FF USIC0 Channel 0
+    0x48000200 - 0x480003FF USIC0 Channel 0
+    0x48000400 - 0x480007FF USIC0 RAM
+    0x48000800 - 0x4801FFFF Reserved
+    0x48020000 - 0x4802000F PRNG
+      PRNG_WORD, PRNG_CHK, PRNG_CTRL
+    0x48020010 - 0x4802FFFF Reserved
+    0x48030000 - 0x480303FF VADC0
+      ID, CLC, OCS, GLOBCFG, BRSCTRL, BRSMR, BRSSEL0-1, BRSPND0-1
+      GLOBICLASS0-1, GLOBRCR, GLOBRES, GLOBRESD, GLOBEFLAG, GLOBEVNP
+    0x48030400 - 0x48030BFF  ** GAP **
+    0x48030C00 - 0x48033FFF Reserved
+    0x48034000 - 0x480341FF SHS0
+      SHS0_ID, SHSCFG, GNCTR00, GNCTR10, LOOP
+    0x48034200 - 0x4803FFFF Reserved
+    0x48040000 - 0x480401FF CCU4 kernel
+    0x48040100 - 0x480401FF CCU40
+    0x48040200 - 0x480402FF CCU41
+    0x48040300 - 0x480403FF CCU42
+    0x48040400 - 0x480404FF CCU43
+    0x48040500 - 0x4FFFFFFF Reserved
+  0x50000000 - 0x5FFFFFFF Application Peripherals
+0x60000000 - 0x9FFFFFFF External RAM (Reserved)
+0xA0000000 - 0xDFFFFFFF External Device (Reserved) (execute never)
+0xE0000000 - 0xE00FFFFF Private Peripheral Bus PPB (execute never)
+  0xE0001000 - 0xE0001FFF Debugger Data Watchpoint
+  0xE0002000 - 0xE0002FFF Debugger Breakpoint Unit
+  0xE000E008 - 0xE000E00F System Control Block
+  0xE000E010 - 0xE000E01F System Timer (SysTick)
+    SYST_CSR, SYST_RVR, SYST_CVR, SYST_CALIB
+  0xE000E100 - 0xE000E4EF NVIC
+    NVIC_ISER, NVIC_ICER, NVIC_ISPR, NVIC_ICPR, NVIC_IPR0-7
+  0xE000ED00 - 0xE000ED3F System Control Block (SCS System Control Space)
+    CPUID, ICSR, AIRCR, SCR, CCR, SHPR2, SHPR3, SHCSR
+  0xE000EF00 - 0xE000EF03 NVIC
+0xE0100000 - 0xFFFFFFFF Device                     (execute never)
+  0xE0100000 - 0xEFFFFFFF Reserved
+  0xF0000000 - 0xF0000FFF System ROM Table
+    0xF0000FD0 - 0xF0000FEF Debug PID (JEDEC part number)
+  0xF0001000 - 0xFFFFFFFF Reserved
+
+=== CPU ===
+Cortex M0 CPU
+
+NVIC: Interrupt Controller
+  In Private Peripheral Bus PPB address space
+
+SysTick
+  In Private Peripheral Bus PPB address space
+
+Debug System (SWD and SPD)
+
+Bus Matrix to AHB Lite
+
+=== AHB Lite Bus ===
+
+-- System Peripherals --
+
+Memory:
+  ROM: 8k
+    BSL Bootstrap loaders
+      SSW startup software.  Pulls P0.8 high to indicate execution start.
+    User Routines
+
+  Flash:
+    Up to 64k + 0.5k read only sector 0
+
+  SRAM: 16k
+
+ERU Event Request Unit
+
+SCU System Control Unit
+
+  RTC Realtime Clock
+    Serial interface
+
+  PCU Power Control Unit
+    Interfaces with EVR and CCU
+
+  Reset Control Unit
+    Brownout monitoring
+
+  CCU Clock Control Unit (MCLK, PCLK)
+    Clock from DCO
+
+  GCU Misc Control Unit
+    Memory fault interface
+    Memory validation logic
+
+WDT Watchdog Timer
+
+GPIO
+
+-- Central Peripherals --
+
+USIC Serial Interface Channels
+
+VADC Convertors (up to 12 channels, 12 bit)
+
+SHS0
+
+CCU4 Capture/Compare Units 4
+
+=== APB 16 bit (in central peripherals space) ===
+
+Flash SFRs
+
+PRNG Pseudo Random Number Generator
+
+Analog System:
+  2 x DCO
+    DCO1: MCLK, PCLK 64MHz
+    DCO2: RTC, WDT 32kHz
+
+  EVR: Embedded Voltage Regulator
+
+  TSE Temperature Sensor
+
+
+
+
