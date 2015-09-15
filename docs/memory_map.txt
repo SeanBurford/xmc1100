@@ -1,4 +1,3 @@
-761 19-10
 0x00000000 - 0x1FFFFFFF Code (ROM, Flash)
   0x00000000 - 0x10000000 ROM
     0x00000000 - 0x00000AFF ROM (user readable)
@@ -192,7 +191,3 @@ Analog System:
   EVR: Embedded Voltage Regulator
 
   TSE Temperature Sensor
-
-
-
-
