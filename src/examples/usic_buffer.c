@@ -14,6 +14,9 @@ unsigned int usicBufferEnable(void) {
 
 void usicBufferSendCh0(const char *msg) {
         unsigned int i;
+	while (ch0TxBuffStart != ch0TxBuffEnd) {
+		;
+	}
         for(i=0; msg[i] != '\0'; i++) {
                 ch0TxBuff[i] = msg[i];
         }
