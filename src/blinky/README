@@ -4,3 +4,4 @@ Programs that blink the LEDs
   blinky_ccu.c:           Two slices of the capture/compare unit PWM at 0.5Hz.
   blinky_rtc.c:           Per second periodic event interrupts from the RTC.
   blinky_rtc_deepsleep.c: Same as RTC with the CPU in deep sleep and flash off.
+  blinky_wdt.c:           Watchdog timer alarm IRQ and WDT reboot.

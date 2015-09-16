@@ -1,3 +1,10 @@
+// Blink two LEDs using the watchdog timer alarm IRQ and WDT reboot.
+//
+// Normally you would avoid a WDT reboot by calling wdtService() while WDT_TIM
+// is between the lower and upper bound.  To demonstrate a WDT reboot I've
+// neglected to do that, instead using the warning to toggle the LEDs then
+// I blink them both on WDT reset.
+
 #include "peripherals/xmc1100.h"
 #include "peripherals/gpio.h"
 #include "peripherals/scu.h"
@@ -11,8 +18,8 @@ int main() {
 
 	if (reset_reason & RSTSTAT_WDT) {
 		unsigned int i, j;
-		// Indicate that a WDT reboot occurred by blinking  both LEDs.
-		for (i = 0; i < 3; i++) {
+		// Indicate that a WDT reboot occurred by blinking both LEDs.
+		for (i = 0; i < 4; i++) {
 			togglePinP1(0);
 			togglePinP1(1);
 			for (j = 0; j < 50000; j++)
