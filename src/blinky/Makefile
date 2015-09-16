@@ -7,7 +7,8 @@ ELF=blinky_cpu.elf \
     blinky_systick.elf \
     blinky_ccu.elf \
     blinky_rtc.elf \
-    blinky_rtc_deepsleep.elf
+    blinky_rtc_deepsleep.elf \
+    blinky_wdt.elf
 
 all:	$(ELF)
 	@echo "done"
@@ -40,6 +41,11 @@ blinky_rtc_deepsleep.elf:	$(RTC_LIBS) blinky_rtc_deepsleep.o
 	$(LD) $(RTC_LIBS) blinky_rtc_deepsleep.o \
 	      -T ../linker_script.ld --cref \
 	      -Map blinky_rtc_deepsleep.map -nostartfiles -o $@
+
+WDT_LIBS=$(CPU_LIBS) ../peripherals/nvic.o ../peripherals/wdt.o
+blinky_wdt.elf:	$(WDT_LIBS) blinky_wdt.o
+	$(LD) $(WDT_LIBS) blinky_wdt.o -T ../linker_script.ld --cref \
+	      -Map blinky_wdt.map -nostartfiles -o $@
 
 .c.o:	
 	$(CC) -c $(CCFLAGS) $< -o $@

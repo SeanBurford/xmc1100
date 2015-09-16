@@ -17,7 +17,7 @@ unsigned int tseEnable(void) {
 	TSE_ANATSECTRL = BIT0;
 
 	// Enable the tse done interrupt.
-	SCU_SRMSK |= TSE_DONE;
+	SCU_SRMSK |= SRMSK_TSE_DONE;
 
 	// TODO: Enable the tse temperature high/low interrupts.
 	// TSE_ANATSEIH.TSE_IH and TSE_ANATSEIH.TSE_IL configure the limits.
@@ -33,8 +33,8 @@ unsigned int tseEnable(void) {
 
 unsigned int tseDisable(void) {
 	// Disable the tse interrupt.
-	if (SCU_SRMSK & TSE_DONE) {
-		SCU_SRMSK ^= TSE_DONE;
+	if (SCU_SRMSK & SRMSK_TSE_DONE) {
+		SCU_SRMSK ^= SRMSK_TSE_DONE;
 	}
 	// Disable the temperature sensor.
 	TSE_ANATSECTRL = 0;

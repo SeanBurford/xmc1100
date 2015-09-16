@@ -8,6 +8,16 @@
 #define RSTCON_U0PERSTEN BIT3
 #define RSTCON_ALL (BIT0 | BIT1 | BIT2 | BIT3)
 
+// Postreset reset reason.
+#define RSTSTAT_POWER_ON BIT0
+#define RSTSTAT_MASTER_RESET BIT1
+#define RSTSTAT_CPU_RESET BIT2
+#define RSTSTAT_CPU_LOCKUP BIT3
+#define RSTSTAT_FLASH_ECC BIT4
+#define RSTSTAT_WDT BIT5
+#define RSTSTAT_CLOCK_LOSS BIT6
+#define RSTSTAT_PARITY_ERROR BIT7
+
 // Clock control.
 // CNTADJ = 1024 clock cycles
 // RTC gets clock from standby source
@@ -22,6 +32,14 @@
 #define CGATCLR0_USIC0 BIT3
 #define CGATCLR0_WDT BIT9
 #define CGATCLR0_RTC BIT10
+
+// SCU_SRMSK and SCU_SRRAW mask values.
+// Watchdog timer prewarning event.
+#define SRMSK_PRWARN BIT0
+// Temperature sensor done, high and low events.
+#define SRMSK_TSE_DONE BIT29
+#define SRMSK_TSE_HIGH BIT30
+#define SRMSK_TSE_LOW BIT31
 
 // Convenience function to get reset reason and set clock speed.
 unsigned int scuPostReset(const unsigned int clkcr);
