@@ -1,4 +1,5 @@
-// Blink two LEDs using per second periodic event interrupts from the RTC.
+// Blink two LEDs using XMC1100 RTC periodic event interrupts.
+//
 // The RTC offers both alarms and periodic events (second, minute ... year).
 
 #include "peripherals/xmc1100.h"

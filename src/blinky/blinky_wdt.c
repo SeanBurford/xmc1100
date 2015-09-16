@@ -1,4 +1,4 @@
-// Blink two LEDs using the watchdog timer alarm IRQ and WDT reboot.
+// Blink two LEDs using the XMC1100 watchdog timer alarm IRQ and WDT reboot.
 //
 // Normally you would avoid a WDT reboot by calling wdtService() while WDT_TIM
 // is between the lower and upper bound.  To demonstrate a WDT reboot I've

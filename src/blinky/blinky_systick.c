@@ -1,4 +1,4 @@
-// Blink two LEDs using the systick timer IRQ.
+// Blink two LEDs using the XMC1100 systick timer IRQ.
 
 #include "peripherals/xmc1100.h"
 #include "peripherals/gpio.h"

@@ -1,4 +1,4 @@
-Programs that blink the LEDs
+Programs that blink the LEDs on the XMC1100 XMC2Go board.
   blinky_cpu.c:           A busy loop.
   blinky_systick.c:       Systick timer IRQ with one systick per second.
   blinky_ccu.c:           Two slices of the capture/compare unit PWM at 0.5Hz.

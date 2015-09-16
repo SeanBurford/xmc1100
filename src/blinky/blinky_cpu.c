@@ -1,4 +1,4 @@
-// Blink two LEDs using a busy loop.
+// Blink two XMC1100 XMC2Go LEDs using a busy loop.
 
 #include "peripherals/xmc1100.h"
 #include "peripherals/gpio.h"

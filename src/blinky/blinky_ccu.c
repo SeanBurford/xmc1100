@@ -1,5 +1,6 @@
-// Blink the LEDs using two slices of the capture/compare unit PWM at 0.5Hz.
-// Slices 0 and 1 are wired to alt outputs for the LED pins P1.0 and P1.1.
+// Blink the LEDs using two slices of the XMC1100 capture/compare unit.
+//
+// Slices 0 and 1 are wired to PWM LED pins P1.0 and P1.1 at 0.5Hz.
 // Both slices run with the same configuration except that slice 1's output
 // has been set to inverted.
 

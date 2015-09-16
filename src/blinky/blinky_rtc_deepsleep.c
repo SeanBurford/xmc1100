@@ -1,4 +1,4 @@
-// Blink two LEDs using the RTC while the CPU is generally in deep sleep.
+// Blink two LEDs using the XMC1100 RTC between CPU deep sleeps.
 //
 // Functions in section .stext are loaded into SRAM by peripherals/init.c 
 // which means flash does not need to be turned on for their execution provided
