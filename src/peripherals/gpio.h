@@ -1,3 +1,5 @@
+// Support for the XMC1100 General Purpose IOs.
+
 #ifndef PERIPHERALS_GPIO_H
 #define PERIPHERALS_GPIO_H
 

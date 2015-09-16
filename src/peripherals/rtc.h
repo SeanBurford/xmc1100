@@ -1,3 +1,5 @@
+// Support for the XMC1100 RTC (real time clock)
+
 #ifndef PERIPHERALS_RTC_H
 #define PERIPHERALS_RTC_H
 

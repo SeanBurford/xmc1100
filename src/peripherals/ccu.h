@@ -1,3 +1,5 @@
+// Support for the XMC1100 CCU4 (Capture Compare Unit 4)
+
 #ifndef PERIPHERALS_CCU_H
 #define PERIPHERALS_CCU_H
 

@@ -1,3 +1,5 @@
+// Support for the XMC1100 ADC (untested).
+
 #ifndef PERIPHERALS_ADC_H
 #define PERIPHERALS_ADC_H
 

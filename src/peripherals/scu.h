@@ -1,3 +1,5 @@
+// Support for the XMC1100 SCU (system control unit)
+
 #ifndef PERIPHERALS_SCU_H
 #define PERIPHERALS_SCU_H
 

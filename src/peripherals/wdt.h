@@ -1,3 +1,5 @@
+// Support for the XMC1100 WDT (watchdog timer)
+
 #ifndef PERIPHERALS_WDT_H
 #define PERIPHERALS_WDT_H
 

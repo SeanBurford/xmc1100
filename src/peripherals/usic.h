@@ -1,3 +1,5 @@
+// Support for the XMC1100 USIC (universal serial interface channel)
+
 #ifndef PERIPHERALS_USIC_H
 #define PERIPHERALS_USIC_H
 

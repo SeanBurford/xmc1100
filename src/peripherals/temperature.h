@@ -1,4 +1,5 @@
-// Support code for the temperature sensor.
+// Support for the XMC1100 temperature sensor.
+//
 // All TSE events are handled through interrupt SCU_SR1.
 
 #ifndef PERIPHERALS_TEMPERATURE_H
