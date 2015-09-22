@@ -173,7 +173,7 @@ USIC Serial Interface Channels
 
 VADC Convertors (up to 12 channels, 12 bit)
 
-SHS0
+SHS0 Sample and Hold Sequencer
 
 CCU4 Capture/Compare Units 4
 
