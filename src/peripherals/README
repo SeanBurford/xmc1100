@@ -1,15 +1,14 @@
 Peripheral support code (see the "XMC1000 Family Reference Manual" for details)
 is in the peripherals directory.  The usic code draws from disassembly of the
 factory installed XMC2Go blinky app in addition to the reference manual.
-scu.c         - System control unit.
-scu.h
-nvic.c        - Nested vectored interrupt controller.
-nvic.h
-systick.c     - System Timer.
-systick.h
-gpio.c        - General purpose IO.
-gpio.h
-ccu.c         - Capture compare unit 4.
-ccu.h
-usic.h        - Universal serial interface channel.
-usic.c
+adc.*         - Analog/digital convertor (untested).
+ccu.*         - Capture compare unit 4.
+gpio.*        - General purpose IO.
+nvic.*        - Nested vectored interrupt controller.
+rtc.*         - Real time clock.
+scu.*         - System control unit.
+systick.*     - System Timer.
+temperature.* - Temperature sensor.
+usic.*        - Universal serial interface controller.
+wdt.*         - Watchdog timer.
+
