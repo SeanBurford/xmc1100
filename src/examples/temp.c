@@ -49,7 +49,7 @@ int main()
 
 void __attribute__((interrupt("IRQ"))) SCU_SR1(void) {
 	static unsigned int min, max;
-	if (SCU_SRRAW & TSE_DONE) {
+	if (SCU_SRRAW & SRMSK_TSE_DONE) {
 		const unsigned int temperature = tseRead();
 		if ((min == 0) || (temperature < min)) {
 			min = temperature;
@@ -64,7 +64,7 @@ void __attribute__((interrupt("IRQ"))) SCU_SR1(void) {
 		}
 
 		// Clear the event bit in SCU_SRRAW
-		SCU_SRCLR = TSE_DONE;
+		SCU_SRCLR = SRMSK_TSE_DONE;
 	}
 }
 
