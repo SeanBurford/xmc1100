@@ -1,12 +1,8 @@
-# In order to use this makefile you must have an arm compiler on your
-# system. You can get one here: https://launchpad.net/gcc-arm-embedded
-# Your PATH environment variable should include the 'bin' folder in
-# the arm compiler directory tree.
-# Specify the compiler, assembler and linker to use
 CC=arm-none-eabi-gcc
 AS=arm-none-eabi-as
 LD=arm-none-eabi-ld
 CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror -I..
+LDFLAGS=-T ../linker.flash.ld --cref -nostartfiles
 LIBC=-L /usr/lib/arm-none-eabi/newlib/armv6-m -lc
 
 all:	ultrasonic.elf speed_test.elf temp.elf
@@ -17,8 +13,7 @@ MAIN_LIBS=../peripherals/init.o ../peripherals/scu.o \
           ../peripherals/gpio.o ../peripherals/systick.o \
           usic_buffer.o
 ultrasonic.elf:	$(MAIN_LIBS) ultrasonic.o
-	$(LD) $^ -T ../linker_script.ld --cref \
-	      -Map ultrasonic.map -nostartfiles -o $@
+	$(LD) $(LDFLAGS) -Map ultrasonic.map $^ -o $@
 	arm-none-eabi-objcopy -O binary $@  ultrasonic.bin
 	objcopy -O ihex $@  ultrasonic.hex
 
@@ -26,8 +21,7 @@ SPEED_TEST_LIBS=../peripherals/init.o ../peripherals/scu.o \
                 ../peripherals/gpio.o ../peripherals/nvic.o \
                 ../peripherals/usic.o
 speed_test.elf:	$(SPEED_TEST_LIBS) speed_test.o
-	$(LD) $^ -T ../linker_script.ld --cref -Map speed_test.map \
-	      -nostartfiles -o $@
+	$(LD) $(LDFLAGS) -Map speed_test.map $^ -o $@
 
 TEMPERATURE_LIBS=../peripherals/init.o ../peripherals/ccu.o \
                  ../peripherals/scu.o ../peripherals/gpio.o \
@@ -35,8 +29,7 @@ TEMPERATURE_LIBS=../peripherals/init.o ../peripherals/ccu.o \
                  ../peripherals/usic.o usic_buffer.o \
                  ../peripherals/temperature.o
 temp.elf:	$(TEMPERATURE_LIBS) temp.o
-	$(LD) $^ -T ../linker_script.ld --cref -Map temp.map \
-	      -nostartfiles -o $@
+	$(LD) $(LDFLAGS) -Map temp.map $^ -o $@
 
 .c.o:	
 	$(CC) -c $(CCFLAGS) $< -o $@

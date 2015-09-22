@@ -17,4 +17,4 @@ Useful flashing commands in gdb are:
 
 The following files are based on Frank Duignan's work at
 http://eleceng.dit.ie/frank/arm/BareMetalXMC2Go/index.html:
-  linker_script.ld
+  linker.flash.ld
