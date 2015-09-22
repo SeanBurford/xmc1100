@@ -18,9 +18,9 @@ MAIN_LIBS=../peripherals/init.o ../peripherals/scu.o \
           usic_buffer.o
 ultrasonic.elf:	$(MAIN_LIBS) ultrasonic.o
 	$(LD) $^ -T ../linker_script.ld --cref \
-	      -Map ultrasonic.map -nostartfiles -o ultrasonic.elf
-	arm-none-eabi-objcopy -O binary ultrasonic.elf ultrasonic.bin
-	objcopy -O ihex ultrasonic.elf ultrasonic.hex
+	      -Map ultrasonic.map -nostartfiles -o $@
+	arm-none-eabi-objcopy -O binary $@  ultrasonic.bin
+	objcopy -O ihex $@  ultrasonic.hex
 
 SPEED_TEST_LIBS=../peripherals/init.o ../peripherals/scu.o \
                 ../peripherals/gpio.o ../peripherals/nvic.o \
