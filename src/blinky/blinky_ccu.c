@@ -4,7 +4,7 @@
 // Both slices run with the same configuration except that slice 1's output
 // has been set to inverted.
 
-#include "peripherals/xmc1100.h"
+#include "xmc1100.h"
 #include "peripherals/ccu.h"
 #include "peripherals/gpio.h"
 #include "peripherals/scu.h"

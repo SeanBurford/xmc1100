@@ -1,5 +1,6 @@
-/* useful reference: www.linuxselfhelp.com/gnu/ld/html_chapter/ld_toc.html */
-/* Written by Frank Duignan */
+/* Based on work by Frank Duignan, modified by Sean Burford.
+   http://eleceng.dit.ie/frank/arm/BareMetalXMC2Go/index.html
+   useful reference: www.linuxselfhelp.com/gnu/ld/html_chapter/ld_toc.html */
 MEMORY
 {
 	flash : org = 0x10001000, len = 64k

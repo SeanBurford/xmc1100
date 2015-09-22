@@ -18,3 +18,6 @@ Useful flashing commands in gdb are:
 The following files are based on Frank Duignan's work at
 http://eleceng.dit.ie/frank/arm/BareMetalXMC2Go/index.html:
   linker.flash.ld
+  linker.sram.ld
+  xmc1100.h
+  init.c

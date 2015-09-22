@@ -1,8 +1,7 @@
 CC=arm-none-eabi-gcc
-CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror
+CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror -I..
 
-SRCS=init.c \
-     adc.c \
+SRCS=adc.c \
      ccu.c \
      gpio.c \
      nvic.c \

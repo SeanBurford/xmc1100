@@ -5,7 +5,7 @@
 // neglected to do that, instead using the warning to toggle the LEDs then
 // I blink them both on WDT reset.
 
-#include "peripherals/xmc1100.h"
+#include "xmc1100.h"
 #include "peripherals/gpio.h"
 #include "peripherals/scu.h"
 #include "peripherals/wdt.h"

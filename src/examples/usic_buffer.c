@@ -1,4 +1,4 @@
-#include "peripherals/xmc1100.h"
+#include "xmc1100.h"
 #include "peripherals/usic.h"
 
 static char ch0TxBuff[128];

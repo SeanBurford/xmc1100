@@ -2,7 +2,7 @@
 //
 // The RTC offers both alarms and periodic events (second, minute ... year).
 
-#include "peripherals/xmc1100.h"
+#include "xmc1100.h"
 #include "peripherals/gpio.h"
 #include "peripherals/scu.h"
 #include "peripherals/rtc.h"

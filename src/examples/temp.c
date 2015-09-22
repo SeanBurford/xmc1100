@@ -1,6 +1,6 @@
 // Make LED P1.0 brighter as the CPU temperature rises.
 
-#include "peripherals/xmc1100.h"
+#include "xmc1100.h"
 #include "peripherals/ccu.h"
 #include "peripherals/gpio.h"
 #include "peripherals/usic.h"
