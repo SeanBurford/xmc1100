@@ -8,7 +8,7 @@ LIBC=-L /usr/lib/arm-none-eabi/newlib/armv6-m -lc
 all:	ultrasonic.elf speed_test.elf temp.elf
 	@echo "done"
 
-MAIN_LIBS=../init.o ../peripherals/scu.o \
+MAIN_LIBS=../init.o ../irq.o ../peripherals/scu.o \
           ../peripherals/ccu.o ../peripherals/nvic.o ../peripherals/usic.o \
           ../peripherals/gpio.o ../peripherals/systick.o \
           usic_buffer.o
@@ -17,13 +17,13 @@ ultrasonic.elf:	$(MAIN_LIBS) ultrasonic.o
 	arm-none-eabi-objcopy -O binary $@  ultrasonic.bin
 	objcopy -O ihex $@  ultrasonic.hex
 
-SPEED_TEST_LIBS=../init.o ../peripherals/scu.o \
+SPEED_TEST_LIBS=../init.o ../irq.o ../peripherals/scu.o \
                 ../peripherals/gpio.o ../peripherals/nvic.o \
                 ../peripherals/usic.o
 speed_test.elf:	$(SPEED_TEST_LIBS) speed_test.o
 	$(LD) $(LDFLAGS) -Map speed_test.map $^ -o $@
 
-TEMPERATURE_LIBS=../init.o ../peripherals/ccu.o \
+TEMPERATURE_LIBS=../init.o ../irq.o ../peripherals/ccu.o \
                  ../peripherals/scu.o ../peripherals/gpio.o \
                  ../peripherals/nvic.o ../peripherals/systick.o \
                  ../peripherals/usic.o usic_buffer.o \

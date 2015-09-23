@@ -5,3 +5,26 @@ Programs that blink the LEDs on the XMC1100 XMC2Go board.
   blinky_rtc.c:           Per second periodic event interrupts from the RTC.
   blinky_rtc_deepsleep.c: Same as RTC with the CPU in deep sleep and flash off.
   blinky_wdt.c:           Watchdog timer alarm IRQ and WDT reboot.
+
+== Running from flash
+The .elf build results (blinky_cpu.elf, etc) run from flash and are loaded/used
+from gdb as follows:
+(gdb) file blinky/blinky_cpu.elf
+(gdb) mon halt
+(gdb) mon reset
+(gdb) load
+(gdb) mon reset
+(gdb) mon go (or run if you have breakpoints)
+
+== Running from SRAM
+There are also versions of the above that load into and run directly from SRAM.
+They have .sram.elf extensions and are loaded/used from gdb as follows:
+(gdb) file blinky/blinky_cpu.sram.elf
+(gdb) mon halt
+(gdb) mon reset
+(gdb) load
+(gdb) mon reg pc = 0x2000014C
+Writing register (PC = 0x2000014C)
+(gdb) mon go
+Where 0x2000014C is the address of init().  init() should stay where it is
+provided init.o is the first object file provided to ld in the Makefile.

@@ -8,12 +8,9 @@ I find it useful to run three terminals in addition to development terminals:
 1) ./JLinkGDBServer -device XMC1100-0064 -speed 4000 -if SWD
 2) arm-none-eabi-gdb ('tar ext :2331')
 3) minicom (connected to /dev/ttyACM0 115200, 8N1)
-Useful flashing commands in gdb are:
-  mon halt
-  mon reset
-  load
-  mon reset
-  mon go (or run if you have some breakpoints)
+
+blinky/README has additional information on how to use gdb to load and run
+programs from either SRAM or flash.
 
 The following files are based on Frank Duignan's work at
 http://eleceng.dit.ie/frank/arm/BareMetalXMC2Go/index.html:

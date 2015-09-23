@@ -6,27 +6,25 @@ MEMORY
 	flash : org = 0x10001000, len = 64k
 	ram : org = 0x20000000, len = 16k
 }
-  
+
 SECTIONS
 {
-	. = ORIGIN(flash);
-	.vectors : {
-		*(.vectors)
-	} >flash
-	.text : {		  
-		*(.text);
-	} >flash
 	. = ORIGIN(ram);
-	.data : {	  
+	.irq_vectors : {
 		*(.interrupt_vectors);
-		*(.stext .data);
-	} >ram AT>flash
+	} >ram
+	.text : {
+		*(.text .stext);
+	} >ram
+	.data : {
+		*(.data);
+	} >ram
 	.bss : {
 		*(.bss);
 	} > ram
-	INIT_DATA_VALUES = LOADADDR(.data);
-	INIT_DATA_START = ADDR(.data);
-	INIT_DATA_SIZE = SIZEOF(.data);
+        INIT_DATA_VALUES = 0;
+        INIT_DATA_START = 0;
+        INIT_DATA_SIZE = 0;
 	BSS_START = ADDR(.bss);
 	BSS_SIZE = SIZEOF(.bss);
 }

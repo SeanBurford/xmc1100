@@ -1,22 +1,30 @@
 CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror -I..
 LDFLAGS=-T ../linker.flash.ld --cref -nostartfiles
+LDFLAGS_SRAM=-T ../linker.sram.ld --cref -nostartfiles
 CC=arm-none-eabi-gcc
 AS=arm-none-eabi-as
 LD=arm-none-eabi-ld
 
-ELF=blinky_cpu.elf \
+ELF=blinky_cpu.elf blinky_cpu.sram.elf\
     blinky_systick.elf \
     blinky_ccu.elf \
     blinky_rtc.elf \
     blinky_rtc_deepsleep.elf \
     blinky_wdt.elf
-LIBS=../init.o ../peripherals/scu.o ../peripherals/gpio.o ../peripherals/nvic.o
+LIBS=../init.o \
+     ../peripherals/scu.o \
+     ../peripherals/gpio.o \
+     ../peripherals/nvic.o
+
 
 all:	$(ELF)
 	@echo "done"
 
 blinky_cpu.elf:	$(LIBS) blinky_cpu.o
 	$(LD) $(LDFLAGS) -Map blinky_cpu.map $^ -o $@
+
+blinky_cpu.sram.elf:	$(LIBS) blinky_cpu.o
+	$(LD) $(LDFLAGS_SRAM) -Map blinky_cpu.map $^ -o $@
 
 blinky_systick.elf:	$(LIBS) ../peripherals/systick.o blinky_systick.o
 	$(LD) $(LDFLAGS) -Map blinky_systick.map $^ -o $@
