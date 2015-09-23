@@ -18,8 +18,8 @@ from gdb as follows:
 
 == Running from SRAM
 There are also versions of the above that load into and run directly from SRAM.
-They have .sram.elf extensions and are loaded/used from gdb as follows:
-(gdb) file blinky/blinky_cpu.sram.elf
+They have .elf.sram extensions and are loaded/used from gdb as follows:
+(gdb) file blinky/blinky_cpu.elf.sram
 (gdb) mon halt
 (gdb) mon reset
 (gdb) load
