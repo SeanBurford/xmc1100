@@ -36,9 +36,11 @@ blinky_rtc.elf:	$(LIBS) ../peripherals/rtc.o blinky_rtc.o
 
 blinky_rtc_deepsleep.elf:	$(LIBS) ../peripherals/rtc.o blinky_rtc_deepsleep.o
 	$(LD) $(LDFLAGS) --cref -Map blinky_rtc_deepsleep.map $^ -o $@
+	$(LD) $(LDFLAGS_SRAM) $^ -o $@.sram
 
 blinky_wdt.elf:	$(LIBS) ../peripherals/wdt.o blinky_wdt.o
 	$(LD) $(LDFLAGS) --cref -Map blinky_wdt.map $^ -o $@
+	$(LD) $(LDFLAGS_SRAM) $^ -o $@.sram
 
 .c.o:	
 	$(CC) -c $(CCFLAGS) $< -o $@

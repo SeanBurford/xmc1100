@@ -4,6 +4,9 @@
 // is between the lower and upper bound.  To demonstrate a WDT reboot I've
 // neglected to do that, instead using the warning to toggle the LEDs then
 // I blink them both on WDT reset.
+//
+// If you run the .elf.sram version from RAM this program reboots to whatever
+// in in flash after lighting each LED once.
 
 #include "xmc1100.h"
 #include "peripherals/gpio.h"
