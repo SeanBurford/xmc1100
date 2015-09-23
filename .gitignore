@@ -6,6 +6,7 @@ local/
 *.ko
 *.obj
 *.elf
+*.sram
 
 # Precompiled Headers
 *.gch
