@@ -13,7 +13,7 @@ SECTIONS
 	.irq_vectors : {
 		*(.interrupt_vectors);
 	} >ram
-	.text : {
+	.text (ORIGIN(ram) + 0x0200): {
 		*(.text .stext);
 	} >ram
 	.data : {

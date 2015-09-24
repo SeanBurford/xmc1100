@@ -23,8 +23,8 @@ They have .elf.sram extensions and are loaded/used from gdb as follows:
 (gdb) mon halt
 (gdb) mon reset
 (gdb) load
-(gdb) mon reg pc = 0x2000014C
-Writing register (PC = 0x2000014C)
+(gdb) mon reg pc = 0x20000200
+Writing register (PC = 0x20000200)
 (gdb) mon go
-Where 0x2000014C is the address of init().  init() should stay where it is
+Where 0x20000200 is the address of init().  init() should stay where it is
 provided init.o is the first object file provided to ld in the Makefile.
