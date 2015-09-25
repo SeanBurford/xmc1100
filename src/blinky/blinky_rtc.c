@@ -4,6 +4,7 @@
 
 #include "xmc1100.h"
 #include "peripherals/gpio.h"
+#include "peripherals/nvic.h"
 #include "peripherals/scu.h"
 #include "peripherals/rtc.h"
 

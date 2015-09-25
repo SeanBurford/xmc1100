@@ -3,15 +3,16 @@
 #include "xmc1100.h"
 #include "peripherals/ccu.h"
 #include "peripherals/gpio.h"
-#include "peripherals/usic.h"
+#include "peripherals/nvic.h"
 #include "peripherals/scu.h"
 #include "peripherals/systick.h"
 #include "peripherals/temperature.h"
+#include "peripherals/usic.h"
 #include "usic_buffer.h"
 
 int main()
 {
-	scuPostReset(CLKCR_M8_P8);
+	scuPostReset(CLKCR_M32_P64);
 
         enablePin(1, 0, GPIO_OUT_PP);  // LED
 	enablePin(1, 1, GPIO_OUT_PP);  // LED

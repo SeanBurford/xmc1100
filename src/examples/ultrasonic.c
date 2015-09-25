@@ -3,6 +3,7 @@
 #include "xmc1100.h"
 #include "peripherals/ccu.h"
 #include "peripherals/gpio.h"
+#include "peripherals/nvic.h"
 #include "peripherals/scu.h"
 #include "peripherals/systick.h"
 #include "usic_buffer.h"

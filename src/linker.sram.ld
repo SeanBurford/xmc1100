@@ -17,11 +17,14 @@ SECTIONS
 		*(.text .stext);
 	} >ram
 	.data : {
-		*(.data);
+		*(.rodata .data);
 	} >ram
 	.bss : {
 		*(.bss);
 	} > ram
+        IRQ_DATA_VALUES = 0;
+        IRQ_DATA_START = 0;
+        IRQ_DATA_SIZE = 0;
         INIT_DATA_VALUES = 0;
         INIT_DATA_START = 0;
         INIT_DATA_SIZE = 0;
