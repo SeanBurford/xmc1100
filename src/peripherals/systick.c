@@ -8,3 +8,7 @@ void systickEnable(const unsigned int period) {
 	// Use processor clock, enable interrupt request and enable counter
 	SYST_CSR |= BIT0 | BIT1 | BIT2;
 }
+
+void systickDisable(void) {
+	SYST_CSR = 0;
+}
