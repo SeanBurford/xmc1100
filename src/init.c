@@ -19,9 +19,7 @@ extern unsigned int BSS_SIZE;
 static void init()
 {
 	// Set up stack pointer.
-	const unsigned int stack_top = 0x20004000;  // RAM + 16k
-	asm("mov r0, %0;"
-	    "mov sp, r0;" : : "ir"(stack_top));
+	asm("mov sp, %0;" : : "r"(0x20004000));
 
 	// Do global/static data initialization
 	// Copy initialized data and the remapped IRQ jump table vectors to RAM.
