@@ -3,6 +3,7 @@
    http://eleceng.dit.ie/frank/arm/BareMetalXMC2Go/index.html */
 
 extern int main();
+static void _init(void);
 
 // The following are 'declared' in the linker script
 extern unsigned int IRQ_DATA_VALUES;
@@ -18,22 +19,29 @@ extern unsigned int BSS_SIZE;
 // the start of .text works when running from sram.
 static void init()
 {
-	// Set up stack pointer.
-	asm("mov sp, %0;" : : "r"(0x20004000));
+	// Set up stack pointer, leaving some space for our caller's stack.
+	asm("mov sp, %0;" : : "r"(0x20003f00));
+	_init();
+}
 
+static void _memcpy4(void *dst, void *src, const int len) {
+	int i = len - 4;
+	if (src && dst && len) {
+		while ( i >= 0) {
+			*(unsigned int *)(dst + i) = *(unsigned int *)(src + i);
+			i -= 4;
+		}
+	}
+}
+
+static void _init(void) {
 	// Do global/static data initialization
 	// Copy initialized data and the remapped IRQ jump table vectors to RAM.
-	const unsigned int *irq = &IRQ_DATA_VALUES;
-	const unsigned int *data = &INIT_DATA_VALUES;
-	unsigned int *dest = &IRQ_DATA_START;
-	int len;
-	for(len=(int)&IRQ_DATA_SIZE / 4; len >= 0; len--)
-		dest[len] = irq[len];
-	dest = &INIT_DATA_START;
-	for(len=(int)&INIT_DATA_SIZE / 4; len >= 0; len--)
-		dest[len] = data[len];
+	_memcpy4(&IRQ_DATA_START, &IRQ_DATA_VALUES, (int)&IRQ_DATA_SIZE);
+	_memcpy4(&INIT_DATA_START, &INIT_DATA_VALUES, (int)&INIT_DATA_SIZE);
 
 	// Zero out the uninitialized global/static variables
+	int len;
 	unsigned int *const bss = &BSS_START;
 	for(len=(int)&BSS_SIZE / 4; len >= 0; len--)
 		bss[len] = 0;
