@@ -35,6 +35,8 @@ void __attribute__((interrupt("IRQ"))) hardfaultDefault(void) {
 // Weak interrupt handler definitions.  Declaring another function of the
 // same name will override the default unhandledIRQ handler for that interrupt.
 void __attribute__((weak, alias("hardfaultDefault"))) hardfaultHandler(void);
+void __attribute__((weak, alias("unhandledIRQ"))) svcallHandler(void);
+void __attribute__((weak, alias("unhandledIRQ"))) pendsvHandler(void);
 void __attribute__((weak, alias("unhandledIRQ"))) systickHandler(void);
 void __attribute__((weak, alias("unhandledIRQ"))) SCU_SR0(void);
 void __attribute__((weak, alias("unhandledIRQ"))) SCU_SR1(void);
@@ -78,20 +80,22 @@ void __attribute__((weak, alias("unhandledIRQ"))) IRQ31(void);
 // a jump table entry.
 inline void __attribute__(( section(".interrupt_vectors"))) JumpTable(void) {
 	asm(" .long 0 "); // -15 Power up and warm reset
-	asm(" .long 0 "); // -14 NMI
+	asm(" .long 0 "); // -14 NMI (mapped to hardfaultHandler)
 	asm(" ldr R0,=(hardfaultHandler) "); // -13 HardFault handler
 	asm(" mov PC,R0");
-	asm(" .long 0 "); // -12 reserved
-	asm(" .long 0 "); // -11 reserved
-	asm(" .long 0 "); // -10 reserved
-	asm(" .long 0 "); // -9 reserved
-	asm(" .long 0 "); // -8 reserved
-	asm(" .long 0 "); // -7 reserved
-	asm(" .long 0 "); // -6 reserved
-	asm(" .long 0 "); // -5 SVCall
-	asm(" .long 0 "); // -4 Debug monitor
-	asm(" .long 0 "); // -3 reserved
-	asm(" .long 0 "); // -2 SVCall
+	asm(" .long 0 "); // -12 reserved (not mapped)
+	asm(" .long 0 "); // -11 reserved (not mapped)
+	asm(" .long 0 "); // -10 reserved (not mapped)
+	asm(" .long 0 "); // -9 reserved (not mapped)
+	asm(" .long 0 "); // -8 reserved (not mapped)
+	asm(" .long 0 "); // -7 reserved (not mapped)
+	asm(" .long 0 "); // -6 reserved (not mapped)
+	asm(" ldr R0,=(svcallHandler) "); // -5 SVCall
+	asm(" mov PC,R0 ");
+	asm(" .long 0 "); // -4 Debug monitor (not mapped)
+	asm(" .long 0 "); // -3 reserved (not mapped)
+	asm(" ldr R0,=(pendsvHandler) "); // -2 SVCall
+	asm(" mov PC,R0 ");
 	asm(" ldr R0,=(systickHandler) "); // -1 Systick handler
 	asm(" mov PC,R0 ");
 	asm(" ldr R0,=(SCU_SR0) ");     // 00: System Control SR0 (critical)
