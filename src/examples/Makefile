@@ -5,7 +5,7 @@ CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror -I..
 LDFLAGS=-T ../linker.flash.ld -nostartfiles
 LIBC=-L /usr/lib/arm-none-eabi/newlib/armv6-m -lc
 
-all:	ultrasonic.elf speed_test.elf temp.elf
+all:	ultrasonic.elf speed_test.elf temp.elf two_phase_pwm.elf
 	@echo "done"
 
 MAIN_LIBS=../init.o ../peripherals/scu.o \
@@ -16,6 +16,11 @@ ultrasonic.elf:	$(MAIN_LIBS) ultrasonic.o
 	$(LD) $(LDFLAGS) --cref -Map $@.map $^ -o $@
 	arm-none-eabi-objcopy -O binary $@ ultrasonic.bin
 	objcopy -O ihex $@  ultrasonic.hex
+
+two_phase_pwm.elf:	$(MAIN_LIBS) two_phase_pwm.o
+	$(LD) $(LDFLAGS) --cref -Map $@.map $^ -o $@
+	arm-none-eabi-objcopy -O binary $@ two_phase_pwm.bin
+	objcopy -O ihex $@  two_phase_pwm.hex
 
 SPEED_TEST_LIBS=../init.o ../peripherals/scu.o \
                 ../peripherals/gpio.o ../peripherals/nvic.o \

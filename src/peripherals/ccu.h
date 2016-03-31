@@ -19,6 +19,8 @@ unsigned int ccuEnable(const unsigned int global_control);
 
 void ccuSetPeriodCompareSlice0(const unsigned int period,
                                const unsigned int compare);
+void ccuSetPeriodCompareSlice1(const unsigned int period,
+                               const unsigned int compare);
 
 // Configure a CCU slice
 //  input_selector configures input events.  It's a bitwise or of

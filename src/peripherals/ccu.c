@@ -96,6 +96,15 @@ void ccuConfigureSlice0(const unsigned int input_selector,
 	}
 }
 
+void ccuSetPeriodCompareSlice1(const unsigned int period,
+                               const unsigned int compare) {
+	// Set the period match and compare level shadow registers.
+	// Request transfer of shadow registers to the normal registers.
+	CCU4_CC41PRS = period;
+	CCU4_CC41CRS = compare;
+	CCU4_GCSS = BIT4;  // Request transfer of PRS and CRS (slice 1)
+}
+
 void ccuConfigureSlice1(const unsigned int input_selector,
                         const unsigned int connections,
                         const unsigned int timer_control,
