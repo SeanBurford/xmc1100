@@ -66,7 +66,7 @@ unsigned int usicConfigureCh0(void) {
 	// TDEN=1:  TBUF is considered valid when it gets assigned
 	USIC0_CH0_TCSR = 0x00000500;  // TDSSM=1, TDEN=01
 	// majority bit decision, 1 stop, sample at 9
-        USIC0_CH0_PCR = (9 << 8) | 1;
+	USIC0_CH0_PCR = (9 << 8) | 1;
 	USIC0_CH0_DX3CR = 0x00000000;  // DX3 DXnA selected (P2.2)
 	USIC0_CH0_DX0CR = 0x00000006;  // DX0 DXnG selected, fPeriph
 
@@ -74,22 +74,22 @@ unsigned int usicConfigureCh0(void) {
 	USIC0_CH0_TRBSCR = 0x0000C707;
 	USIC0_CH0_PSCR = 0x0001FFFF;
 	// Configure TX FIFO interrupt characteristics.
-        // SIZE: (5<<24): FIFO is 32 entries.
+	// SIZE: (4<<24): FIFO is 16 entries.
 	// STBINP: (1<<16) Standard transmit buffer interrupt node SR1.
 	// Trigger mode 1(3<<14): While TRBSR.STBT=1 interrupt until FIFO full.
 	// Limit is 1 (1 << 8): Interrupt requests fill at that point.
 	// DPTR=0 (lower half of fifo buffer)
-        USIC0_CH0_TBCTR = ((5 << 24) | (1 << 16) | (3 << 14) | (1 << 8));
+	USIC0_CH0_TBCTR = ((4 << 24) | (1 << 16) | (3 << 14) | (1 << 8));
 	// Configure RX FIFO interrupt characterstics.
 	// SRBIEN=1 (1<<30) generate receive interrupts
 	// LOF=1 (1<<28) event when fill level transitions to > 0
-	// SIZE=32 (5<<24)
+	// SIZE=16 (4<<24)
 	// SRBINP=0 SR0
 	// SRBTEN=0
 	// SRBTM=0
 	// LIMIT=0
 	// DPTR=0x20 top half of FIFO buffer
-	USIC0_CH0_RBCTR = (1 << 30) | (1<<28) | (5 << 24) | 0x20;
+	USIC0_CH0_RBCTR = (1 << 30) | (1<<28) | (4 << 24) | 0x20;
 
 	// ASC mode, no hardware control, no parity, transmit buffer irq enabled
 	// USIC0_CH0_CCR = (1 << 13) | 2;
@@ -124,10 +124,21 @@ void __attribute__((interrupt("IRQ"))) USIC_SR0(void) {
 	USIC0_CH0_TRBSCR = BIT2 | BIT1 | BIT0;
 }
 
+static void usicSendCh0Byte(void) {
+	// Transmit a byte.
+	if ((!usicCh0TransmitDone) || (!usicCh0TransmitDone())) {
+		if (usicCh0Transmit) {
+			*USIC0_CH0_IN = usicCh0Transmit();
+		} else {
+			*USIC0_CH0_IN = 'x';
+		}
+	}
+}
+
 void usicSendCh0(void) {
 	// Enable the TX interrupt and transmit the first byte.
 	USIC0_CH0_TBCTR |= BIT30;
-	*USIC0_CH0_IN = usicCh0Transmit();
+	usicSendCh0Byte();
 }
 
 void __attribute__((interrupt("IRQ"))) USIC_SR1(void) {
@@ -135,22 +146,19 @@ void __attribute__((interrupt("IRQ"))) USIC_SR1(void) {
 	// This interrupt will trigger while TRBSR.STBT=1 until the FIFO is full
 	// it will also trigger when the FIFO empties to 0.
 
-	// Check that this is a standard transmit buffer event
-	if (USIC0_CH0_TRBSR & BIT8) {
+	// Check that this is a standard transmit FIFO buffer event
+	if (USIC0_CH0_TRBSR & BIT8) {  // BIT8=STBI
+		// Clear TX bits in the transmit/receive buffer status register.
+		USIC0_CH0_TRBSCR = BIT9 | BIT8;  // BIT8=CSTBI, BIT9=CSTERI
+
 		// Check that the TX buffer is not full and we have data to send
-		if (!(USIC0_CH0_TRBSR & BIT12) &&
-		    usicCh0TransmitDone && usicCh0Transmit &&
-		    !usicCh0TransmitDone()) {
-			// Transmit a byte.
-			*USIC0_CH0_IN = usicCh0Transmit();
+		if (!(USIC0_CH0_TRBSR & BIT12)) {  // BIT12=TFULL
+			usicSendCh0Byte();
 		}
 	}
 
 	// Disable the TX interrupt when we are done
 	if ((!usicCh0TransmitDone) || usicCh0TransmitDone()) {
-		USIC0_CH0_TBCTR &= 0xFFFFFFFF ^ BIT30;
+		USIC0_CH0_TBCTR &= 0xFFFFFFFF ^ BIT30;  // BIT30=STBIEN
 	}
-
-	// Clear TX bits in the transmit/receive buffer status register.
-	USIC0_CH0_TRBSCR = BIT9 | BIT8;
 }
