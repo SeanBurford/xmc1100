@@ -9,11 +9,11 @@
 static unsigned int txcount = 0;
 
 void usicCh0Receive(unsigned int val) {
-        val = val & 0xFF;
-        *USIC0_CH0_IN = val;
-        if ((unsigned char)val == '\r') {
-                *USIC0_CH0_IN = '\n';
-        }
+	val = val & 0xFF;
+	*USIC0_CH0_IN = val;
+	if ((unsigned char)val == '\r') {
+		*USIC0_CH0_IN = '\n';
+	}
 	if (val == 'x') {
 		txcount = 115200;
 		usicSendCh0();
@@ -21,7 +21,7 @@ void usicCh0Receive(unsigned int val) {
 }
 
 unsigned int usicCh0TransmitDone(void) {
-        return txcount == 0;
+	return txcount == 0;
 }
 
 unsigned char usicCh0Transmit(void) {
@@ -44,10 +44,10 @@ int main()
 {
 	scuPostReset(CLKCR_M32_P64);
 
-        enablePin(1, 0, GPIO_OUT_PP);  // LED
+	enablePin(1, 0, GPIO_OUT_PP);  // LED
 	enablePin(1, 1, GPIO_OUT_PP);  // LED
-        enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
-        enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
+	enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
+	enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
 
 	usicEnable();
 	usicConfigureCh0();

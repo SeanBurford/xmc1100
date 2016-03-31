@@ -16,20 +16,20 @@ void enableInterrupt(unsigned int interrupt, unsigned int priority) {
 }
 
 void __attribute__((interrupt("IRQ"))) unhandledIRQ(void) {
-        // IPSR holds the ISR number.
-        // Special return addresses:
-        //   0xFFFFFFF1: Return to handler mode (main stack, use MSP).
-        //   0xFFFFFFF9: Return to thread mode (MSP, MSP).
-        //   0xFFFFFFFD: Return to thread mode (PSP, PSP).
-        static unsigned int unhandled_interrupts;
-        unhandled_interrupts++;
+	// IPSR holds the ISR number.
+	// Special return addresses:
+	//   0xFFFFFFF1: Return to handler mode (main stack, use MSP).
+	//   0xFFFFFFF9: Return to thread mode (MSP, MSP).
+	//   0xFFFFFFFD: Return to thread mode (PSP, PSP).
+	static unsigned int unhandled_interrupts;
+	unhandled_interrupts++;
 }
 
 void __attribute__((interrupt("IRQ"))) hardfaultDefault(void) {
 	// Wait for the user to fix things (or the wdt).
-        while(1) {
-                asm("wfi");
-        }
+	while(1) {
+		asm("wfi");
+	}
 }
 
 // Weak interrupt handler definitions.  Declaring another function of the

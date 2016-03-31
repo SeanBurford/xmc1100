@@ -31,16 +31,16 @@ int main() {
 		}
 	}
 
-        enable_interrupts();
+	enable_interrupts();
 
 	togglePinP1(0);
 	// Since we're using the prealarm to fire a warning the lower bound
 	// never comes into play.
 	wdtEnable(0x00007f00, 0x00008000, 1);
 
-        while(1) {
-                asm("wfi");
-        }
+	while(1) {
+		asm("wfi");
+	}
 	return 0;
 }
 

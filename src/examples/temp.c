@@ -14,10 +14,10 @@ int main()
 {
 	scuPostReset(CLKCR_M32_P64);
 
-        enablePin(1, 0, GPIO_OUT_PP);  // LED
+	enablePin(1, 0, GPIO_OUT_PP);  // LED
 	enablePin(1, 1, GPIO_OUT_PP);  // LED
-        enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
-        enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
+	enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
+	enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
 
 	usicEnable();
 	usicConfigureCh0();
@@ -66,6 +66,15 @@ void __attribute__((interrupt("IRQ"))) SCU_SR1(void) {
 
 		// Clear the event bit in SCU_SRRAW
 		SCU_SRCLR = SRMSK_TSE_DONE;
+	}
+}
+
+// Input character handler.  Echo received characters to output.
+void usicCh0Receive(unsigned int val) {
+	val = val & 0xFF;
+	*USIC0_CH0_IN = val;
+	if ((unsigned char)val == '\r') {
+		*USIC0_CH0_IN = '\n';
 	}
 }
 

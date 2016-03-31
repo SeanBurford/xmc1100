@@ -12,10 +12,10 @@ int main()
 {
 	scuPostReset(CLKCR_M32_P64);
 
-        enablePin(1, 0, GPIO_OUT_PP);  // LED
+	enablePin(1, 0, GPIO_OUT_PP);  // LED
 	enablePin(1, 1, GPIO_OUT_PP);  // LED
-        enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
-        enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
+	enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
+	enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
 
 	usicBufferEnable();
 
@@ -26,7 +26,7 @@ int main()
 	// Clear the timer (STRM) and start on event 1
 	// Transfer shadow registers on timer clear
 	ccuConfigureSlice0(EV1IS_INyI | EV1EM_RISING,
-                           STRTS_EV1,
+	                   STRTS_EV1,
 	                   CMOD_COMPARE | CLST_ENABLE | STRM_BOTH,
 	                   PSC_FCCU_16,  // Prescaler: 64MHz / 16 = 4MHz
 	                   99, 50,  // 40kHz 50%
@@ -51,8 +51,8 @@ int main()
 	// P1.0: push pull PWM output (LED). (CCU4.OUT0)
 	// P0.7 pull up input to CCU slice 1 trigger capture.
 	enablePin(1, 0, GPIO_OUT_PP_ALT2);  // LED P1.0 alt2 is CCU4.OUT0
-	enablePin(0, 6, GPIO_OUT_OD_ALT4);  // P0.6 alt4 is CCU4.OUT0
-        enablePin(0, 7, GPIO_IN_PU);
+	enablePin(0, 6, GPIO_OUT_PP_ALT4);  // P0.6 alt4 is CCU4.OUT0
+	enablePin(0, 7, GPIO_IN_PU);
 
 	// Clock = 64MHz so 8000000 - 1 is 8 systicks/second.
 	systickEnable(8000000 - 1);
@@ -72,41 +72,50 @@ int main()
 }
 
 void __attribute__((interrupt("IRQ"))) systickHandler(void) {
-        // Toggle LED P1.1.
-        togglePinP1(1);
+	// Toggle LED P1.1.
+	togglePinP1(1);
 }
 
 unsigned int capture_vals[128];
 unsigned int capture_head = 0;
 void __attribute__((interrupt("IRQ"))) CCU40_SR0(void) {
-        // Check CCU4_CC41INTS to determine which slice the interrupt came from.
-        if (CCU4_CC40INTS) {
-                // This will occur due to slice 0 activity, no interrupts
-                // are actually generated/expected.
-                CCU4_CC40SWR = 0x00000f0f;  // Clear interrupt flags.
-        }
-        if (CCU4_CC41INTS) {
-                if (CCU4_CC41INTS & BIT8) {  // Event 0
-                        // Slice 1 capture event.
-                        const unsigned int capture_val = CCU4_CC41C1V;
-                        if (capture_val & BIT20) {
-                                capture_vals[capture_head] = capture_val;
-                        } else {
-                                // Capture full flag not set, value invalid.
-                                // This was unexpected.
-                                capture_vals[capture_head] = 0xaa55aa55;
-                        }
-                        capture_head = (capture_head + 1) & 0x7F;
-                }
-                CCU4_CC41SWR = 0x00000f0f;  // Clear interrupt flags.
-        }
-        if (CCU4_CC42INTS) {
-                // This was unexpected.
-                CCU4_CC42SWR = 0x00000f0f;  // Clear interrupt flags.
-        }
-        if (CCU4_CC43INTS) {
-                // This was unexpected.
-                CCU4_CC43SWR = 0x00000f0f;  // Clear interrupt flags.
-        }
+	// Check CCU4_CC41INTS to determine which slice the interrupt came from.
+	if (CCU4_CC40INTS) {
+		// This will occur due to slice 0 activity, no interrupts
+		// are actually generated/expected.
+		CCU4_CC40SWR = 0x00000f0f;  // Clear interrupt flags.
+	}
+	if (CCU4_CC41INTS) {
+		if (CCU4_CC41INTS & BIT8) {  // Event 0
+			// Slice 1 capture event.
+			const unsigned int capture_val = CCU4_CC41C1V;
+			if (capture_val & BIT20) {
+				capture_vals[capture_head] = capture_val;
+			} else {
+				// Capture full flag not set, value invalid.
+				// This was unexpected.
+				capture_vals[capture_head] = 0xaa55aa55;
+			}
+			capture_head = (capture_head + 1) & 0x7F;
+		}
+		CCU4_CC41SWR = 0x00000f0f;  // Clear interrupt flags.
+	}
+	if (CCU4_CC42INTS) {
+		// This was unexpected.
+		CCU4_CC42SWR = 0x00000f0f;  // Clear interrupt flags.
+	}
+	if (CCU4_CC43INTS) {
+		// This was unexpected.
+		CCU4_CC43SWR = 0x00000f0f;  // Clear interrupt flags.
+	}
+}
+
+// Input character handler.  Echo received characters to output.
+void usicCh0Receive(unsigned int val) {
+	val = val & 0xFF;
+	*USIC0_CH0_IN = val;
+	if ((unsigned char)val == '\r') {
+		*USIC0_CH0_IN = '\n';
+	}
 }
 

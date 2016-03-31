@@ -12,21 +12,21 @@
 // Convenience function to get reset reason and set clock speed.
 unsigned int scuPostReset(const unsigned int clkcr)
 {
-        unsigned int reason = scuResetReason();
-        scuResetControl(RSTCON_ALL);
-        scuClockControl(clkcr);
-        return reason;
+	unsigned int reason = scuResetReason();
+	scuResetControl(RSTCON_ALL);
+	scuClockControl(clkcr);
+	return reason;
 }
 
 // Get reason for previous reset (12.4.2)
 unsigned int scuResetReason(void)
 {
-        unsigned int reason;
-        reason = SCU_RSTSTAT & 0x3FF;
-        SCU_RSTCLR = BIT0;
-        // Reset on ECC error, loss of clock.
-        SCU_RSTCON = BIT1 | BIT0;
-        return reason;
+	unsigned int reason;
+	reason = SCU_RSTSTAT & 0x3FF;
+	SCU_RSTCLR = BIT0;
+	// Reset on ECC error, loss of clock.
+	SCU_RSTCON = BIT1 | BIT0;
+	return reason;
 }
 
 // Set reset triggers.

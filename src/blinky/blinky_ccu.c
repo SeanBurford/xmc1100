@@ -34,11 +34,11 @@ static void blink(void) {
 
 int main() {
 	scuPostReset(CLKCR_M8_P8);
-        enable_interrupts();
+	enable_interrupts();
 	blink();
-        while(1) {
-                asm("wfi");
-        }
+	while(1) {
+		asm("wfi");
+	}
 	return 0;
 }
 

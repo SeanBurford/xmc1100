@@ -12,8 +12,8 @@
 
 // This loop might become active from deep sleep so we put it in .stext.
 void __attribute__((section(".stext"))) sleep(
-    const unsigned int disable_flash,
-    const unsigned int deep_sleep) {
+	const unsigned int disable_flash,
+	const unsigned int deep_sleep) {
 	if (disable_flash) {
 		// Turn off NVM_ON.
 		// To reverse in gdb:
@@ -56,15 +56,15 @@ void __attribute__((interrupt("IRQ"), section(".stext"))) SCU_SR1(void) {
 // Insurance in case we mess up.
 void __attribute__((interrupt("IRQ"), section(".stext"))) hardfaultHandler(void)
 {
-        // Turn flash on (if it's off) and wait for it to become active.
-        // Unnecessary unless we've used NVMCONF to turn off flash.
-        NVMCONF |= BIT15;  // Turn on flash.
-        while (NVMSTATUS & BIT1) {
-                // BIT1: SLEEP mode is active.
-        }
-        while(1) {
+	// Turn flash on (if it's off) and wait for it to become active.
+	// Unnecessary unless we've used NVMCONF to turn off flash.
+	NVMCONF |= BIT15;  // Turn on flash.
+	while (NVMSTATUS & BIT1) {
+		// BIT1: SLEEP mode is active.
+	}
+	while(1) {
 		asm("wfi");
-        }
+	}
 }
 
 static void blink(void) {
@@ -79,7 +79,7 @@ static void blink(void) {
 
 int main() {
 	scuPostReset(CLKCR_M8_P8);
-        enable_interrupts();
+	enable_interrupts();
 	blink();
 	sleep(1, 1);
 	return 0;
