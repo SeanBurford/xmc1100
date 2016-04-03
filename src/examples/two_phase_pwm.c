@@ -8,6 +8,8 @@
 #include "peripherals/systick.h"
 #include "usic_buffer.h"
 
+unsigned int reset_reason = 0;
+
 void configureCCU()
 {
 	// Capture compare unit config
@@ -44,7 +46,7 @@ void configureCCU()
 
 int main()
 {
-	scuPostReset(CLKCR_M32_P64);
+	reset_reason = scuPostReset(CLKCR_M32_P64);
 
 	enablePin(1, 0, GPIO_OUT_PP);  // LED
 	enablePin(1, 1, GPIO_OUT_PP);  // LED
