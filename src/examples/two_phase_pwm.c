@@ -10,6 +10,10 @@
 
 unsigned int reset_reason = 0;
 
+static unsigned int current_on_percent = 5;
+static unsigned int target_on_percent = 5;
+static unsigned int invert_output = 0;
+
 void configureCCU()
 {
 	// Capture compare unit config
@@ -22,7 +26,7 @@ void configureCCU()
 			   STRTS_EV1,
 			   CMOD_COMPARE | TCM_CENTER | CLST_ENABLE | STRM_BOTH,
 			   PSC_FCCU_8,  // Prescaler: 64MHz / 8 = 8MHz
-			   99, 5,  // 40kHz (center aligned), 5%
+			   99, 95,  // 40kHz (center aligned), 5%
 			   0, 0,    // No interrupts
 			   0);      // Passive level low
 	// Slice 1: 40kHz 50% PWM (inverted output).
@@ -32,7 +36,7 @@ void configureCCU()
 	                   STRTS_EV1,
 	                   CMOD_COMPARE | TCM_CENTER | CLST_ENABLE | STRM_BOTH,
 	                   PSC_FCCU_8,  // Prescaler: 64MHz / 8 = 8MHz
-	                   99, 95,  // 40kHz (center aligned), 5%
+	                   99, 5,  // 40kHz (center aligned), 5%
 	                   0, 0,    // No interrupts
 	                   1);  // Passive level high
 	// CCU40 OUT0 is available at P0.0, P0.5, P0.6, P1.0, P2.0.
@@ -71,18 +75,11 @@ int main()
 	return 0;
 }
 
-static int current_on_percent = 5;
-static int target_on_percent = 5;
-
 void __attribute__((interrupt("IRQ"))) systickHandler(void) {
-	togglePinP1(0);
 	if (current_on_percent != target_on_percent) {
 		setPin(1, 1);
 		if (target_on_percent > 50) {
 			target_on_percent = 50;
-		}
-		if (target_on_percent < 0) {
-			target_on_percent = 0;
 		}
 		if (target_on_percent < current_on_percent) {
 			current_on_percent -= 1;
@@ -91,8 +88,13 @@ void __attribute__((interrupt("IRQ"))) systickHandler(void) {
 			current_on_percent += 1;
 			usicBufferSendCh0("+\r\n");
 		}
-		ccuSetPeriodCompareSlice0(99, current_on_percent);
-		ccuSetPeriodCompareSlice1(99, 100 - current_on_percent);
+		if (!invert_output) {
+			ccuSetPeriodCompareSlice0(99, 100 - current_on_percent);
+			ccuSetPeriodCompareSlice1(99, current_on_percent);
+		} else {
+			ccuSetPeriodCompareSlice0(99, current_on_percent);
+			ccuSetPeriodCompareSlice1(99, 100 - current_on_percent);
+		}
 	} else {
 		clearPin(1, 1);
 	}
@@ -134,9 +136,19 @@ void usicCh0Receive(unsigned int val) {
 	case '9':
 		target_on_percent = 45;
 		break;
+	case '^':
+		invert_output = invert_output? 0:1;
+		target_on_percent = 0;
+		current_on_percent = 1;
+		break;
 	default:
 		;
 	}
 	usicBufferSendCh0(msg);
+	if (invert_output) {
+		setPin(1, 0);
+	} else {
+		clearPin(1, 0);
+	}
 }
 
