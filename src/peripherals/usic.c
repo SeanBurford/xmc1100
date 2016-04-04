@@ -48,7 +48,23 @@
 
 unsigned int usicEnable(void) {
 	// Clear gating of USIC in SCU_CGATCLR0
-	return scuUngatePeripheralClock(CGATCLR0_USIC0);
+	if (scuUngatePeripheralClock(CGATCLR0_USIC0)) {
+		return 1;
+	}
+
+	// Check module identification
+	// This is not available before peripheral clock starts.
+	if ((USIC0_ID >> 8) != 0x0000AAC0) {
+		return 1;
+	}
+
+	// Check that buffered async serial is supported ASC(1) RB(6) and TB(7)
+	const unsigned int buffered_async_serial = BIT1 | BIT6 | BIT7;
+	if ((USIC0_CH0_CCFG & buffered_async_serial) != buffered_async_serial) {
+		return 1;
+	}
+
+	return 0;
 }
 
 unsigned int usicConfigureCh0(void) {
@@ -69,17 +85,18 @@ unsigned int usicConfigureCh0(void) {
 	USIC0_CH0_PCR = (9 << 8) | 1;
 	USIC0_CH0_DX3CR = 0x00000000;  // DX3 DXnA selected (P2.2)
 	USIC0_CH0_DX0CR = 0x00000006;  // DX0 DXnG selected, fPeriph
-
-	// Clear the buffer status register and protocol status register.
-	USIC0_CH0_TRBSCR = 0x0000C707;
+	// Clear the protocol status register.
 	USIC0_CH0_PSCR = 0x0001FFFF;
+
+	// Clear the buffer events and flush the FIFOs.
+	USIC0_CH0_TRBSCR = 0x0000C707;
 	// Configure TX FIFO interrupt characteristics.
 	// SIZE: (4<<24): FIFO is 16 entries.
 	// STBINP: (1<<16) Standard transmit buffer interrupt node SR1.
 	// Trigger mode 1(3<<14): While TRBSR.STBT=1 interrupt until FIFO full.
 	// Limit is 1 (1 << 8): Interrupt requests fill at that point.
-	// DPTR=0 (lower half of fifo buffer)
-	USIC0_CH0_TBCTR = ((4 << 24) | (1 << 16) | (3 << 14) | (1 << 8));
+	// DPTR=0x20 (top half of fifo buffer)
+	USIC0_CH0_TBCTR = ((4 << 24) | (1 << 16) | (3 << 14) | (1 << 8) | 0x20);
 	// Configure RX FIFO interrupt characterstics.
 	// SRBIEN=1 (1<<30) generate receive interrupts
 	// LOF=1 (1<<28) event when fill level transitions to > 0
@@ -88,8 +105,8 @@ unsigned int usicConfigureCh0(void) {
 	// SRBTEN=0
 	// SRBTM=0
 	// LIMIT=0
-	// DPTR=0x20 top half of FIFO buffer
-	USIC0_CH0_RBCTR = (1 << 30) | (1<<28) | (4 << 24) | 0x20;
+	// DPTR=0x00 lower half of FIFO buffer
+	USIC0_CH0_RBCTR = (1 << 30) | (1<<28) | (4 << 24) | 0x00;
 
 	// ASC mode, no hardware control, no parity, transmit buffer irq enabled
 	// USIC0_CH0_CCR = (1 << 13) | 2;
