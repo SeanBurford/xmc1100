@@ -161,7 +161,7 @@ void ccuSetPeriodCompareSlice1(const unsigned int period,
 #define MOS_EV0 (0x01 << 18)
 #define MOS_EV1 (0x02 << 18)
 #define MOS_EV2 (0x03 << 18)
-// CCU4yCMC timer concat enable (when enabled concat from previous slice(
+// CCU4yCMC timer concat enable (when enabled concat from previous slice).
 #define TCE_ENABLE BIT20
 
 // CCU4yTC timer control.
