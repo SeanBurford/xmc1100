@@ -3,6 +3,7 @@ is in the peripherals directory.  The usic code draws from disassembly of the
 factory installed XMC2Go blinky app in addition to the reference manual.
 adc.*         - Analog/digital convertor (untested).
 ccu.*         - Capture compare unit 4.
+eru.*         - Event Request Unit.
 gpio.*        - General purpose IO.
 nvic.*        - Nested vectored interrupt controller.
 rtc.*         - Real time clock.

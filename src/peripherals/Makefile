@@ -3,6 +3,7 @@ CCFLAGS=-mcpu=cortex-m0 -mthumb -g -Wall -Werror -I..
 
 SRCS=adc.c \
      ccu.c \
+     eru.c \
      gpio.c \
      nvic.c \
      rtc.c \
