@@ -3,7 +3,36 @@
 #ifndef PERIPHERALS_ERU_H
 #define PERIPHERALS_ERU_H
 
+unsigned int eruEnable(void);
+unsigned int eruDisable(void);
+
+unsigned int  eruConfigureETL0(
+    unsigned int exs_a_input,  // EXISEL_EXS_INx
+    unsigned int exs_b_input,  // EXISEL_EXS_INx
+    unsigned int exicon);      // EXICON values
+
+unsigned int  eruConfigureETL1(
+    unsigned int exs_a_input,  // EXISEL_EXS_INx
+    unsigned int exs_b_input,  // EXISEL_EXS_INx
+    unsigned int exicon);      // EXICON values
+
+unsigned int  eruConfigureETL2(
+    unsigned int exs_a_input,  // EXISEL_EXS_INx
+    unsigned int exs_b_input,  // EXISEL_EXS_INx
+    unsigned int exicon);      // EXICON values
+
+unsigned int  eruConfigureETL3(
+    unsigned int exs_a_input,  // EXISEL_EXS_INx
+    unsigned int exs_b_input,  // EXISEL_EXS_INx
+    unsigned int exicon);      // EXICON values
+
+unsigned int eruConfigureOGU0(unsigned int exocon);  // EXOCON values
+unsigned int eruConfigureOGU1(unsigned int exocon);  // EXOCON values
+unsigned int eruConfigureOGU2(unsigned int exocon);  // EXOCON values
+unsigned int eruConfigureOGU3(unsigned int exocon);  // EXOCON values
+
 // EXISEL register values.  eg. (EXISEL_EXS_IN1 << EXISEL_EXS0A_SHIFT) | ...
+#define EXISEL_EXS_MASK 3
 #define EXISEL_EXS_IN0 0
 #define EXISEL_EXS_IN1 1
 #define EXISEL_EXS_IN2 2
