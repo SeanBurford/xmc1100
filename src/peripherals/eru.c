@@ -1,12 +1,12 @@
 #include "xmc1100.h"
 #include "eru.h"
 
-void eruEnable() {
+unsigned int eruEnable() {
 	// ERU does not require clock enable.
 	return 0;
 }
 
-void eruDisable() {
+unsigned int eruDisable() {
 	return 0;
 }
 
