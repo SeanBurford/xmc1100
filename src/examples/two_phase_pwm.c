@@ -22,23 +22,25 @@ void configureCCU()
 	// Event 1: active high, rising edge, input I (SCU)
 	// Clear the timer (STRM) and start on event 1
 	// Transfer shadow registers on timer clear
-	ccuConfigureSlice0(EV1IS_INyI | EV1EM_RISING,
-			   STRTS_EV1,
-			   CMOD_COMPARE | TCM_CENTER | CLST_ENABLE | STRM_BOTH,
-			   PSC_FCCU_8,  // Prescaler: 64MHz / 8 = 8MHz
-			   99, 95,  // 40kHz (center aligned), 5%
-			   0, 0,    // No interrupts
-			   0);      // Passive level low
+	ccuConfigureSlice0(
+	    ccuEvent1(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
+	    STRTS_EV1,
+	    CMOD_COMPARE | TCM_CENTER | CLST_ENABLE | STRM_BOTH,
+	    PSC_FCCU_8,  // Prescaler: 64MHz / 8 = 8MHz
+	    99, 95,  // 40kHz (center aligned), 5%
+	    0, 0,    // No interrupts
+	    0);      // Passive level low
 	// Slice 1: 40kHz 50% PWM (inverted output).
 	// Event 1: active high, rising edge, input I (SCU.GSC40)
 	// Clear the timer (STRM) and start on event 1.
-	ccuConfigureSlice1(EV1IS_INyI | EV1EM_RISING,
-	                   STRTS_EV1,
-	                   CMOD_COMPARE | TCM_CENTER | CLST_ENABLE | STRM_BOTH,
-	                   PSC_FCCU_8,  // Prescaler: 64MHz / 8 = 8MHz
-	                   99, 5,  // 40kHz (center aligned), 5%
-	                   0, 0,    // No interrupts
-	                   1);  // Passive level high
+	ccuConfigureSlice1(
+	    ccuEvent1(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
+	    STRTS_EV1,
+	    CMOD_COMPARE | TCM_CENTER | CLST_ENABLE | STRM_BOTH,
+	    PSC_FCCU_8,  // Prescaler: 64MHz / 8 = 8MHz
+	    99, 5,  // 40kHz (center aligned), 5%
+	    0, 0,    // No interrupts
+	    1);  // Passive level high
 	// CCU40 OUT0 is available at P0.0, P0.5, P0.6, P1.0, P2.0.
 	// P0.6: push pull PWM output. (CCU4.OUT0)
 	// P0.7: push pull PWM output (CCU4.OUT1).

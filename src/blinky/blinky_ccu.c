@@ -15,14 +15,16 @@ static void blink(void) {
 	ccuEnable(GCTRL_SUSCFG_ROLLOVER);
 	ccuConfigureSlice0(
 	    // Reset count and start on event 0 (Input I: SCU CCU start event)
-	    EV0IS_INyI | EV0EM_RISING, STRTS_EV0,
+	    ccuEvent0(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
+	    STRTS_EV0,
 	    CMOD_COMPARE | CLST_ENABLE | STRM_BOTH,
 	    PSC_FCCU_512,  // Prescaler 8MHz / 512 = 15,625Hz
 	    31250, 15625,  // 0.5Hz 50%
 	    0, 0, 0);      // Generate no interrupts. passive level low.
 	ccuConfigureSlice1(
 	    // Reset count and start on event 0 (Input I: SCU CCU start event)
-	    EV0IS_INyI | EV0EM_RISING, STRTS_EV0,
+	    ccuEvent0(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
+	    STRTS_EV0,
 	    CMOD_COMPARE | CLST_ENABLE | STRM_BOTH,
 	    PSC_FCCU_512,  // Prescaler 8MHz / 512 = 15,625Hz
 	    31250, 15625,  // 0.5Hz 50%

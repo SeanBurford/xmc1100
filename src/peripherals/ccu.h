@@ -7,6 +7,16 @@
 //  global_control is an or of GCTRL values.
 unsigned int ccuEnable(const unsigned int global_control);
 
+// Start requested slices.
+// Uses SCU.GSC40 to start slices simultaneously if CCU4_CC4xINS and
+// CCU4_CC4xCMC have been configured to start the slices on an SCU event.
+//   slices is a bit field of slices to start (0=slice 0 .. 3=slice3).
+void ccuStartSlices(const unsigned int slices);
+
+// Put requested slices into idle (clock stopped, registers not cleared).
+//   slices is a bit field of slices to stop (0=slice 0 .. 3=slice3).
+void ccuStopSlices(const unsigned int slices);
+
 // GCTRL suspend configuration.
 // Ignore suspend requests, module never suspends.
 #define GCTRL_SUSCFG_IGNORE (0x00 << 8)
@@ -17,14 +27,20 @@ unsigned int ccuEnable(const unsigned int global_control);
 // Safe stops the block after rollover and clamps outputs to passive state.
 #define GCTRL_SUSCFG_ROLLOVER (0x03 << 8)
 
-void ccuSetPeriodCompareSlice0(const unsigned int period,
-                               const unsigned int compare);
-void ccuSetPeriodCompareSlice1(const unsigned int period,
-                               const unsigned int compare);
+// Helpers to build ccuCOnfigureSlice event fields.
+//   is is the input selector.  It is an EVIS_INy_ value.
+//   em is the edge selector.  It is an EVEM___ value.
+//   lm is the active level selector.  It is an EVLM___ value.
+//   lpf is the low pass filter count.  It is an LPFM__ value.
+unsigned int ccuEvent0(unsigned int is, unsigned int em, unsigned int lm,
+                       unsigned int lpf);
+unsigned int ccuEvent1(unsigned int is, unsigned int em, unsigned int lm,
+                       unsigned int lpf);
+unsigned int ccuEvent2(unsigned int is, unsigned int em, unsigned int lm,
+                       unsigned int lpf);
 
 // Configure a CCU slice
-//  input_selector configures input events.  It's a bitwise or of
-//    EVyIS | EVyEM | EVyLM | LPFyM for each event y.
+//  events configures input events.  ccuEvent[0:2]() can help build it.
 //  connections configures the connection matrix. Bitwise or of
 //    STRTS | ENDS | CAP0S | CAP1S | CAP2S | GATES | UDS | LDS | CNTS | OFS |
 //    TS | MOS | TCE
@@ -34,7 +50,7 @@ void ccuSetPeriodCompareSlice1(const unsigned int period,
 //  period, compare: 16 bit values for timer period and compare.
 //  interrupt_enable is an or of INTE_ values (eg. INTE_E0AE_ENABLE)
 //  interrupt_route is an or of SRS_ values (eg. INTE_E0AE_ENABLE)
-void ccuConfigureSlice0(const unsigned int input_selector,
+void ccuConfigureSlice0(const unsigned int events,
                         const unsigned int connections,
                         const unsigned int timer_control,
                         const unsigned int prescaler,
@@ -43,7 +59,7 @@ void ccuConfigureSlice0(const unsigned int input_selector,
                         const unsigned int interrupt_enable,
                         const unsigned int interrupt_route,
                         const unsigned int passive_level);
-void ccuConfigureSlice1(const unsigned int input_selector,
+void ccuConfigureSlice1(const unsigned int events,
                         const unsigned int connections,
                         const unsigned int timer_control,
                         const unsigned int prescaler,
@@ -53,103 +69,56 @@ void ccuConfigureSlice1(const unsigned int input_selector,
                         const unsigned int interrupt_route,
                         const unsigned int passive_level);
 
-// Put requested slices into idle (clock stopped, registers not cleared).
-//   slices is a bit field of slices to stop (0=slice 0 .. 3=slice3).
-void ccuStopSlices(const unsigned int slices);
-
-// Start requested slices.
-// Uses SCU.GSC40 to start slices simultaneously if CCU4_CC4xINS and
-// CCU4_CC4xCMC have been configured to start the slices on an SCU event.
-//   slices is a bit field of slices to start (0=slice 0 .. 3=slice3).
-void ccuStartSlices(const unsigned int slices);
+void ccuSetPeriodCompareSlice0(const unsigned int period,
+                               const unsigned int compare);
+void ccuSetPeriodCompareSlice1(const unsigned int period,
+                               const unsigned int compare);
 
 // TODO: A lot of the stuff below should be structs and enums.
 
-// CCU4xINS event 0 input.
-#define EV0IS_INyA (0x0000 << 0)
-#define EV0IS_INyB (0x0001 << 0)
-#define EV0IS_INyC (0x0002 << 0)
-#define EV0IS_INyD (0x0003 << 0)
-#define EV0IS_INyE (0x0004 << 0)
-#define EV0IS_INyF (0x0005 << 0)
-#define EV0IS_INyG (0x0006 << 0)
-#define EV0IS_INyH (0x0007 << 0)
-#define EV0IS_INyI (0x0008 << 0)
-#define EV0IS_INyJ (0x0009 << 0)
-#define EV0IS_INyK (0x000a << 0)
-#define EV0IS_INyL (0x000b << 0)
-#define EV0IS_INyM (0x000c << 0)
-#define EV0IS_INyN (0x000d << 0)
-#define EV0IS_INyO (0x000e << 0)
-#define EV0IS_INyP (0x000f << 0)
-// CCU4xINS event 0 edge.
-#define EV0EM_RISING (0x01 << 16)
-#define EV0EM_FALLING (0x02 << 16)
-#define EV0EM_BOTH (0x03 << 16)
-// CCU4xINS event 0 level.
-#define EV0LM_HIGH (0x00 << 22)
-#define EV0LM_LOW (0x01 << 22)
-// CCU4xINS event 0 low pass filter.
-#define LPF0M_3 (0x01 << 25)
-#define LPF0M_5 (0x02 << 25)
-#define LPF0M_7 (0x03 << 25)
-// CCU4xINS event 1 input.
-#define EV1IS_INyA (0x0000 << 4)
-#define EV1IS_INyB (0x0001 << 4)
-#define EV1IS_INyC (0x0002 << 4)
-#define EV1IS_INyD (0x0003 << 4)
-#define EV1IS_INyE (0x0004 << 4)
-#define EV1IS_INyF (0x0005 << 4)
-#define EV1IS_INyG (0x0006 << 4)
-#define EV1IS_INyH (0x0007 << 4)
-#define EV1IS_INyI (0x0008 << 4)
-#define EV1IS_INyJ (0x0009 << 4)
-#define EV1IS_INyK (0x000a << 4)
-#define EV1IS_INyL (0x000b << 4)
-#define EV1IS_INyM (0x000c << 4)
-#define EV1IS_INyN (0x000d << 4)
-#define EV1IS_INyO (0x000e << 4)
-#define EV1IS_INyP (0x000f << 4)
-// CCU4xINS event 1 edge.
-#define EV1EM_RISING (0x01 << 18)
-#define EV1EM_FALLING (0x02 << 18)
-#define EV1EM_BOTH (0x03 << 18)
-// CCU4xINS event 1 level.
-#define EV1LM_HIGH (0x00 << 23)
-#define EV1LM_LOW (0x01 << 23)
-// CCU4xINS event 1 low pass filter.
-#define LPF1M_0 (0x00 << 27)
-#define LPF1M_3 (0x01 << 27)
-#define LPF1M_5 (0x02 << 27)
-#define LPF1M_7 (0x03 << 27)
-// CCU4xINS event 2 input.
-#define EV2IS_INyA (0x0000 << 8)
-#define EV2IS_INyB (0x0001 << 8)
-#define EV2IS_INyC (0x0002 << 8)
-#define EV2IS_INyD (0x0003 << 8)
-#define EV2IS_INyE (0x0004 << 8)
-#define EV2IS_INyF (0x0005 << 8)
-#define EV2IS_INyG (0x0006 << 8)
-#define EV2IS_INyH (0x0007 << 8)
-#define EV2IS_INyI (0x0008 << 8)
-#define EV2IS_INyJ (0x0009 << 8)
-#define EV2IS_INyK (0x000a << 8)
-#define EV2IS_INyL (0x000b << 8)
-#define EV2IS_INyM (0x000c << 8)
-#define EV2IS_INyN (0x000d << 8)
-#define EV2IS_INyO (0x000e << 8)
-#define EV2IS_INyP (0x000f << 8)
-// CCU4xINS event 2 edge.
-#define EV2EM_RISING (0x01 << 20)
-#define EV2EM_FALLING (0x02 << 20)
-#define EV2EM_BOTH (0x03 << 20)
-// CCU4xINS event 2 level.
-#define EV2LM_HIGH (0x00 << 24)
-#define EV2LM_LOW (0x01 << 24)
-// CCU4xINS event 2 low pass filter.
-#define LPF2M_3 (0x01 << 29)
-#define LPF2M_5 (0x02 << 29)
-#define LPF2M_7 (0x03 << 29)
+// Event configuration.  ccuEvent0() - ccuEvent2() can help construct these.
+// CCU4xINS event (0-2) input.
+#define EV0IS_SHIFT 0
+#define EV1IS_SHIFT 4
+#define EV2IS_SHIFT 8
+#define EVIS_INyA 0x0000
+#define EVIS_INyB 0x0001
+#define EVIS_INyC 0x0002
+#define EVIS_INyD 0x0003
+#define EVIS_INyE 0x0004
+#define EVIS_INyF 0x0005
+#define EVIS_INyG 0x0006
+#define EVIS_INyH 0x0007
+#define EVIS_INyI 0x0008
+#define EVIS_INyJ 0x0009
+#define EVIS_INyK 0x000a
+#define EVIS_INyL 0x000b
+#define EVIS_INyM 0x000c
+#define EVIS_INyN 0x000d
+#define EVIS_INyO 0x000e
+#define EVIS_INyP 0x000f
+// CCU4xINS event (0-2) edge.
+#define EV0EM_SHIFT 16
+#define EV1EM_SHIFT 18
+#define EV2EM_SHIFT 20
+#define EVEM_NONE 0x00
+#define EVEM_RISING 0x01
+#define EVEM_FALLING 0x02
+#define EVEM_BOTH 0x03
+// CCU4xINS event (0-2) active level.
+#define EV0LM_SHIFT 22
+#define EV1LM_SHIFT 23
+#define EV2LM_SHIFT 24
+#define EVLM_HIGH 0x00
+#define EVLM_LOW 0x01
+// CCU4xINS event (0-2) low pass filter.
+#define EV0LPF_SHIFT 25
+#define EV1LPF_SHIFT 27
+#define EV2LPF_SHIFT 29
+#define EVLPFM_0 (0x00)
+#define EVLPFM_3 (0x01)
+#define EVLPFM_5 (0x02)
+#define EVLPFM_7 (0x03)
 
 // CCY4yCMC connection matrix control.
 // CCU4yCMC start event.
