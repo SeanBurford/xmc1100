@@ -13,10 +13,10 @@ unsigned int ccuEnable(const unsigned int global_control) {
 		return 1;
 	}
 
-	// Enable interrupt node 21-24 at priority 64
-	enableInterrupt(21, 64);
-	enableInterrupt(22, 64);
-	enableInterrupt(23, 64);
+	// Enable interrupt node 21-24 at priority 61-64
+	enableInterrupt(21, 61);
+	enableInterrupt(22, 62);
+	enableInterrupt(23, 63);
 	enableInterrupt(24, 64);
 
 	// Stop any slices that were previously running.
