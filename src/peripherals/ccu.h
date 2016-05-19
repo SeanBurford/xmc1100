@@ -68,10 +68,32 @@ void ccuConfigureSlice1(const unsigned int events,
                         const unsigned int interrupt_enable,
                         const unsigned int interrupt_route,
                         const unsigned int passive_level);
+void ccuConfigureSlice2(const unsigned int events,
+                        const unsigned int connections,
+                        const unsigned int timer_control,
+                        const unsigned int prescaler,
+                        const unsigned int period,
+                        const unsigned int compare,
+                        const unsigned int interrupt_enable,
+                        const unsigned int interrupt_route,
+                        const unsigned int passive_level);
+void ccuConfigureSlice3(const unsigned int events,
+                        const unsigned int connections,
+                        const unsigned int timer_control,
+                        const unsigned int prescaler,
+                        const unsigned int period,
+                        const unsigned int compare,
+                        const unsigned int interrupt_enable,
+                        const unsigned int interrupt_route,
+                        const unsigned int passive_level);
 
 void ccuSetPeriodCompareSlice0(const unsigned int period,
                                const unsigned int compare);
 void ccuSetPeriodCompareSlice1(const unsigned int period,
+                               const unsigned int compare);
+void ccuSetPeriodCompareSlice2(const unsigned int period,
+                               const unsigned int compare);
+void ccuSetPeriodCompareSlice3(const unsigned int period,
                                const unsigned int compare);
 
 // TODO: A lot of the stuff below should be structs and enums.

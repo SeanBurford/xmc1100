@@ -123,14 +123,60 @@ void ccuConfigureSlice1(const unsigned int events,
 	CCU4_CC41CMC = connections;  // Set after timer_control.
 	CCU4_CC41PSL = passive_level;
 
-	CCU4_CC41PRS = period;
-	CCU4_CC41CRS = compare;
-	CCU4_GCSS = BIT4;  // Request transfer of PRS and CRS (slice 1)
+	ccuSetPeriodCompareSlice1(period, compare);
 
 	CCU4_CC41INTE = interrupt_enable;
 	if (interrupt_enable) {
 		CCU4_CC41SWR = 0x00000f0f;
 		CCU4_CC41SRS = interrupt_route;
+	}
+}
+
+void ccuConfigureSlice2(const unsigned int events,
+                        const unsigned int connections,
+                        const unsigned int timer_control,
+                        const unsigned int prescaler,
+                        const unsigned int period,     // 0x0000 - 0xffff)
+                        const unsigned int compare,    // 0x0000 - 0xffff)
+                        const unsigned int interrupt_enable,
+                        const unsigned int interrupt_route,
+                        const unsigned int passive_level) {
+	CCU4_CC42PSC = prescaler;
+	CCU4_CC42TC = timer_control;
+	CCU4_CC42INS = events;
+	CCU4_CC42CMC = connections;  // Set after timer_control.
+	CCU4_CC42PSL = passive_level;
+
+	ccuSetPeriodCompareSlice2(period, compare);
+
+	CCU4_CC42INTE = interrupt_enable;
+	if (interrupt_enable) {
+		CCU4_CC42SWR = 0x00000f0f;
+		CCU4_CC42SRS = interrupt_route;
+	}
+}
+
+void ccuConfigureSlice3(const unsigned int events,
+                        const unsigned int connections,
+                        const unsigned int timer_control,
+                        const unsigned int prescaler,
+                        const unsigned int period,     // 0x0000 - 0xffff)
+                        const unsigned int compare,    // 0x0000 - 0xffff)
+                        const unsigned int interrupt_enable,
+                        const unsigned int interrupt_route,
+                        const unsigned int passive_level) {
+	CCU4_CC43PSC = prescaler;
+	CCU4_CC43TC = timer_control;
+	CCU4_CC43INS = events;
+	CCU4_CC43CMC = connections;  // Set after timer_control.
+	CCU4_CC43PSL = passive_level;
+
+	ccuSetPeriodCompareSlice3(period, compare);
+
+	CCU4_CC43INTE = interrupt_enable;
+	if (interrupt_enable) {
+		CCU4_CC43SWR = 0x00000f0f;
+		CCU4_CC43SRS = interrupt_route;
 	}
 }
 
@@ -142,7 +188,7 @@ void ccuSetPeriodCompareSlice0(const unsigned int period,
 	// Using CRS blocks out C0V and C1V capture registers.
 	CCU4_CC40PRS = period;
 	CCU4_CC40CRS = compare;
-	CCU4_GCSS = BIT0;  // Request transfer of PRS and CRS (slice 0)
+	CCU4_GCSS = BIT0 << 0;  // Request transfer of PRS and CRS
 }
 
 void ccuSetPeriodCompareSlice1(const unsigned int period,
@@ -151,6 +197,26 @@ void ccuSetPeriodCompareSlice1(const unsigned int period,
 	// Request transfer of shadow registers to the normal registers.
 	CCU4_CC41PRS = period;
 	CCU4_CC41CRS = compare;
-	CCU4_GCSS = BIT4;  // Request transfer of PRS and CRS (slice 1)
+	CCU4_GCSS = BIT0 << 4;  // Request transfer of PRS and CRS
+}
+
+void ccuSetPeriodCompareSlice2(const unsigned int period,
+                               const unsigned int compare) {
+	// Set the period match and compare level shadow registers.
+	// Request transfer of shadow registers to the normal registers.
+	// Using PRS blocks out C2V and C3V capture registers.
+	// Using CRS blocks out C0V and C1V capture registers.
+	CCU4_CC42PRS = period;
+	CCU4_CC42CRS = compare;
+	CCU4_GCSS = BIT0 << 8;  // Request transfer of PRS and CRS
+}
+
+void ccuSetPeriodCompareSlice3(const unsigned int period,
+                               const unsigned int compare) {
+	// Set the period match and compare level shadow registers.
+	// Request transfer of shadow registers to the normal registers.
+	CCU4_CC43PRS = period;
+	CCU4_CC43CRS = compare;
+	CCU4_GCSS = BIT0 << 12;  // Request transfer of PRS and CRS
 }
 
