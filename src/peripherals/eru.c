@@ -1,8 +1,16 @@
 #include "xmc1100.h"
 #include "eru.h"
+#include "nvic.h"
 
 unsigned int eruEnable() {
 	// ERU does not require clock enable.
+
+	// Enable ERU interrupt node 3-6 at priority 65-68
+	enableInterrupt(3, 65);
+	enableInterrupt(4, 66);
+	enableInterrupt(5, 67);
+	enableInterrupt(6, 68);
+
 	return 0;
 }
 

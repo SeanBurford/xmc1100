@@ -101,9 +101,13 @@ unsigned int eruConfigureOGU3(unsigned int exocon);  // EXOCON values
 #define EXOCON_PDR_MASK (1 << 3)
 // Gating selection and pattern detection result.
 #define EXOCON_GP_MASK (3 << 4)
+//   No interrupt
 #define EXOCON_GP_GOUT_DISABLE_IOUT_DISABLE (0 << 4)
+//   Interrupt for events
 #define EXOCON_GP_GOUT_ENABLE_IOUT_TOUT (1 << 4)
+//   Interrupt for events if PD
 #define EXOCON_GP_GOUT_PDOUT_IOUT_TOUT (2 << 4)
+//   Interrupt for events if not PD
 #define EXOCON_GP_INV_GOUT_PDOUT_IOUT_TOUT (3 << 4)
 // Pattern detection enable.
 #define EXOCON_IPEN_MASK (15 << 12)
