@@ -34,10 +34,14 @@ unsigned int ccuEnable(const unsigned int global_control) {
 	return 0;
 }
 
-void ccuStartSlices(const unsigned int slices) {
+void ccuEnableSlices(const unsigned int slices) {
 	CCU4_GIDLS = BIT9;  // clear the prescaler and load PVAL.
 	// BIT8 enables the prescaler run bit for the CCU.
 	CCU4_GIDLC = BIT8 | slices;
+}
+
+void ccuStartSlices(const unsigned int slices) {
+	ccuEnableSlices(slices);
 	// Start CCU40 timers that have been configured (INS and CMC registers)
 	// to use SCU.GSC40 as a start event.
 	SCU_CCUCON = BIT0;

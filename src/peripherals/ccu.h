@@ -7,7 +7,11 @@
 //  global_control is an or of GCTRL values.
 unsigned int ccuEnable(const unsigned int global_control);
 
-// Start requested slices.
+// Enable requested slices.
+// Once enabled slices can be started by their nominated start events.
+void ccuEnableSlices(const unsigned int slices);
+
+// Enable and start requested slices.
 // Uses SCU.GSC40 to start slices simultaneously if CCU4_CC4xINS and
 // CCU4_CC4xCMC have been configured to start the slices on an SCU event.
 //   slices is a bit field of slices to start (0=slice 0 .. 3=slice3).

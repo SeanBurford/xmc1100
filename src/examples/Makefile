@@ -6,7 +6,8 @@ LDFLAGS=-T ../linker.flash.ld -nostartfiles
 LDFLAGS_SRAM=-T ../linker.sram.ld -nostartfiles
 LIBC=-L /usr/lib/arm-none-eabi/newlib/armv6-m -lc
 
-all:	ultrasonic.elf speed_test.elf temp.elf two_phase_pwm.elf eru.elf
+all:	ultrasonic.elf speed_test.elf temp.elf two_phase_pwm.elf eru.elf \
+	eru_ccu.elf
 	@echo "done"
 
 MAIN_LIBS=../init.o ../peripherals/scu.o \
@@ -27,6 +28,11 @@ eru.elf:	$(MAIN_LIBS) ../peripherals/eru.o eru.o
 	$(LD) $(LDFLAGS_SRAM) --cref -Map $@.map $^ -o $@
 	arm-none-eabi-objcopy -O binary $@ eru.bin
 	objcopy -O ihex $@  eru.hex
+
+eru_ccu.elf:	$(MAIN_LIBS) ../peripherals/eru.o eru_ccu.o
+	$(LD) $(LDFLAGS_SRAM) --cref -Map $@.map $^ -o $@
+	arm-none-eabi-objcopy -O binary $@ eru_ccu.bin
+	objcopy -O ihex $@  eru_ccu.hex
 
 SPEED_TEST_LIBS=../init.o ../peripherals/scu.o \
                 ../peripherals/gpio.o ../peripherals/nvic.o \
