@@ -55,7 +55,7 @@ unsigned int usicCh0TransmitDone(void) {
 }
 
 // Output character handler.
-unsigned char usicCh0Transmit(void) {
+unsigned short usicCh0Transmit(void) {
 	if (ch0TxBuffStart < ch0TxBuffEnd) {
 		return ch0TxBuff[ch0TxBuffStart++];
 	} else {

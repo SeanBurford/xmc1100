@@ -58,16 +58,16 @@ unsigned int usicEnable(void) {
 		return 1;
 	}
 
+	return 0;
+}
+
+unsigned int usicConfigureCh0(void) {
 	// Check that buffered async serial is supported ASC(1) RB(6) and TB(7)
 	const unsigned int buffered_async_serial = BIT1 | BIT6 | BIT7;
 	if ((USIC0_CH0_CCFG & buffered_async_serial) != buffered_async_serial) {
 		return 1;
 	}
 
-	return 0;
-}
-
-unsigned int usicConfigureCh0(void) {
 	// Enable USIC module clock and functionality.
 	USIC0_CH0_KSCFG = BIT1 | BIT0;
 	USIC0_CH0_CCR = 0x00000000;  // USIC CH0 is now disabled, idle.

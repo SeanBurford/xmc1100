@@ -24,7 +24,7 @@ unsigned int usicCh0TransmitDone(void) {
 	return txcount == 0;
 }
 
-unsigned char usicCh0Transmit(void) {
+unsigned short usicCh0Transmit(void) {
 	if (txcount == 0) {
 		return 'x';
 	}
