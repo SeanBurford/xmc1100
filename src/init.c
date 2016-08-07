@@ -27,6 +27,9 @@ static void __attribute__((naked)) init()
 	// Set up stack pointer, leaving some space for our caller's stack.
 	asm("mov sp, %0;" : : "r"(0x20003f00));
 	_init();
+	// Defensive infinite loop.
+	while(1)
+		asm("wfi");
 }
 
 static void _memcpy4(void *dst, void *src, const int len) {
