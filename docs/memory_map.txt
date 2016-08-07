@@ -24,11 +24,13 @@
       0x10001004 - 0x10001007 Start Address after SSW
       0x10001010 - 0x10001013 CLK_VAL1
       0x10001014 - 0x10001017 CLK_VAL2
+      0x10001018              Reset PC value
     0x10011000 - 0x1FFFFFFF Reserved
 0x20000000 - 0x3FFFFFFF SRAM (SRAM)
   0x20000000 - 0x20000FFF SRAM block 0
     0x20000000 - 0x200000BF Vectors
     0x200000C0 - 0x200001FF Boot up stack and data
+    0x20000920              Reset SP value
   0x20001000 - 0x20001FFF SRAM block 1
   0x20002000 - 0x20002FFF SRAM block 2
   0x20003000 - 0x20003FFF SRAM block 3
