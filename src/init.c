@@ -17,6 +17,11 @@ extern unsigned int BSS_SIZE;
 
 // init() should be the first function in this file so that jumping to
 // the start of .text works when running from sram.
+//
+// The XMC2Go demo app ships with vectors configured to provide an initial
+// stack pointer of 0x20000920.  If we use linker.sram.ld to run from SRAM
+// we don't want init() push the callers registers to that address as it
+// will stomp on our code or data.  Making this function naked solves that.
 static void __attribute__((naked)) init()
 {
 	// Set up stack pointer, leaving some space for our caller's stack.
