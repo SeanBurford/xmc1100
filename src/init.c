@@ -20,7 +20,7 @@ extern unsigned int BSS_SIZE;
 //
 // The XMC2Go demo app ships with vectors configured to provide an initial
 // stack pointer of 0x20000920.  If we use linker.sram.ld to run from SRAM
-// we don't want init() push the callers registers to that address as it
+// we don't want init() to push the callers registers to that address as it
 // will stomp on our code or data.  Making this function naked solves that.
 static void __attribute__((naked)) init()
 {
