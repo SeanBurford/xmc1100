@@ -1,6 +1,8 @@
 #include "xmc1100.h"
 #include "peripherals/usic.h"
 
+#include "usic_fifo.h"
+
 #define TXBUFF_LEN 128
 static char ch0TxBuff[TXBUFF_LEN];
 static unsigned int ch0TxBuffStart = 0;
@@ -18,15 +20,15 @@ void toHex(const unsigned int val, char *buff) {
         buff[index] = '\0';
 }
 
-unsigned int usicBufferEnable(void) {
+unsigned int usicFifoEnable(void) {
 	// Perform usic startup initialization.
 	if (usicEnable() != 0) {
 		return 1;
 	}
-	return usicConfigureCh0();
+	return usicConfigure(0, USIC_PROTO_ASC);
 }
 
-void usicBufferSendCh0(const char *msg) {
+void usicFifoSendCh0(const char *msg) {
 	unsigned int i, pos;
 	pos = ch0TxBuffEnd;
 	for(i=0; (msg[i] != '\0') && (pos < TXBUFF_LEN); i++, pos++) {

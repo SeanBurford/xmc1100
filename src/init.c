@@ -17,7 +17,7 @@ extern unsigned int BSS_SIZE;
 
 // init() should be the first function in this file so that jumping to
 // the start of .text works when running from sram.
-static void init()
+static void __attribute__((naked)) init()
 {
 	// Set up stack pointer, leaving some space for our caller's stack.
 	asm("mov sp, %0;" : : "r"(0x20003f00));

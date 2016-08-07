@@ -11,6 +11,7 @@ SRCS=adc.c \
      systick.c \
      temperature.c \
      usic.c \
+     usic_fifo.c \
      wdt.c
 OBJS=$(SRCS:.c=.o)
 

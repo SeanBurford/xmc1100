@@ -19,12 +19,12 @@
 // ERU0.PDOUT3: CCU40.IN2D, IN3J, P0.3(x), P2.0(exposed)
 
 #include "xmc1100.h"
-#include "examples/usic_buffer.h"
 #include "peripherals/eru.h"
 #include "peripherals/gpio.h"
 #include "peripherals/nvic.h"
 #include "peripherals/scu.h"
 #include "peripherals/systick.h"
+#include "peripherals/usic_fifo.h"
 
 void __attribute__((interrupt("IRQ"))) ERU_SR0(void) {
 	// Set P1.1 to match OGU0 pattern detect.
@@ -110,7 +110,7 @@ int main()
 	clearPin(0, 8);
 	clearPin(2, 10);
 
-	usicBufferEnable();
+	usicFifoEnable();
 
 	eru0ConfigureChannel3AorB();
 

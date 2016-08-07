@@ -6,7 +6,7 @@
 #include "peripherals/nvic.h"
 #include "peripherals/scu.h"
 #include "peripherals/systick.h"
-#include "usic_buffer.h"
+#include "peripherals/usic_fifo.h"
 
 int main()
 {
@@ -17,7 +17,7 @@ int main()
 	enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
 	enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
 
-	usicBufferEnable();
+	usicFifoEnable();
 
 	// Capture compare unit config
 	ccuEnable(GCTRL_SUSCFG_ROLLOVER);
@@ -64,7 +64,7 @@ int main()
 	// Start CCU slices 0 and 1
 	ccuStartSlices(BIT1 | BIT0);
 
-	usicBufferSendCh0("Ready.\r\n");
+	usicFifoSendCh0("Ready.\r\n");
 	while(1)
 	{
 		asm("wfi");

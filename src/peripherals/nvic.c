@@ -5,6 +5,7 @@ static volatile unsigned int *nvic_ipr = PTR_32(NVIC_BASE + 0x300);
 static const unsigned int nvic_masks[] = {
 	0xffffff00, 0xffff00ff, 0xff00ffff, 0x00ffffff
 };
+static unsigned int unhandled_interrupts = 0;
 
 void enableInterrupt(unsigned int interrupt, unsigned int priority) {
 	const unsigned int ipr_reg = interrupt >> 2;
@@ -21,7 +22,6 @@ void __attribute__((interrupt("IRQ"))) unhandledIRQ(void) {
 	//   0xFFFFFFF1: Return to handler mode (main stack, use MSP).
 	//   0xFFFFFFF9: Return to thread mode (MSP, MSP).
 	//   0xFFFFFFFD: Return to thread mode (PSP, PSP).
-	static unsigned int unhandled_interrupts;
 	unhandled_interrupts++;
 }
 

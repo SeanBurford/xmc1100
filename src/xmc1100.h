@@ -50,8 +50,8 @@
 #define BIT31 (1 << 31)
 
 // Macros to reduce typing later on
-#define  REGISTER_32(ADDRESS) (*((volatile unsigned int *)(ADDRESS)))
-#define  REGISTER_16(ADDRESS) (*((volatile unsigned int *)(ADDRESS)))
+#define  REGISTER_32(ADDRESS) (*((volatile unsigned int *const)(ADDRESS)))
+#define  REGISTER_16(ADDRESS) (*((volatile unsigned int *const)(ADDRESS)))
 #define  PTR_32(ADDRESS) (((volatile unsigned int *)(ADDRESS)))
 
 // Macros to enable/disable global interrupts

@@ -50,7 +50,7 @@ int main()
 	enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
 
 	usicEnable();
-	usicConfigureCh0();
+	usicConfigure(0, USIC_PROTO_ASC);
 
 	enable_interrupts();
 

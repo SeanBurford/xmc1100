@@ -61,43 +61,79 @@ unsigned int usicEnable(void) {
 	return 0;
 }
 
-unsigned int usicConfigureCh0(void) {
-	// Check that buffered async serial is supported ASC(1) RB(6) and TB(7)
-	const unsigned int buffered_async_serial = BIT1 | BIT6 | BIT7;
-	if ((USIC0_CH0_CCFG & buffered_async_serial) != buffered_async_serial) {
+static unsigned int usicChannelBase(int channel) {
+	unsigned int cbase = 0;
+	switch(channel) {
+	case 0:
+		cbase = USIC0_CH0_BASE;
+		break;
+	case 1:
+		cbase = USIC0_CH1_BASE;
+		break;
+	}
+	return cbase;
+}
+
+unsigned int usicConfigure(int channel, int protocol) {
+	const unsigned int cbase = usicChannelBase(channel);
+	if (cbase == 0)
+		return 1;
+
+	// Enable USIC module clock and functionality.
+	// Module enable (+moden write)
+	USIC0_KSCFG(cbase) = BIT1 | BIT0;
+	// Set channel operating mode to disabled, idle.
+	USIC0_CCR(cbase) = USIC_PROTO_DISABLED;
+
+	// Protocol specific settings.
+	unsigned int proto_available = BIT6 | BIT7; // RB, TB buffers
+	unsigned int ccr_enable = 0;
+	switch(protocol) {
+	case USIC_PROTO_ASC:
+		proto_available |= BIT1;
+		// ASC, no hardware control, no parity.
+		ccr_enable = USIC_PROTO_ASC;
+
+		// For clock = 32MHz:
+		// Fractional mode, STEP=0x24E
+		// PDIV=0004, DCTQ=15, PCTQ=1 (PDIV=4 for 115200 baud,
+		//                             PDIV=3B for 9600)
+		USIC0_FDR(cbase) = 0x0000824E;
+		USIC0_BRG(cbase) = (0x0004 << 16) | (15 << 10) | (1<<8);
+		// 8 bits, active high, passive high
+		USIC0_SCTR(cbase) = 0x07070102;
+		// TDSSM=1: TBUF is considered invalid when moved to shift reg
+		// TDEN=1:  TBUF is considered valid when it gets assigned
+		USIC0_TCSR(cbase) = 0x00000500;  // TDSSM=1, TDEN=01
+		// majority bit decision, 1 stop, sample at 9
+		USIC0_PCR(cbase) = (9 << 8) | 1;
+		// TODO: This is only correct for CH0 to the XMC2Go pins.
+		USIC0_DX3CR(cbase) = 0x00000000;  // DX3 DXnA selected (P2.2)
+		USIC0_DX0CR(cbase) = 0x00000006;  // DX0 DXnG selected, fPeriph
+		break;
+	case USIC_PROTO_IIC:
+		proto_available |= BIT2;
+		// IIC, parity must be disabled.
+		ccr_enable = USIC_PROTO_IIC;
+	default:
 		return 1;
 	}
 
-	// Enable USIC module clock and functionality.
-	USIC0_CH0_KSCFG = BIT1 | BIT0;
-	USIC0_CH0_CCR = 0x00000000;  // USIC CH0 is now disabled, idle.
+	// Check that the protocol is supported on this channel.
+	if ((USIC0_CCFG(cbase) & proto_available) != proto_available) {
+		return 1;
+	}
 
-	// For clock = 32MHz:
-	// Fractional mode, STEP=0x24E
-	// PDIV=0004, DCTQ=15, PCTQ=1 (PDIV=4 for 115200 baud, PDIV=3B for 9600)
-	USIC0_CH0_FDR = 0x0000824E;
-	USIC0_CH0_BRG = (0x0004 << 16) | (15 << 10) | (1<<8);
-	USIC0_CH0_SCTR = 0x07070102;  // 8 bits, active high, passive high
-	// TDSSM=1: TBUF is considered invalid when moved to shift reg
-	// TDEN=1:  TBUF is considered valid when it gets assigned
-	USIC0_CH0_TCSR = 0x00000500;  // TDSSM=1, TDEN=01
-	// majority bit decision, 1 stop, sample at 9
-	USIC0_CH0_PCR = (9 << 8) | 1;
-	USIC0_CH0_DX3CR = 0x00000000;  // DX3 DXnA selected (P2.2)
-	USIC0_CH0_DX0CR = 0x00000006;  // DX0 DXnG selected, fPeriph
-	// Clear the protocol status register.
-	USIC0_CH0_PSCR = 0x0001FFFF;
-
-	// Clear the buffer events and flush the FIFOs.
-	USIC0_CH0_TRBSCR = 0x0000C707;
-	// Configure TX FIFO interrupt characteristics.
+	// TX FIFO interrupt characteristics.
 	// SIZE: (4<<24): FIFO is 16 entries.
 	// STBINP: (1<<16) Standard transmit buffer interrupt node SR1.
 	// Trigger mode 1(3<<14): While TRBSR.STBT=1 interrupt until FIFO full.
 	// Limit is 1 (1 << 8): Interrupt requests fill at that point.
-	// DPTR=0x20 (top half of fifo buffer)
-	USIC0_CH0_TBCTR = ((4 << 24) | (1 << 16) | (3 << 14) | (1 << 8) | 0x20);
-	// Configure RX FIFO interrupt characterstics.
+	// DPTR=0x10 (0x20 should be the top half of fifo buffer)
+	USIC0_TBCTR(cbase) = ((4 << 24) | (1 << 16) | (3 << 14) | (1 << 8) |
+	                      0x10);
+
+	// RX FIFO interrupt characterstics.
 	// SRBIEN=1 (1<<30) generate receive interrupts
 	// LOF=1 (1<<28) event when fill level transitions to > 0
 	// SIZE=16 (4<<24)
@@ -106,17 +142,26 @@ unsigned int usicConfigureCh0(void) {
 	// SRBTM=0
 	// LIMIT=0
 	// DPTR=0x00 lower half of FIFO buffer
-	USIC0_CH0_RBCTR = (1 << 30) | (1<<28) | (4 << 24) | 0x00;
+	USIC0_RBCTR(cbase) = (1 << 30) | (1<<28) | (4 << 24) | 0x00;
 
-	// ASC mode, no hardware control, no parity, transmit buffer irq enabled
-	// USIC0_CH0_CCR = (1 << 13) | 2;
-	USIC0_CH0_CCR = 2;
+	// Clear the buffer events and flush the FIFOs.
+	// This also loads the output pointers from the input pointers.
+	USIC0_TRBSCR(cbase) = 0x0000C707;
+
+	// Generally use default interrupt routing.
+	USIC0_INPR(cbase) = 0;
+
+	// Clear the protocol status register.
+	USIC0_PSCR(cbase) = 0x0001FFFF;
 
 	// Configure FIFO interrupts.
 	// USIC0.SR0 (RX FIFO) is interrupt node 9.
 	// USIC0.SR1 (TX FIFO) is interrupt node 10.
 	enableInterrupt(9, 129);
 	enableInterrupt(10, 128);
+
+	// Enable the protocol unit.
+	USIC0_CCR(cbase) = ccr_enable;
 
 	return 0;
 }
@@ -142,12 +187,12 @@ void __attribute__((interrupt("IRQ"))) USIC_SR0(void) {
 }
 
 static void usicSendCh0Byte(void) {
-	// Transmit a byte.
-	if ((!usicCh0TransmitDone) || (!usicCh0TransmitDone())) {
+	// Transmit a byte if we have one to send.
+	if (!(usicCh0TransmitDone && usicCh0TransmitDone())) {
 		if (usicCh0Transmit) {
-			*USIC0_CH0_IN = usicCh0Transmit();
+			USIC0_CH0_IN[0] = usicCh0Transmit();
 		} else {
-			*USIC0_CH0_IN = 'x';
+			USIC0_CH0_IN[0] = 'x';
 		}
 	}
 }
@@ -168,7 +213,7 @@ void __attribute__((interrupt("IRQ"))) USIC_SR1(void) {
 		// Clear TX bits in the transmit/receive buffer status register.
 		USIC0_CH0_TRBSCR = BIT9 | BIT8;  // BIT8=CSTBI, BIT9=CSTERI
 
-		// Check that the TX buffer is not full and we have data to send
+		// Check that the TX buffer is not full.
 		if (!(USIC0_CH0_TRBSR & BIT12)) {  // BIT12=TFULL
 			usicSendCh0Byte();
 		}
