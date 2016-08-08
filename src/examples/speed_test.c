@@ -5,6 +5,7 @@
 #include "peripherals/nvic.h"
 #include "peripherals/scu.h"
 #include "peripherals/usic.h"
+#include "peripherals/usic_fifo.h"
 
 static unsigned int txcount = 0;
 
@@ -49,8 +50,9 @@ int main()
 	enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
 	enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
 
-	usicEnable();
-	usicConfigure(0, USIC_PROTO_ASC);
+	while (usicConfigure(0, USIC_PROTO_ASC) || usicFifoEnable(0)) {
+		asm("wfi");
+	}
 
 	enable_interrupts();
 

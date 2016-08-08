@@ -11,15 +11,15 @@ all:	ultrasonic.elf speed_test.elf temp.elf two_phase_pwm.elf eru.elf \
 	@echo "done"
 
 MAIN_LIBS=../init.o ../peripherals/scu.o \
-          ../peripherals/ccu.o ../peripherals/nvic.o ../peripherals/usic.o \
-          ../peripherals/gpio.o ../peripherals/systick.o \
-          ../peripherals/usic_fifo.o
+          ../peripherals/ccu.o ../peripherals/nvic.o \
+          ../peripherals/gpio.o ../peripherals/systick.o
 ultrasonic.elf:	$(MAIN_LIBS) ultrasonic.o
 	$(LD) $(LDFLAGS) --cref -Map $@.map $^ -o $@
 	arm-none-eabi-objcopy -O binary $@ ultrasonic.bin
 	objcopy -O ihex $@  ultrasonic.hex
 
-two_phase_pwm.elf:	$(MAIN_LIBS) two_phase_pwm.o
+TWO_PHASE_LIBS=$(MAIN_LIBS) ../peripherals/usic.o ../peripherals/usic_fifo.o
+two_phase_pwm.elf:	$(TWO_PHASE_LIBS) two_phase_pwm.o
 	$(LD) $(LDFLAGS) --cref -Map $@.map $^ -o $@
 	arm-none-eabi-objcopy -O binary $@ two_phase_pwm.bin
 	objcopy -O ihex $@  two_phase_pwm.hex
@@ -36,14 +36,13 @@ eru_ccu.elf:	$(MAIN_LIBS) ../peripherals/eru.o eru_ccu.o
 
 SPEED_TEST_LIBS=../init.o ../peripherals/scu.o \
                 ../peripherals/gpio.o ../peripherals/nvic.o \
-                ../peripherals/usic.o
+                ../peripherals/usic.o ../peripherals/usic_fifo.o
 speed_test.elf:	$(SPEED_TEST_LIBS) speed_test.o
 	$(LD) $(LDFLAGS_SRAM) --cref -Map $@.map $^ -o $@
 
 TEMPERATURE_LIBS=../init.o ../peripherals/ccu.o \
                  ../peripherals/scu.o ../peripherals/gpio.o \
                  ../peripherals/nvic.o ../peripherals/systick.o \
-                 ../peripherals/usic.o ../peripherals/usic_fifo.o \
                  ../peripherals/temperature.o
 temp.elf:	$(TEMPERATURE_LIBS) temp.o
 	$(LD) $(LDFLAGS) --cref -Map $@.map $^ -o $@

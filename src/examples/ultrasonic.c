@@ -6,7 +6,6 @@
 #include "peripherals/nvic.h"
 #include "peripherals/scu.h"
 #include "peripherals/systick.h"
-#include "peripherals/usic_fifo.h"
 
 int main()
 {
@@ -16,8 +15,6 @@ int main()
 	enablePin(1, 1, GPIO_OUT_PP);  // LED
 	enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
 	enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
-
-	usicFifoEnable();
 
 	// Capture compare unit config
 	ccuEnable(GCTRL_SUSCFG_ROLLOVER);
@@ -64,7 +61,6 @@ int main()
 	// Start CCU slices 0 and 1
 	ccuStartSlices(BIT1 | BIT0);
 
-	usicFifoSendCh0("Ready.\r\n");
 	while(1)
 	{
 		asm("wfi");
@@ -109,15 +105,6 @@ void __attribute__((interrupt("IRQ"))) CCU40_SR0(void) {
 	if (CCU4_CC43INTS) {
 		// This was unexpected.
 		CCU4_CC43SWR = 0x00000f0f;  // Clear interrupt flags.
-	}
-}
-
-// Input character handler.  Echo received characters to output.
-void usicCh0Receive(unsigned int val) {
-	val = val & 0xFF;
-	*USIC0_CH0_IN = val;
-	if ((unsigned char)val == '\r') {
-		*USIC0_CH0_IN = '\n';
 	}
 }
 

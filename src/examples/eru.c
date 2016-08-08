@@ -24,7 +24,6 @@
 #include "peripherals/nvic.h"
 #include "peripherals/scu.h"
 #include "peripherals/systick.h"
-#include "peripherals/usic_fifo.h"
 
 void __attribute__((interrupt("IRQ"))) ERU_SR0(void) {
 	// Set P1.1 to match OGU0 pattern detect.
@@ -109,8 +108,6 @@ int main()
 	enablePin(2, 10, GPIO_OUT_OD);
 	clearPin(0, 8);
 	clearPin(2, 10);
-
-	usicFifoEnable();
 
 	eru0ConfigureChannel3AorB();
 

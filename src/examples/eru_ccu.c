@@ -39,7 +39,6 @@
 #include "peripherals/nvic.h"
 #include "peripherals/scu.h"
 #include "peripherals/systick.h"
-#include "peripherals/usic_fifo.h"
 
 struct capture_info {
 	unsigned int count;
@@ -180,8 +179,6 @@ int main()
 	clearPin(0, 8);
 	clearPin(2, 10);
 
-	usicFifoEnable();
-
 	eru0ConfigureChannel3AorB();
 	ccuEnable(GCTRL_SUSCFG_ROLLOVER);
 	ccuConfigureCaptureERUChannel0();
@@ -190,7 +187,6 @@ int main()
 	systickEnable(8000000 - 1);
 
 	enable_interrupts();
-
 
 	while(1)
 	{

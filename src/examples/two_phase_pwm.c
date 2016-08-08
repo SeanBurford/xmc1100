@@ -6,6 +6,7 @@
 #include "peripherals/nvic.h"
 #include "peripherals/scu.h"
 #include "peripherals/systick.h"
+#include "peripherals/usic.h"
 #include "peripherals/usic_fifo.h"
 
 unsigned int reset_reason = 0;
@@ -60,7 +61,7 @@ int main()
 	enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
 
 	// If we can't configure the serial port then hang.
-	while (usicFifoEnable()) {
+	while (usicConfigure(0, USIC_PROTO_ASC) || usicFifoEnable(0)) {
 		asm("wfi");
 	}
 
@@ -72,7 +73,7 @@ int main()
 	// Start CCU slices 0 and 1 simultaneously.
 	ccuStartSlices(BIT1 | BIT0);
 
-	usicFifoSendCh0("Ready.\r\n");
+	usicBufferedSendCh0("Ready.\r\n");
 	while(1)
 	{
 		asm("wfi");
@@ -89,10 +90,10 @@ void __attribute__((interrupt("IRQ"))) systickHandler(void) {
 		}
 		if (target_on_percent < current_on_percent) {
 			current_on_percent -= 1;
-			usicFifoSendCh0("-\r\n");
+			usicBufferedSendCh0("-\r\n");
 		} else if (target_on_percent > current_on_percent) {
 			current_on_percent += 1;
-			usicFifoSendCh0("+\r\n");
+			usicBufferedSendCh0("+\r\n");
 		}
 		if (!invert_output) {
 			ccuSetPeriodCompareSlice0(99, 100 - current_on_percent);
@@ -150,7 +151,7 @@ void usicCh0Receive(unsigned int val) {
 	default:
 		;
 	}
-	usicFifoSendCh0(msg);
+	usicBufferedSendCh0(msg);
 	if (invert_output) {
 		setPin(1, 0);
 	} else {

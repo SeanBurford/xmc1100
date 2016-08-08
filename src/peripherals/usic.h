@@ -14,11 +14,28 @@ enum usic_protocols {
 unsigned int usicEnable(void);
 // Eg. usicConfigure(0, USIC_PROTO_ASC);
 unsigned int usicConfigure(int channel, int protocol);
-void usicSendCh0(void);
-extern void __attribute__((weak)) usicCh0Receive(unsigned int);
-extern unsigned int __attribute__((weak)) usicCh0TransmitDone(void);
-extern unsigned short __attribute((weak)) usicCh0Transmit(void);
 
+// Internal helper.
+unsigned int usicChannelBase(int channel);
+
+void usicSendCh0(void);
+
+// Callbacks used by usicSendCh0 to get next byte to send.
+// Output done check, default may be overridden by user.
+extern unsigned int usicCh0TransmitDone(void);
+// Output character handler, default may be overridden by user.
+extern unsigned short usicCh0Transmit(void);
+// Input character handler, default may be overridden by the user.
+// The default echoes received characters back to output.
+extern void usicCh0Receive(unsigned int);
+
+// Interfaces for sending data via the callbacks above.
+void usicSendCh0Byte(void);
+void usicSendCh0(void);
+// Interface for sending a string using the default callbacks.
+void usicBufferedSendCh0(const char *msg);
+
+void toHex(const unsigned int val, char *buff);
 
 #define USIC0_CCFG(cbase)   REGISTER_32(cbase + 0x004)
 
