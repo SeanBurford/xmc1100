@@ -1,4 +1,4 @@
-// Send characters to/from a USIC SSC port.
+// Read SPI input from an MCP8003 ADC and output it via ASC serial.
 
 // Configure USIC channel 1 as an SSC master using pins:
 //   DX0 input: P0.6 (USIC_CH1.DX0C)
@@ -23,32 +23,36 @@ void __attribute__((interrupt("IRQ"))) systickHandler(void) {
         togglePinP1(0);
 
 	// MCP3008 expects 1 start bit, sgl/diff and then a 3 bit channel.
-	// In return it:
-	//   misses a clock
-	//   sends a zero
-	//   sends a 10 bit MSB conversion.
-	// We're 7 bits in before the conversion value starts coming, so we should
-	// lose one bit with our 16 bit read.
-	USIC0_CH1_TBUF[1] = (unsigned short) 0xC800;  // 1 (start) 1 (single) 000 (ch0)
+	// In return it sends a 10 bit MSB conversion followed by a 10-1 bit LSB
+	// conversion.  These start at bit 8 of the received value, so we should
+	// lose one bit with a 16 bit read.  A 32 bit read gets all bits.
+	USIC0_CH1_TBUF[0] = (unsigned short) 0xC000;  // 1 (start) 1 (single) 000 (ch0)
 	while (USIC0_CH1_TCSR & 0x80)
 		;
-	USIC0_CH1_TBUF[1] = (unsigned short) 0x0000;  // clock in more data
+	USIC0_CH1_TBUF[0] = (unsigned short) 0x0000;  // clock in more data
+	while (USIC0_CH1_TCSR & 0x80)
+		;
 
 	rbufsr = USIC0_CH1_RBUFSR;
+	buff[17] = '\r';
+	buff[18] = '\n';
+	buff[19] = '\0';
 	if (rbufsr & (BIT13 | BIT14)) {
 		while (rbufsr & (BIT13 | BIT14)) {
+			// unsigned int psr = USIC0_CH1_PSR;
+			USIC0_CH1_PSR = 0;
 			rbuf = USIC0_CH1_RBUF;
 			toHex(rbufsr, &buff[0]);
 			buff[8] = ' ';
 			toHex(rbuf, &buff[9]);
-			buff[13] = '\r';
-			buff[14] = '\n';
-			buff[15] = '\0';
+			buff[17] = '\r';
+			buff[18] = '\n';
+			buff[19] = '\0';
 			usicBufferedSendCh0(buff);
 			rbufsr = USIC0_CH1_RBUFSR;
 		}
-		usicBufferedSendCh0(&buff[13]);
 	}
+	usicBufferedSendCh0(&buff[17]);
 }
 
 int main()

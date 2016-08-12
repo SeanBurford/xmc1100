@@ -108,11 +108,18 @@ static void usicConfigureSSCMaster(const unsigned int cbase,
 	// fsclk = fsys(32MHz) * (STEP/1024) * 1/2 * 1/(PDIV + 1)
 	// using scripts/serial_solver.py we find a good fractional solution
 	// that provides exactly 100K and 400k baud fsclk values:
-	// step=0x300 PCTQ=1 DCTQ=9  PDIV=0xB 100000  PDIV=2 400000
+	// step=0x300 PCTQ=1 PDIV=0x77 100000  PDIV=13 400000
 	// Max baud rate for these values is 1.2M.
-	USIC0_FDR(cbase) = 0x00008300;  // Fractional mode, STEP=0x300
-	// SCLKCFG=01, PDIV=000B, DCTQ=9, PCTQ=1
-	USIC0_BRG(cbase) = (1 << 30) | (0x000B << 16) | (9 << 10) | (1<<8);
+	// Unlike ASC mode DCTQ only effects a couple of idle periods.
+	// Fractional mode, STEP=0x300 (fFD = 32MHz * (0x300/0x3FF) = 24MHz)
+	USIC0_FDR(cbase) = 0x00008300;
+	USIC0_BRG(cbase) = (1 << 30) |      // SCLKCFG = 01 (SCLK passive high)
+	                   (0x000B << 16) | // PDIV (fPDIV = fPPP / 12 (2MHz))
+	                   (1 << 10) |      // DCTQ = 0x01 (2 time quanta)
+	                   (1 << 8) |       // PCTQ = 0x01 (tQ = 2/fPPP 2/2MHz)
+	                   (0 << 6) |       // CTQSEL = 1 (fCTQIN = fPDIV)
+	                   (0 << 4) |       // PPPEN = 0 (fPPP = fPIN (24MHz))
+	                   (0 << 0);        // CLKSEL = 0 (fPIN = fFD (24MHz))
 
 	// Shift control register.
 	USIC0_SCTR(cbase) = ((16-1) << 24) | // SCTR.WLE (word length)
@@ -139,12 +146,15 @@ static void usicConfigureSSCMaster(const unsigned int cbase,
 	                   (1 << 1) | // PCR.SELCTR (1: direct select mode)
 	                   (1 << 0);  // PCR.MSLSEN (1: master use slave select)
 
+	// No FIFO buffering.
+	USIC0_RBCTR(cbase) = 0;
+
 	// DX0 data input.
 	USIC0_DX0CR(cbase) = (0 << 8) | // DX0CR.DPOL (0: signal isnt inverted)
 	                     (1 << 4) | // DX0CR.INSW (1: no PPU processing)
 	                     (2 << 0);  // DX0CR.DSEL = DXnC (P0.6)
 	// DX1 clock input (to data shift unit).
-	// Not used in master mode, PPP provides clock for data shift unit.
+	// PPP provides clock for data shift unit because INSW and DCEN are 0.
 	USIC0_DX1CR(cbase) = 0;
 	// DX2 chip select input (to data shift unit).
 	// Not used in master mode, PPP provides select and delay for the DSU.
