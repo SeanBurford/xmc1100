@@ -1,4 +1,4 @@
-// Read SPI input from an MCP8003 ADC and output it via ASC serial.
+// Read SPI input from an MCP3008 ADC and output it via ASC serial.
 
 // Configure USIC channel 1 as an SSC master using pins:
 //   DX0 input: P0.6 (USIC_CH1.DX0C)
@@ -19,9 +19,9 @@ unsigned int ch0_cbase = 0;
 unsigned int ch1_cbase = 0;
 
 unsigned int readMCP3008Channel(int channel) {
+	unsigned int result = 0;
 	unsigned int rbufsr = 0;
 	unsigned int rbuf = 0;
-	unsigned int result = 0;
 
 	// MCP3008 expects 1 start bit, sgl/diff and then a 3 bit channel.
 	// In return it sends a 10 bit MSB conversion followed by a 10-1 bit LSB
@@ -46,7 +46,7 @@ unsigned int readMCP3008Channel(int channel) {
 			rbufsr = USIC0_RBUFSR(ch1_cbase);
 		}
 	}
-	return 0;
+	return result;
 }
 
 
