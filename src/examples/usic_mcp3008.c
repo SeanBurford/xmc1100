@@ -15,43 +15,58 @@
 #include "peripherals/usic.h"
 #include "peripherals/usic_fifo.h"
 
-void __attribute__((interrupt("IRQ"))) systickHandler(void) {
+unsigned int ch0_cbase = 0;
+unsigned int ch1_cbase = 0;
+
+unsigned int readMCP3008Channel(int channel) {
 	unsigned int rbufsr = 0;
 	unsigned int rbuf = 0;
-	char buff[64];
-
-        togglePinP1(0);
+	unsigned int result = 0;
 
 	// MCP3008 expects 1 start bit, sgl/diff and then a 3 bit channel.
 	// In return it sends a 10 bit MSB conversion followed by a 10-1 bit LSB
 	// conversion.  These start at bit 8 of the received value, so we should
 	// lose one bit with a 16 bit read.  A 32 bit read gets all bits.
-	USIC0_CH1_TBUF[0] = (unsigned short) 0xC000;  // 1 (start) 1 (single) 000 (ch0)
-	while (USIC0_CH1_TCSR & 0x80)
+	const unsigned short query = (0x18 | channel) << 11;
+	USIC0_TBUF(ch1_cbase)[0] = query;
+	while (USIC0_TCSR(ch1_cbase) & 0x80)
 		;
-	USIC0_CH1_TBUF[0] = (unsigned short) 0x0000;  // clock in more data
-	while (USIC0_CH1_TCSR & 0x80)
+	USIC0_TBUF(ch1_cbase)[0] = (unsigned short) 0x0000;  // clock in more data
+	while (USIC0_TCSR(ch1_cbase) & 0x80)
 		;
 
-	rbufsr = USIC0_CH1_RBUFSR;
-	buff[17] = '\r';
-	buff[18] = '\n';
-	buff[19] = '\0';
+	rbufsr = USIC0_RBUFSR(ch1_cbase);
 	if (rbufsr & (BIT13 | BIT14)) {
 		while (rbufsr & (BIT13 | BIT14)) {
-			// unsigned int psr = USIC0_CH1_PSR;
-			USIC0_CH1_PSR = 0;
-			rbuf = USIC0_CH1_RBUF;
-			toHex(rbufsr, &buff[0]);
-			buff[8] = ' ';
-			toHex(rbuf, &buff[9]);
-			buff[17] = '\r';
-			buff[18] = '\n';
-			buff[19] = '\0';
-			usicBufferedSendCh0(buff);
-			rbufsr = USIC0_CH1_RBUFSR;
+			// unsigned int psr = USIC0_CH1_PSR(ch1_cbase);
+			USIC0_PSR(ch1_cbase) = 0;
+			rbuf = USIC0_RBUF(ch1_cbase);
+			result = (result << 16) | rbuf;
+
+			rbufsr = USIC0_RBUFSR(ch1_cbase);
 		}
 	}
+	return 0;
+}
+
+
+void __attribute__((interrupt("IRQ"))) systickHandler(void) {
+	char buff[64];
+	unsigned int channel, result;
+
+        togglePinP1(0);
+
+	for (channel = 0; channel < 8; channel++) {
+		result = readMCP3008Channel(0);
+		toHex(0, &buff[0]);
+		buff[8] = ' ';
+		toHex(result, &buff[9]);
+		buff[17] = '\r';
+		buff[18] = '\n';
+		buff[19] = '\0';
+		usicBufferedSendCh0(buff);
+	}
+
 	usicBufferedSendCh0(&buff[17]);
 }
 
@@ -75,11 +90,12 @@ int main()
 	enablePin(0, 8, GPIO_OUT_PP_ALT7);  // sclk out
 	enablePin(0, 9, GPIO_OUT_PP_ALT7);  // chip select out
 
-	while (usicConfigure(0, USIC_PROTO_ASC) ||
-               usicFifoEnable(0) ||
-	       usicConfigure(1, USIC_PROTO_SSC)) {
+	ch0_cbase = usicConfigure(0, USIC_PROTO_ASC);
+	ch1_cbase = usicConfigure(1, USIC_PROTO_SSC);
+	while (ch0_cbase == 0 || ch1_cbase == 0) {
 		asm("wfi");
 	}
+	usicFifoEnable(0);
 
         systickEnable(8000000 - 1);
 
