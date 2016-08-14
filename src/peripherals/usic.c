@@ -195,10 +195,10 @@ static void usicConfigureIIC(const unsigned int cbase) {
 unsigned int usicConfigure(int channel, int protocol) {
 	const unsigned int cbase = usicChannelBase(channel);
 	if (cbase == 0)
-		return 1;
+		return 0;
 
 	if (usicEnable())
-		return 1;
+		return 0;
 
 	// Enable USIC module clock and functionality.
 	// Module enable (+moden write)
@@ -229,12 +229,12 @@ unsigned int usicConfigure(int channel, int protocol) {
 		usicConfigureIIC(cbase);
 		break;
 	default:
-		return 1;
+		return 0;
 	}
 
 	// Check that the protocol is supported on this channel.
 	if ((USIC0_CCFG(cbase) & proto_available) != proto_available) {
-		return 1;
+		return 0;
 	}
 
 	// Use default interrupt routing.
@@ -243,7 +243,7 @@ unsigned int usicConfigure(int channel, int protocol) {
 	// Enable the protocol unit.
 	USIC0_CCR(cbase) = ccr_enable;
 
-	return 0;
+	return cbase;
 }
 
 // Input character handler, may be overridden by the user.

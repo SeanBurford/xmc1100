@@ -50,9 +50,11 @@ int main()
 	enablePin(2, 1, GPIO_OUT_PP_ALT6);  // P2.1 alt6 is USIC0_CH0_DOUT0
 	enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
 
-	while (usicConfigure(0, USIC_PROTO_ASC) || usicFifoEnable(0)) {
+	unsigned int ch0_cbase = usicConfigure(0, USIC_PROTO_ASC);
+	while (ch0_cbase == 0) {
 		asm("wfi");
 	}
+	usicFifoEnable(0);
 
 	enable_interrupts();
 

@@ -61,9 +61,11 @@ int main()
 	enablePin(2, 2, GPIO_IN_FLOAT);  // P2.2 is the debug serial input
 
 	// If we can't configure the serial port then hang.
-	while (usicConfigure(0, USIC_PROTO_ASC) || usicFifoEnable(0)) {
+	unsigned int ch0_cbase = usicConfigure(0, USIC_PROTO_ASC);
+	while (ch0_cbase == 0) {
 		asm("wfi");
 	}
+	usicFifoEnable(0);
 
 	configureCCU();
 	// Clock = 64MHz so 8000000 - 1 is 8 systicks/second.

@@ -53,12 +53,32 @@ void toHex(const unsigned int val, char *buff);
 #define USIC0_TCSR(cbase)   REGISTER_32(cbase + 0x038)
 #define USIC0_PCR(cbase)    REGISTER_32(cbase + 0x03c)
 #define USIC0_CCR(cbase)    REGISTER_32(cbase + 0x040)
-
+#define USIC0_CMTR(cbase)   REGISTER_32(cbase + 0x044)
+#define USIC0_PSR(cbase)    REGISTER_32(cbase + 0x048)
 #define USIC0_PSCR(cbase)   REGISTER_32(cbase + 0x04c)
 
-#define USIC0_TBCTR(cbase)  REGISTER_32(cbase + 0x108)
-#define USIC0_RBCTR(cbase)  REGISTER_32(cbase + 0x10c)
+#define USIC0_RBUFSR(cbase)       REGISTER_32(cbase + 0x050)
+#define USIC0_RBUF(cbase)         REGISTER_32(cbase + 0x054)
+#define USIC0_RBUFD(cbase)        REGISTER_32(cbase + 0x058)
+#define USIC0_RBUF0(cbase)        REGISTER_32(cbase + 0x05c)
+#define USIC0_RBUF1(cbase)        REGISTER_32(cbase + 0x060)
+#define USIC0_RBUF01SR(cbase)     REGISTER_32(cbase + 0x064)
+#define USIC0_FMR(cbase)          REGISTER_32(cbase + 0x068)
 
-#define USIC0_TRBSCR(cbase) REGISTER_32(cbase + 0x118)
+// USIC0_TBUF IS AN ARRAY OF 32 WORDS (INDEX 0 TO 31)
+#define USIC0_TBUF(cbase)         PTR_32(cbase + 0x080)
+
+#define USIC0_BYP(cbase)          REGISTER_32(cbase + 0x100)
+#define USIC0_BYPCR(cbase)        REGISTER_32(cbase + 0x104)
+#define USIC0_TBCTR(cbase)        REGISTER_32(cbase + 0x108)
+#define USIC0_RBCTR(cbase)        REGISTER_32(cbase + 0x10c)
+#define USIC0_TRBPTR(cbase)       REGISTER_32(cbase + 0x110)
+#define USIC0_TRBSR(cbase)        REGISTER_32(cbase + 0x114)
+#define USIC0_TRBSCR(cbase)       REGISTER_32(cbase + 0x118)
+#define USIC0_OUTR(cbase)         REGISTER_32(cbase + 0x11c)
+#define USIC0_OUTDR(cbase)        REGISTER_32(cbase + 0x120)
+
+// USIC_IN IS AN ARRAY OF 32 WORDS (INDEX 0 TO 31)
+#define USIC0_IN(cbase)           PTR_32(cbase + 0x180)
 
 #endif
