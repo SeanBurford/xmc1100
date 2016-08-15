@@ -11,9 +11,9 @@ static unsigned int txcount = 0;
 
 void usicCh0Receive(unsigned int val) {
 	val = val & 0xFF;
-	USIC0_CH0_IN[0] = val;
+	USIC0_IN(USIC0_CH0_BASE)[0] = val;
 	if ((unsigned char)val == '\r') {
-		USIC0_CH0_IN[0] = '\n';
+		USIC0_IN(USIC0_CH0_BASE)[0] = '\n';
 	}
 	if (val == 'x') {
 		txcount = 115200;

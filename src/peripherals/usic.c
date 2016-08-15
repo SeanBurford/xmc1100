@@ -77,23 +77,20 @@ unsigned int usicEnable(void) {
 	return 0;
 }
 
-unsigned int usicChannelBase(int channel) {
-	unsigned int cbase = 0;
+const unsigned int usicChannelBase(const int channel) {
 	switch(channel) {
 	case 0:
-		cbase = USIC0_CH0_BASE;
-		break;
+		return USIC0_CH0_BASE;
 	case 1:
-		cbase = USIC0_CH1_BASE;
-		break;
+		return USIC0_CH1_BASE;
 	}
-	return cbase;
+	return 0;
 }
 
 static void usicConfigureSSCMaster(const unsigned int cbase,
                                    const unsigned int wlen) {
 	// Configure USIC channel 1 as an SSC master using pins:
-	//   DX0 input: P0.6 (USIC_CH1.DX0C)
+	//   DX0 input: P0.6 (USIC0_CH1.DX0C)
 	//   DOUT0 output: P0.7 (P0.7 ALT7)
 	//   SCLKOUT output: P0.8 (P0.8 ALT7)
 	//   CS SELO0 output: P0.9 (P0.9 ALT7)
@@ -249,9 +246,9 @@ unsigned int usicConfigure(int channel, int protocol) {
 // Input character handler, may be overridden by the user.
 void __attribute__((weak)) usicCh0Receive(unsigned int val) {
 	val = val & 0xFF;
-	USIC0_CH0_IN[0] = val;
+	USIC0_IN(USIC0_CH0_BASE)[0] = val;
 	if ((unsigned char)val == '\r') {
-		USIC0_CH0_IN[0] = '\n';
+		USIC0_IN(USIC0_CH0_BASE)[0] = '\n';
 	}
 }
 
@@ -278,9 +275,9 @@ void usicSendCh0Byte(void) {
 	// Transmit a byte if we have one to send.
 	if (!(usicCh0TransmitDone && usicCh0TransmitDone())) {
 		if (usicCh0Transmit) {
-			USIC0_CH0_IN[0] = usicCh0Transmit();
+			USIC0_IN(USIC0_CH0_BASE)[0] = usicCh0Transmit();
 		} else {
-			USIC0_CH0_IN[0] = 'x';
+			USIC0_IN(USIC0_CH0_BASE)[0] = 'x';
 		}
 	}
 }
@@ -288,7 +285,7 @@ void usicSendCh0Byte(void) {
 // Interface for sending data via the callbacks above.
 void usicSendCh0(void) {
 	// Enable the TX interrupt and transmit the first byte.
-	USIC0_CH0_TBCTR |= BIT30;
+	USIC0_TBCTR(USIC0_CH0_BASE) |= BIT30;
 	usicSendCh0Byte();
 }
 

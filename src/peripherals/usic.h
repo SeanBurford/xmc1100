@@ -16,7 +16,7 @@ unsigned int usicEnable(void);
 unsigned int usicConfigure(int channel, int protocol);
 
 // Internal helper.
-unsigned int usicChannelBase(int channel);
+const unsigned int usicChannelBase(const int channel);
 
 void usicSendCh0(void);
 
@@ -36,6 +36,8 @@ void usicSendCh0(void);
 void usicBufferedSendCh0(const char *msg);
 
 void toHex(const unsigned int val, char *buff);
+
+#define USIC0_ID            REGISTER_32(USIC0_CH0_BASE + 0x08)
 
 #define USIC0_CCFG(cbase)   REGISTER_32(cbase + 0x004)
 

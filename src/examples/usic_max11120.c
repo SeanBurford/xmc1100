@@ -14,7 +14,7 @@
 //   AIN4 I2 MAX6607 temperature output.
 //
 // Configure USIC channel 1 as an SSC master using pins:
-//   DX0 input: P0.6 (USIC_CH1.DX0C)
+//   DX0 input: P0.6 (USIC0_CH1.DX0C)
 //   DOUT0 output: P0.7 (P0.7 ALT7)
 //   SCLKOUT output: P0.8 (P0.8 ALT7)
 //   CS SELO0 output: P0.9 (P0.9 ALT7)

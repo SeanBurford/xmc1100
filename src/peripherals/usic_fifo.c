@@ -49,20 +49,19 @@ void __attribute__((interrupt("IRQ"))) USIC_SR0(void) {
 	// Configured as channel 0 FIFO RX by RBCTR (uses usic.h callbacks).
 
 	// Check that this is a standard receive buffer event
-	if (USIC0_CH0_TRBSR & BIT0) {
-		unsigned int level = (USIC0_CH0_TRBSR >> 16) & 0x7F;  // RBFLVL
+	if (USIC0_TRBSR(USIC0_CH0_BASE) & BIT0) {
+		// RRBSR[24:16] is RBFLVL
+		unsigned int level = (USIC0_TRBSR(USIC0_CH0_BASE) >> 16) & 0x7F;
 		while (level > 0) {
-			unsigned int c = USIC0_CH0_OUTR;
-			if (usicCh0Receive) {
-				// Invoke the receive handler.
-				usicCh0Receive(c);
-			}
-			level = (USIC0_CH0_TRBSR >> 16) & 0x7F;
+			// Invoke the receive handler.
+			unsigned int c = USIC0_OUTR(USIC0_CH0_BASE);
+			usicCh0Receive(c);
+			level = (USIC0_TRBSR(USIC0_CH0_BASE) >> 16) & 0x7F;
 		}
 	}
 
 	// Clear RX bits in the transmit/receive buffer status register.
-	USIC0_CH0_TRBSCR = BIT2 | BIT1 | BIT0;
+	USIC0_TRBSCR(USIC0_CH0_BASE) = BIT2 | BIT1 | BIT0;
 }
 
 void __attribute__((interrupt("IRQ"))) USIC_SR1(void) {
@@ -73,19 +72,21 @@ void __attribute__((interrupt("IRQ"))) USIC_SR1(void) {
 	// it will also trigger when the FIFO empties to 0.
 
 	// Check that this is a standard transmit FIFO buffer event
-	if (USIC0_CH0_TRBSR & BIT8) {  // BIT8=STBI
+	if (USIC0_TRBSR(USIC0_CH0_BASE) & BIT8) {  // BIT8=STBI
 		// Clear TX bits in the transmit/receive buffer status register.
-		USIC0_CH0_TRBSCR = BIT9 | BIT8;  // BIT8=CSTBI, BIT9=CSTERI
+		// BIT8=CSTBI, BIT9=CSTERI
+		USIC0_TRBSCR(USIC0_CH0_BASE) = BIT9 | BIT8;
 
 		// Check that the TX buffer is not full.
-		if (!(USIC0_CH0_TRBSR & BIT12)) {  // BIT12=TFULL
+		if (!(USIC0_TRBSR(USIC0_CH0_BASE) & BIT12)) {  // BIT12=TFULL
 			usicSendCh0Byte();
 		}
 	}
 
 	// Disable the TX interrupt when we are done
-	if ((!usicCh0TransmitDone) || usicCh0TransmitDone()) {
-		USIC0_CH0_TBCTR &= 0xFFFFFFFF ^ BIT30;  // BIT30=STBIEN
+	if (usicCh0TransmitDone()) {
+		// BIT30=STBIEN
+		USIC0_TBCTR(USIC0_CH0_BASE) &= 0xFFFFFFFF ^ BIT30;
 	}
 }
 

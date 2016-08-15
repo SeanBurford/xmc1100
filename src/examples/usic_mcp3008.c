@@ -1,7 +1,7 @@
 // Read SPI input from an MCP3008 ADC and output it via ASC serial.
 
 // Configure USIC channel 1 as an SSC master using pins:
-//   DX0 input: P0.6 (USIC_CH1.DX0C)
+//   DX0 input: P0.6 (USIC0_CH1.DX0C)
 //   DOUT0 output: P0.7 (P0.7 ALT7)
 //   SCLKOUT output: P0.8 (P0.8 ALT7)
 //   CS SELO0 output: P0.9 (P0.9 ALT7)
@@ -28,27 +28,27 @@ unsigned int readMCP3008Channel(int channel) {
 	// conversion.  These start at bit 8 of the received value, so we should
 	// lose one bit with a 16 bit read.  A 32 bit read gets all bits.
 	const unsigned short query = (0x18 | channel) << 11;
-	USIC0_TBUF(ch1_cbase)[0] = query;
-	while (USIC0_TCSR(ch1_cbase) & 0x80)
+	USIC0_TBUF(USIC0_CH1_BASE)[0] = query;
+	while (USIC0_TCSR(USIC0_CH1_BASE) & 0x80)
 		;
-	USIC0_TBUF(ch1_cbase)[0] = (unsigned short) 0x0000;  // clock in more data
-	while (USIC0_TCSR(ch1_cbase) & 0x80)
+	// clock in more data
+	USIC0_TBUF(USIC0_CH1_BASE)[0] = (unsigned short) 0x0000;
+	while (USIC0_TCSR(USIC0_CH1_BASE) & 0x80)
 		;
 
-	rbufsr = USIC0_RBUFSR(ch1_cbase);
+	rbufsr = USIC0_RBUFSR(USIC0_CH1_BASE);
 	if (rbufsr & (BIT13 | BIT14)) {
 		while (rbufsr & (BIT13 | BIT14)) {
-			// unsigned int psr = USIC0_CH1_PSR(ch1_cbase);
-			USIC0_PSR(ch1_cbase) = 0;
-			rbuf = USIC0_RBUF(ch1_cbase);
+			// unsigned int psr = USIC0_PSR(USIC0_CH1_BASE);
+			USIC0_PSR(USIC0_CH1_BASE) = 0;
+			rbuf = USIC0_RBUF(USIC0_CH1_BASE);
 			result = (result << 16) | rbuf;
 
-			rbufsr = USIC0_RBUFSR(ch1_cbase);
+			rbufsr = USIC0_RBUFSR(USIC0_CH1_BASE);
 		}
 	}
 	return result;
 }
-
 
 void __attribute__((interrupt("IRQ"))) systickHandler(void) {
 	char buff[32];
