@@ -22,7 +22,7 @@ int main()
 	// Event 1: active high, rising edge, input I (SCU)
 	// Clear the timer (STRM) and start on event 1
 	// Transfer shadow registers on timer clear
-	ccuConfigureSlice0(
+	ccuConfigureSlice(0,
 	    ccuEvent1(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
 	    STRTS_EV1,
 	    CMOD_COMPARE | CLST_ENABLE | STRM_BOTH,
@@ -35,7 +35,7 @@ int main()
 	// Capture on event 0.
 	// Event 1: active high, rising edge, input I (SCU.GSC40)
 	// Clear the timer (STRM) and start on event 1.
-	ccuConfigureSlice1(
+	ccuConfigureSlice(1,
 	    ccuEvent0(EVIS_INyB, EVEM_RISING, EVLM_HIGH, EVLPFM_3) |
 	    ccuEvent1(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
 	    CAP0S_EV0 | STRTS_EV1,
@@ -77,16 +77,16 @@ void __attribute__((interrupt("IRQ"))) systickHandler(void) {
 unsigned int capture_vals[128];
 unsigned int capture_head = 0;
 void __attribute__((interrupt("IRQ"))) CCU40_SR0(void) {
-	// Check CCU4_CC41INTS to determine which slice the interrupt came from.
-	if (CCU4_CC40INTS) {
+	// Check CCU4_INTS to determine which slice the interrupt came from.
+	if (CCU4_INTS(CC40)) {
 		// This will occur due to slice 0 activity, no interrupts
 		// are actually generated/expected.
-		CCU4_CC40SWR = 0x00000f0f;  // Clear interrupt flags.
+		CCU4_SWR(CC40) = 0x00000f0f;  // Clear interrupt flags.
 	}
-	if (CCU4_CC41INTS) {
-		if (CCU4_CC41INTS & BIT8) {  // Event 0
+	if (CCU4_INTS(CC41)) {
+		if (CCU4_INTS(CC41) & BIT8) {  // Event 0
 			// Slice 1 capture event.
-			const unsigned int capture_val = CCU4_CC41C1V;
+			const unsigned int capture_val = CCU4_C1V(CC41);
 			if (capture_val & BIT20) {
 				capture_vals[capture_head] = capture_val;
 			} else {
@@ -96,15 +96,15 @@ void __attribute__((interrupt("IRQ"))) CCU40_SR0(void) {
 			}
 			capture_head = (capture_head + 1) & 0x7F;
 		}
-		CCU4_CC41SWR = 0x00000f0f;  // Clear interrupt flags.
+		CCU4_SWR(CC41) = 0x00000f0f;  // Clear interrupt flags.
 	}
-	if (CCU4_CC42INTS) {
+	if (CCU4_INTS(CC42)) {
 		// This was unexpected.
-		CCU4_CC42SWR = 0x00000f0f;  // Clear interrupt flags.
+		CCU4_SWR(CC42) = 0x00000f0f;  // Clear interrupt flags.
 	}
-	if (CCU4_CC43INTS) {
+	if (CCU4_INTS(CC43)) {
 		// This was unexpected.
-		CCU4_CC43SWR = 0x00000f0f;  // Clear interrupt flags.
+		CCU4_SWR(CC43) = 0x00000f0f;  // Clear interrupt flags.
 	}
 }
 

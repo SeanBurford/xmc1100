@@ -13,7 +13,7 @@ static void blink(void) {
 	// On suspend wait for rollover then clamp the outputs.
 	// By default the PWM keeps running even in suspend (eg. debug).
 	ccuEnable(GCTRL_SUSCFG_ROLLOVER);
-	ccuConfigureSlice0(
+	ccuConfigureSlice(0,
 	    // Reset count and start on event 0 (Input I: SCU CCU start event)
 	    ccuEvent0(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
 	    STRTS_EV0,
@@ -21,7 +21,7 @@ static void blink(void) {
 	    PSC_FCCU_512,  // Prescaler 8MHz / 512 = 15,625Hz
 	    31250, 15625,  // 0.5Hz 50%
 	    0, 0, 0);      // Generate no interrupts. passive level low.
-	ccuConfigureSlice1(
+	ccuConfigureSlice(1,
 	    // Reset count and start on event 0 (Input I: SCU CCU start event)
 	    ccuEvent0(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
 	    STRTS_EV0,

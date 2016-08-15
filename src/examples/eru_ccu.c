@@ -84,7 +84,7 @@ unsigned int eru0ConfigureChannel3AorB(void) {
 unsigned int ccuConfigureCaptureERUChannel0(void) {
 	// One CCU4 channel serves as both the pulse width and pulse to pulse
 	// period timer.
-	ccuConfigureSlice0(
+	ccuConfigureSlice(0,
 		// CCU40.IN0K is ERU0.IOUT0, CCU40.IN0J is ERU0.PDOUT0.
 		ccuEvent0(EVIS_INyJ, EVEM_RISING, EVLM_HIGH, EVLPFM_0) |
 		ccuEvent1(EVIS_INyJ, EVEM_FALLING, EVLM_HIGH, EVLPFM_3),
@@ -107,23 +107,23 @@ void __attribute__((interrupt("IRQ"))) CCU40_SR0(void) {
 	// Here SR0 is dedicated to ERU PD related interrupts.
 	capture_info.count_irq++;
 
-	if (CCU4_CC40INTS & BIT8) {
+	if (CCU4_INTS(CC40) & BIT8) {
 		// Slice 0 EV0 activity.
 		// A match has started (has the lpf period of 3 clocks
 		// has passed?)
 		// Record the state of P2.7 and P2.9.
-		CCU4_CC40SWR = BIT8;  // Clear EV0 interrupt flag.
+		CCU4_SWR(CC40) = BIT8;  // Clear EV0 interrupt flag.
 		setPin(1, 1);
 		capture_info.count_ev0++;
 	}
 
-	if (CCU4_CC40INTS & BIT9) {
+	if (CCU4_INTS(CC40) & BIT9) {
 		// Slice 0 EV1 activity.
 		// A match has ended (has the lpf period of 3 clocks passed?)
 		// Read the capture register to get the pulse width.
-		CCU4_CC40SWR = BIT9;  // Clear EV1 interrupt flag.
+		CCU4_SWR(CC40) = BIT9;  // Clear EV1 interrupt flag.
 
-		unsigned int capture = CCU4_CC40C1V;
+		unsigned int capture = CCU4_C1V(CC40);
 		unsigned int capture_index = (capture_info.count++) & 31;
 		capture_info.captures[capture_index] = capture;
 
@@ -131,10 +131,10 @@ void __attribute__((interrupt("IRQ"))) CCU40_SR0(void) {
 		capture_info.count_ev1++;
 	}
 
-	if (CCU4_CC40INTS & BIT0) {
+	if (CCU4_INTS(CC40) & BIT0) {
 		// Slice 0 period match activity.
 		// Pulse to pulse period has expired.
-		CCU4_CC40SWR = BIT0;  // Clear period match interrupt flag.
+		CCU4_SWR(CC40) = BIT0;  // Clear period match interrupt flag.
 
 		capture_info.count_period++;
 	}

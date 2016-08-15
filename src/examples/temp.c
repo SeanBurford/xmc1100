@@ -22,7 +22,7 @@ int main()
 
 	// PWM LED P1.0 using CCU slice 0.
 	ccuEnable(GCTRL_SUSCFG_PASSIVE);
-	ccuConfigureSlice0(
+	ccuConfigureSlice(0,
 	    // Reset count and start on event 0 (Input I: SCU CCU start event)
 	    ccuEvent0(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
 	    STRTS_EV0,
@@ -56,7 +56,7 @@ void __attribute__((interrupt("IRQ"))) SCU_SR1(void) {
 		if (min < max) {
 			const unsigned int range = max - min;
 			const unsigned int ratio = range - (temperature - min);
-			ccuSetPeriodCompareSlice0(range, ratio);
+			ccuSetPeriodCompare(0, range, ratio);
 		}
 
 		// Clear the event bit in SCU_SRRAW

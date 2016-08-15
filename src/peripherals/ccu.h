@@ -54,51 +54,20 @@ unsigned int ccuEvent2(unsigned int is, unsigned int em, unsigned int lm,
 //  period, compare: 16 bit values for timer period and compare.
 //  interrupt_enable is an or of INTE_ values (eg. INTE_E0AE_ENABLE)
 //  interrupt_route is an or of SRS_ values (eg. INTE_E0AE_ENABLE)
-void ccuConfigureSlice0(const unsigned int events,
-                        const unsigned int connections,
-                        const unsigned int timer_control,
-                        const unsigned int prescaler,
-                        const unsigned int period,
-                        const unsigned int compare,
-                        const unsigned int interrupt_enable,
-                        const unsigned int interrupt_route,
-                        const unsigned int passive_level);
-void ccuConfigureSlice1(const unsigned int events,
-                        const unsigned int connections,
-                        const unsigned int timer_control,
-                        const unsigned int prescaler,
-                        const unsigned int period,
-                        const unsigned int compare,
-                        const unsigned int interrupt_enable,
-                        const unsigned int interrupt_route,
-                        const unsigned int passive_level);
-void ccuConfigureSlice2(const unsigned int events,
-                        const unsigned int connections,
-                        const unsigned int timer_control,
-                        const unsigned int prescaler,
-                        const unsigned int period,
-                        const unsigned int compare,
-                        const unsigned int interrupt_enable,
-                        const unsigned int interrupt_route,
-                        const unsigned int passive_level);
-void ccuConfigureSlice3(const unsigned int events,
-                        const unsigned int connections,
-                        const unsigned int timer_control,
-                        const unsigned int prescaler,
-                        const unsigned int period,
-                        const unsigned int compare,
-                        const unsigned int interrupt_enable,
-                        const unsigned int interrupt_route,
-                        const unsigned int passive_level);
+void ccuConfigureSlice(const unsigned int slice,
+                       const unsigned int events,
+                       const unsigned int connections,
+                       const unsigned int timer_control,
+                       const unsigned int prescaler,
+                       const unsigned int period,
+                       const unsigned int compare,
+                       const unsigned int interrupt_enable,
+                       const unsigned int interrupt_route,
+                       const unsigned int passive_level);
 
-void ccuSetPeriodCompareSlice0(const unsigned int period,
-                               const unsigned int compare);
-void ccuSetPeriodCompareSlice1(const unsigned int period,
-                               const unsigned int compare);
-void ccuSetPeriodCompareSlice2(const unsigned int period,
-                               const unsigned int compare);
-void ccuSetPeriodCompareSlice3(const unsigned int period,
-                               const unsigned int compare);
+void ccuSetPeriodCompare(const unsigned int slice,
+                         const unsigned int period,
+                         const unsigned int compare);
 
 // TODO: A lot of the stuff below should be structs and enums.
 
@@ -297,5 +266,53 @@ void ccuSetPeriodCompareSlice3(const unsigned int period,
 #define SRS_E2SR_SR1 (0x01 << 12)
 #define SRS_E2SR_SR2 (0x02 << 12)
 #define SRS_E2SR_SR3 (0x03 << 12)
+
+// CCU40 global registers
+#define CCU4_GCTRL             REGISTER_32(CCU40_BASE + 0x0000)
+#define CCU4_GSTAT             REGISTER_32(CCU40_BASE + 0x0004)
+#define CCU4_GIDLS             REGISTER_32(CCU40_BASE + 0x0008)
+#define CCU4_GIDLC             REGISTER_32(CCU40_BASE + 0x000c)
+#define CCU4_GCSS              REGISTER_32(CCU40_BASE + 0x0010)
+#define CCU4_GCSC              REGISTER_32(CCU40_BASE + 0x0014)
+#define CCU4_GCST              REGISTER_32(CCU40_BASE + 0x0018)
+#define CCU4_MIDR              REGISTER_32(CCU40_BASE + 0x0080)
+
+// Slice Register Offsets
+#define CC40 0x100
+#define CC41 0x200
+#define CC42 0x300
+#define CC43 0x400
+
+// Slice Registers
+#define CCU4_INS(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x00)
+#define CCU4_CMC(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x04)
+#define CCU4_TST(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x08)
+#define CCU4_TCSET(coffset) REGISTER_32(CCU40_BASE + coffset + 0x0c)
+#define CCU4_TCCLR(coffset) REGISTER_32(CCU40_BASE + coffset + 0x10)
+#define CCU4_TC(coffset)    REGISTER_32(CCU40_BASE + coffset + 0x14)
+#define CCU4_PSL(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x18)
+#define CCU4_DIT(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x1c)
+#define CCU4_DITS(coffset)  REGISTER_32(CCU40_BASE + coffset + 0x20)
+#define CCU4_PSC(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x24)
+#define CCU4_FPC(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x28)
+#define CCU4_FPCS(coffset)  REGISTER_32(CCU40_BASE + coffset + 0x2c)
+#define CCU4_PR(coffset)    REGISTER_32(CCU40_BASE + coffset + 0x30)
+#define CCU4_PRS(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x34)
+#define CCU4_CR(coffset)    REGISTER_32(CCU40_BASE + coffset + 0x38)
+#define CCU4_CRS(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x3c)
+
+#define CCU4_TIMER(coffset) REGISTER_32(CCU40_BASE + coffset + 0x70)
+#define CCU4_C0V(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x74)
+#define CCU4_C1V(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x78)
+#define CCU4_C2V(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x7c)
+#define CCU4_C3V(coffset)   REGISTER_32(CCU40_BASE + coffset + 0x80)
+
+#define CCU4_INTS(coffset)  REGISTER_32(CCU40_BASE + coffset + 0xa0)
+#define CCU4_INTE(coffset)  REGISTER_32(CCU40_BASE + coffset + 0xa4)
+#define CCU4_SRS(coffset)   REGISTER_32(CCU40_BASE + coffset + 0xa8)
+#define CCU4_SWS(coffset)   REGISTER_32(CCU40_BASE + coffset + 0xac)
+#define CCU4_SWR(coffset)   REGISTER_32(CCU40_BASE + coffset + 0xb0)
+#define CCU4_ECRD0(coffset) REGISTER_32(CCU40_BASE + coffset + 0xb8)
+#define CCU4_ECRD1(coffset) REGISTER_32(CCU40_BASE + coffset + 0xbc)
 
 #endif

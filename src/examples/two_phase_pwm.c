@@ -23,7 +23,7 @@ void configureCCU()
 	// Event 1: active high, rising edge, input I (SCU)
 	// Clear the timer (STRM) and start on event 1
 	// Transfer shadow registers on timer clear
-	ccuConfigureSlice0(
+	ccuConfigureSlice(0,
 	    ccuEvent1(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
 	    STRTS_EV1,
 	    CMOD_COMPARE | TCM_CENTER | CLST_ENABLE | STRM_BOTH,
@@ -34,7 +34,7 @@ void configureCCU()
 	// Slice 1: 40kHz 50% PWM (inverted output).
 	// Event 1: active high, rising edge, input I (SCU.GSC40)
 	// Clear the timer (STRM) and start on event 1.
-	ccuConfigureSlice1(
+	ccuConfigureSlice(1,
 	    ccuEvent1(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
 	    STRTS_EV1,
 	    CMOD_COMPARE | TCM_CENTER | CLST_ENABLE | STRM_BOTH,
@@ -98,11 +98,11 @@ void __attribute__((interrupt("IRQ"))) systickHandler(void) {
 			usicBufferedSendCh0("+\r\n");
 		}
 		if (!invert_output) {
-			ccuSetPeriodCompareSlice0(99, 100 - current_on_percent);
-			ccuSetPeriodCompareSlice1(99, current_on_percent);
+			ccuSetPeriodCompare(0, 99, 100 - current_on_percent);
+			ccuSetPeriodCompare(1, 99, current_on_percent);
 		} else {
-			ccuSetPeriodCompareSlice0(99, current_on_percent);
-			ccuSetPeriodCompareSlice1(99, 100 - current_on_percent);
+			ccuSetPeriodCompare(0, 99, current_on_percent);
+			ccuSetPeriodCompare(1, 99, 100 - current_on_percent);
 		}
 	} else {
 		clearPin(1, 1);
