@@ -7,7 +7,7 @@ LDFLAGS_SRAM=-T ../linker.sram.ld -nostartfiles
 LIBC=-L /usr/lib/arm-none-eabi/newlib/armv6-m -lc
 
 all:	ultrasonic.elf speed_test.elf temp.elf two_phase_pwm.elf eru.elf \
-	eru_ccu.elf usic_mcp3008.elf
+	eru_ccu.elf usic_mcp3008.elf usic_max11120.c
 	@echo "done"
 
 MAIN_LIBS=../init.o ../peripherals/scu.o \
@@ -41,6 +41,9 @@ speed_test.elf:	$(SPEED_TEST_LIBS) speed_test.o
 	$(LD) $(LDFLAGS_SRAM) --cref -Map $@.map $^ -o $@
 
 usic_mcp3008.elf:	$(SPEED_TEST_LIBS) ../peripherals/systick.o usic_mcp3008.o
+	$(LD) $(LDFLAGS_SRAM) --cref -Map $@.map $^ -o $@
+
+usic_max11120.elf:	$(SPEED_TEST_LIBS) ../peripherals/systick.o usic_max11120.o
 	$(LD) $(LDFLAGS_SRAM) --cref -Map $@.map $^ -o $@
 
 TEMPERATURE_LIBS=../init.o ../peripherals/ccu.o \

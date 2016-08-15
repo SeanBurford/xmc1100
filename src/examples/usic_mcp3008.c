@@ -51,19 +51,20 @@ unsigned int readMCP3008Channel(int channel) {
 
 
 void __attribute__((interrupt("IRQ"))) systickHandler(void) {
-	char buff[64];
+	char buff[32];
 	unsigned int channel, result;
 
         togglePinP1(0);
 
+	buff[17] = '\r';
+	buff[18] = '\n';
+	buff[19] = '\0';
 	for (channel = 0; channel < 8; channel++) {
 		result = readMCP3008Channel(0);
-		toHex(0, &buff[0]);
+		toHex(channel, &buff[0]);
 		buff[8] = ' ';
 		toHex(result, &buff[9]);
 		buff[17] = '\r';
-		buff[18] = '\n';
-		buff[19] = '\0';
 		usicBufferedSendCh0(buff);
 	}
 
