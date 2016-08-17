@@ -34,7 +34,7 @@ unsigned int ch1_cbase = 0;
 void max112xToASC(const unsigned int adc_cbase) {
 	// Send already buffered words from the ADC to serial.
 	char buff[32];
-	rbufsr = USIC0_RBUFSR(adc_cbase);
+	unsigned int rbuf, rbufsr = USIC0_RBUFSR(adc_cbase);
 	if (rbufsr & (BIT13 | BIT14)) {
 		buff[8] = '\r';
 		buff[9] = '\n';
@@ -52,12 +52,12 @@ void max112xToASC(const unsigned int adc_cbase) {
 }
 
 void SPISend(const unsigned int cbase, const unsigned short word) {
-	USIC0_TBUF(cbase)[0] = query;
+	USIC0_TBUF(cbase)[15] = word;
 	while (USIC0_TCSR(cbase) & 0x80)
 		;
 }
 
-unsigned int configureMax1112x(const unsigned int adc_cbase) {
+void configureMax1112x(const unsigned int adc_cbase) {
 	// Config: ADC mode control.
 	SPISend(adc_cbase,
 	        (0 << 15) |  // REG_CNTL select ADC mode control.
@@ -65,19 +65,20 @@ unsigned int configureMax1112x(const unsigned int adc_cbase) {
 	        (5 << 7)  |  // CHSEL scan up to channel 5.
 	        (2 << 5)  |  // RESET reset all registers to defaults.
 	        (0 << 3)  |  // PM power management normal.
-	        (0 << 2)  |  // CHAN_ID set to 1 in ext mode to get chan id.
-	        (0 << 1);    // SWCNV set to 1 to convert on rising CS edge.
+	        (1 << 2)  |  // CHAN_ID set to 1 in ext mode to get chan id.
+	        (0 << 1));   // SWCNV set to 1 to convert on rising CS edge.
 	max112xToASC(adc_cbase);
 
 	// Config: ADC configuration.
 	SPISend(adc_cbase,
-	        (0x10 << 11) |  // CONFIG_SETUP
+	        (1 << 15)    |  // CONFIG_SETUP
+	        (0 << 11)    |  //
 	        (0 << 10)    |  // REFSEL external single ended.
 	        (0 << 9)     |  // AVGON averaging turned off.
 	        (0 << 7)     |  // NAVG 1 conversion per result.
 	        (0 << 5)     |  // NSCAN scans N and returns 4 results.
 	        (0 << 3)     |  // SPM all circuitry powered all the time.
-	        (0 << 2);       // ECHO disabled.
+	        (0 << 2));      // ECHO disabled.
 	max112xToASC(adc_cbase);
 
 	// Defaults are good for:
@@ -89,17 +90,24 @@ unsigned int configureMax1112x(const unsigned int adc_cbase) {
 	// Config: Sample set.
 
 	usicBufferedSendCh0("Configured\r\n");
-
-	return result;
 }
 
-unsigned int tickleMax1112x(const unsigned int adc_cbase) {
-	SPISend(adc_cbase, 0);
+void tickleMax1112x(const unsigned int adc_cbase) {
+	// SPISend(adc_cbase, 0);
+	SPISend(adc_cbase,
+	        (0 << 15) |  // REG_CNTL select ADC mode control.
+	        (3 << 11) |  // standard_int scan 0-N internal clock w/avg.
+	        (5 << 7)  |  // CHSEL scan up to channel 5.
+	        (2 << 5)  |  // RESET reset all registers to defaults.
+	        (0 << 3)  |  // PM power management normal.
+	        (1 << 2)  |  // CHAN_ID set to 1 in ext mode to get chan id.
+	        (0 << 1));   // SWCNV set to 1 to convert on rising CS edge.
 	max112xToASC(adc_cbase);
 }
 
 void __attribute__((interrupt("IRQ"))) systickHandler(void) {
-        togglePinP1(0);
+	unsigned int channel;
+	togglePinP1(0);
 
 	for (channel = 0; channel < 10; channel++) {
 		tickleMax1112x(ch1_cbase);
@@ -138,7 +146,7 @@ int main()
 
 	configureMax1112x(ch1_cbase);
 
-        systickEnable(8000000 - 1);
+	systickEnable(8000000 - 1);
 
 	usicBufferedSendCh0("Ready.\r\n");
 	while(1)

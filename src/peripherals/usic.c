@@ -87,8 +87,7 @@ const unsigned int usicChannelBase(const int channel) {
 	return 0;
 }
 
-static void usicConfigureSSCMaster(const unsigned int cbase,
-                                   const unsigned int wlen) {
+static void usicConfigureSSCMaster(const unsigned int cbase) {
 	// Configure USIC channel 1 as an SSC master using pins:
 	//   DX0 input: P0.6 (USIC0_CH1.DX0C)
 	//   DOUT0 output: P0.7 (P0.7 ALT7)
@@ -119,8 +118,10 @@ static void usicConfigureSSCMaster(const unsigned int cbase,
 	                   (0 << 0);        // CLKSEL = 0 (fPIN = fFD (24MHz))
 
 	// Shift control register.
+	// FLE is overridden by TCI[4:0] due to TCSR.FLEMD being set below,
+	// ie writing to USIC0_TBUF[15] sets it to 15.
 	USIC0_SCTR(cbase) = ((16-1) << 24) | // SCTR.WLE (word length)
-	                    ((wlen-1) << 16) | // SCTR.FLE (frame length)
+	                    ((16-1) << 16) | // SCTR.FLE (frame length)
 	                    (1 << 8) | // SCTR.TRM (1: shift idle at 1)
 	                    (0 << 6) | // SCTR.DOCFG (0: DOUTx not inverted)
 	                    (0 << 4) | // SCTR.HPCDIR (0: hwcontrol=input
@@ -130,8 +131,10 @@ static void usicConfigureSSCMaster(const unsigned int cbase,
 
 	// Transmission control and status register.
 	USIC0_TCSR(cbase) = (1 << 10) | // TCSR.TDEN (01: TBUFx valid if TDV)
-	                    //(1 << 1) | // TCSR.SELMD (1: TBUFx selects CS)
-	                    (1 << 8);  // TCSR.TDSSM (1: invalidate sent data)
+	                    (1 << 8)  | // TCSR.TDSSM (1: invalidate sent data)
+	                    (1 << 2);   // TCSR.FLEMD (1: TBUFx sets frame len)
+	                    //(1 << 1); // TCSR.SELMD (1: TBUFx selects CS)
+	                    //(1 << 0); // TCSR.WLEMD (1: TBUFx sets word len)
 
 	// SSC Protocol Control Register.
 	USIC0_PCR(cbase) = (1 << 16) | // PCR.SELO (1: SELO0 can be used)
@@ -211,7 +214,7 @@ unsigned int usicConfigure(int channel, int protocol) {
 		proto_available |= BIT0;
 		// SSC
 		ccr_enable = USIC_PROTO_SSC;
-		usicConfigureSSCMaster(cbase, 32);  // XXX
+		usicConfigureSSCMaster(cbase);
 		break;
 	case USIC_PROTO_ASC:
 		proto_available |= BIT1;

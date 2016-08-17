@@ -28,11 +28,11 @@ unsigned int readMCP3008Channel(int channel) {
 	// conversion.  These start at bit 8 of the received value, so we should
 	// lose one bit with a 16 bit read.  A 32 bit read gets all bits.
 	const unsigned short query = (0x18 | channel) << 11;
-	USIC0_TBUF(USIC0_CH1_BASE)[0] = query;
+	USIC0_TBUF(USIC0_CH1_BASE)[31] = query;
 	while (USIC0_TCSR(USIC0_CH1_BASE) & 0x80)
 		;
 	// clock in more data
-	USIC0_TBUF(USIC0_CH1_BASE)[0] = (unsigned short) 0x0000;
+	USIC0_TBUF(USIC0_CH1_BASE)[31] = (unsigned short) 0x0000;
 	while (USIC0_TCSR(USIC0_CH1_BASE) & 0x80)
 		;
 
