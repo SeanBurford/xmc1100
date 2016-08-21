@@ -43,7 +43,8 @@ speed_test.elf:	$(SPEED_TEST_LIBS) speed_test.o
 usic_mcp3008.elf:	$(SPEED_TEST_LIBS) ../peripherals/systick.o usic_mcp3008.o
 	$(LD) $(LDFLAGS_SRAM) --cref -Map $@.map $^ -o $@
 
-usic_max11120.elf:	$(SPEED_TEST_LIBS) ../peripherals/systick.o usic_max11120.o
+usic_max11120.elf:	$(SPEED_TEST_LIBS) ../peripherals/ccu.o \
+			../peripherals/eru.o usic_max11120.o
 	$(LD) $(LDFLAGS_SRAM) --cref -Map $@.map $^ -o $@
 
 TEMPERATURE_LIBS=../init.o ../peripherals/ccu.o \

@@ -7,73 +7,92 @@
 // https://datasheets.maximintegrated.com/en/ds/MAX11120-MAX11128.pdf
 //
 // The MAXREFDES77 inputs are:
-//   AIN0 V1 ((1/(5.6 / 125.6) * 3.3) / 4096) =~ 0.018v/LSB.
-//   AIN1 I1 (voltage across 0.005 ohms amplified by 12.5/20/50/100 times).
-//   AIN2 V2 ((1/(5.6 / 125.6) * 3.3) / 4096) =~ 0.018v/LSB.
-//   AIN3 I2 (voltage across 0.005 ohms amplified by 12.5/20/50/100 times).
+//   AIN0 V1 voltage = ((value / 4096) * 3.3v) * (1 / (5.6 / 125.6))
+//                     Voltage is output from a resistor divider.
+//                     ~ 0.018V per LSB
+//   AIN1 I1 current = (((value / 4096) * 3.3v) / 20) / 0.005 ohms
+//                     MAX44285T has an amplification factor of 20.
+//                     ~ 0.0080A per LSB
+//   AIN2 V2 voltage = ((value / 4096) * 3.3v) * (1 / (5.6 / 125.6))
+//   AIN3 I2 current = (((value / 4096) * 3.3v) / 20) / 0.005 ohms
 //   AIN4 I2 MAX6607 temperature output.
+//           degrees Celsius = (((value / 4096) * 3.3v) - 0.5v) / 0.01v/C
 //
 // Configure USIC channel 1 as an SSC master using pins:
 //   DX0 input: P0.6 (USIC0_CH1.DX0C)
 //   DOUT0 output: P0.7 (P0.7 ALT7)
 //   SCLKOUT output: P0.8 (P0.8 ALT7)
 //   CS SELO0 output: P0.9 (P0.9 ALT7)
+// These pins drive the sampling:
+//   CNVST output: P2.0
+//   EOC end of conversion input: P2.6
 
 
 #include "xmc1100.h"
+#include "peripherals/ccu.h"
+#include "peripherals/eru.h"
 #include "peripherals/gpio.h"
 #include "peripherals/nvic.h"
 #include "peripherals/scu.h"
-#include "peripherals/systick.h"
 #include "peripherals/usic.h"
 #include "peripherals/usic_fifo.h"
 
 unsigned int ch0_cbase = 0;
 unsigned int ch1_cbase = 0;
 
-void max112xToASC(const unsigned int adc_cbase) {
+unsigned int max112xToASC(const unsigned int adc_cbase) {
 	// Send already buffered words from the ADC to serial.
-	char buff[32];
-	unsigned int rbuf, rbufsr = USIC0_RBUFSR(adc_cbase);
+	unsigned int last_result = 0;
+	char buff[16];
+	unsigned int rbufsr = USIC0_RBUFSR(adc_cbase);
 	if (rbufsr & (BIT13 | BIT14)) {
 		buff[8] = '\r';
 		buff[9] = '\n';
 		buff[10] = '\0';
 		while (rbufsr & (BIT13 | BIT14)) {
-			rbufsr = USIC0_RBUFSR(adc_cbase);
-			rbuf = USIC0_RBUF(adc_cbase);
+			last_result = USIC0_RBUF(adc_cbase);
 
-			toHex(rbuf, &buff[0]);
+			toHex(last_result, &buff[0]);
 			buff[8] = '\r';
 			usicBufferedSendCh0(&buff[4]);
+			rbufsr = USIC0_RBUFSR(adc_cbase);
 		}
 		USIC0_PSR(adc_cbase) = 0;
 	}
+	return last_result;
 }
 
 void SPISend(const unsigned int cbase, const unsigned short word) {
+	// USIC0_TBUF[15] to set frame length to 16 bits.
 	USIC0_TBUF(cbase)[15] = word;
 	while (USIC0_TCSR(cbase) & 0x80)
 		;
 }
 
+void tickleMax1112x(void) {
+	// In internally clocked modes the MAX112x outputs the oldest word
+	// from the FIFO until the FIFO is empty, then it outputs zero.
+	// It will perform another round of sampling on the rising edge of
+	// CS if SWCNV is set in the ADC Mode Control Register (SWCNV is
+	// then cleared after each round of sampling) or it the CNVST pin
+	// is pulled low.
+	unsigned int i;
+	for (i = 0; i < 8; i++) {
+		SPISend(USIC0_CH1_BASE, 0);  // Clock in a word
+		max112xToASC(USIC0_CH1_BASE);
+	}
+	usicBufferedSendCh0("\r\n");
+}
+
 void configureMax1112x(const unsigned int adc_cbase) {
-	// Config: ADC mode control.
-	SPISend(adc_cbase,
-	        (0 << 15) |  // REG_CNTL select ADC mode control.
-	        (3 << 11) |  // standard_int scan 0-N internal clock w/avg.
-	        (5 << 7)  |  // CHSEL scan up to channel 5.
-	        (2 << 5)  |  // RESET reset all registers to defaults.
-	        (0 << 3)  |  // PM power management normal.
-	        (1 << 2)  |  // CHAN_ID set to 1 in ext mode to get chan id.
-	        (0 << 1));   // SWCNV set to 1 to convert on rising CS edge.
+	// Config: Reset.
+	SPISend(adc_cbase, (2 << 5)); // RESET reset all registers to defaults.
 	max112xToASC(adc_cbase);
 
 	// Config: ADC configuration.
 	SPISend(adc_cbase,
-	        (1 << 15)    |  // CONFIG_SETUP
-	        (0 << 11)    |  //
-	        (0 << 10)    |  // REFSEL external single ended.
+	        (0x10 << 11) |  // CONFIG_SETUP
+	        (1 << 10)    |  // REFSEL external single ended (vs REF-).
 	        (0 << 9)     |  // AVGON averaging turned off.
 	        (0 << 7)     |  // NAVG 1 conversion per result.
 	        (0 << 5)     |  // NSCAN scans N and returns 4 results.
@@ -81,8 +100,24 @@ void configureMax1112x(const unsigned int adc_cbase) {
 	        (0 << 2));      // ECHO disabled.
 	max112xToASC(adc_cbase);
 
-	// Defaults are good for:
 	// Config: Unipolar.
+	SPISend(adc_cbase, (0x12 << 11));  // All channels unipolar.
+	max112xToASC(adc_cbase);
+	SPISend(adc_cbase, (0x11 << 11) |  // All channels unipolar.
+                           (1 << 2));      // Reference all channels to REF-.
+	max112xToASC(adc_cbase);
+
+	// Config: ADC mode control.
+	SPISend(adc_cbase,
+	        (0 << 15) |  // REG_CNTL select ADC mode control.
+	        (3 << 11) |  // standard_int scan 0-N internal clock w/avg.
+	        (4 << 7)  |  // CHSEL scan up to channel 4.
+	        (0 << 5)  |  // RESET the FIFO only.
+	        (0 << 3)  |  // PM power management normal.
+	        (1 << 2));   // CHAN_ID set to 1 in ext mode to get chan id.
+	max112xToASC(adc_cbase);
+
+	// Defaults are good for:
 	// Config: Bipolar.
 	// Config: RANGE.
 	// Config: Custom scan 0.
@@ -90,29 +125,52 @@ void configureMax1112x(const unsigned int adc_cbase) {
 	// Config: Sample set.
 
 	usicBufferedSendCh0("Configured\r\n");
-}
 
-void tickleMax1112x(const unsigned int adc_cbase) {
-	// SPISend(adc_cbase, 0);
-	SPISend(adc_cbase,
-	        (0 << 15) |  // REG_CNTL select ADC mode control.
-	        (3 << 11) |  // standard_int scan 0-N internal clock w/avg.
-	        (5 << 7)  |  // CHSEL scan up to channel 5.
-	        (2 << 5)  |  // RESET reset all registers to defaults.
-	        (0 << 3)  |  // PM power management normal.
-	        (1 << 2)  |  // CHAN_ID set to 1 in ext mode to get chan id.
-	        (0 << 1));   // SWCNV set to 1 to convert on rising CS edge.
+	// Flush anything buffered.
 	max112xToASC(adc_cbase);
 }
 
-void __attribute__((interrupt("IRQ"))) systickHandler(void) {
-	unsigned int channel;
-	togglePinP1(0);
+void configureCCU(void) {
+	// Configure the CCU to send two CNVST pulses a second to P2.0.
+	ccuEnable(GCTRL_SUSCFG_ROLLOVER);
+	ccuConfigureSlice(
+		0,
+		ccuEvent0(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
+		STRTS_EV0,
+		CMOD_COMPARE | CLST_ENABLE | STRM_BOTH,
+		PSC_FCCU_1024,  // Prescaler 32MHz / 1024 = 31,250Hz
+		31249, 31249,   // 2 Hz with 15uS of trigger time
+		0, 0, 1);       // No interrupts, passive level high
+	ccuStartSlices(BIT0);
+}
 
-	for (channel = 0; channel < 10; channel++) {
-		tickleMax1112x(ch1_cbase);
-	}
-	usicBufferedSendCh0("\r\n");
+void configureERU(void) {
+	// Configure the ERU to interrupt on P2.6 EOC going low (ERU0.2A1)
+	eruEnable();
+	eruConfigureETL2(
+		EXISEL_EXS_IN1,  // ERU.2A1 is P2.6
+		EXISEL_EXS_IN2,  // ERU.2B2 is reserved
+		EXICON_PE_ENABLE |  // Output a pulse on select edge detected.
+		EXICON_LD_REBUILD | // Level detect reflects actual level.
+		EXICON_RE_DISABLE | // Rising edge ignored.
+		EXICON_FE_ENABLE |  // Falling edge trigger.
+		EXICON_OCS_OGU0 |   // Trigger output channel OGU0.
+		EXICON_SS_A |       // Only input A contributes.
+		EXICON_NA_DIRECT |  // A not inverted.
+		EXICON_NB_DIRECT);  // B not inverted.
+	eruConfigureOGU0(
+		EXOCON_ISS_DISABLE |  // Peripheral trigger source disabled.
+		EXOCON_GEEN_DISABLE |  // Event on pattern detection change
+		EXOCON_GP_GOUT_ENABLE_IOUT_TOUT | // GOUT enabled, IOUT=TOUT.
+		EXOCON_IPEN_EXICON2);  // Pattern detect on ETL2 output.
+}
+
+void __attribute__((interrupt("IRQ"))) ERU_SR0(void) {
+	// ERU OGU0 pattern match event.
+	// We're here because EOC was pulled low by the ADC.
+	// Clock out the results and send them to the ASC port.
+	togglePinP1(0);
+	tickleMax1112x();
 }
 
 int main()
@@ -144,9 +202,17 @@ int main()
 
 	enable_interrupts();
 
+	// CNVST is P2.0
+	enablePin(2, 0, GPIO_OUT_PP_ALT2);
+	setPin(2, 0);
+
 	configureMax1112x(ch1_cbase);
 
-	systickEnable(8000000 - 1);
+	// Configure the CCU to send CNVST pulses to P2.0
+	configureCCU();
+	// Configure the ERU to interrupt on EOC on P2.6
+	enablePin(2, 6, GPIO_IN_FLOAT);  // EOC in through ERU ch2.
+	configureERU();
 
 	usicBufferedSendCh0("Ready.\r\n");
 	while(1)
