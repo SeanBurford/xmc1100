@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import time
 
 Vref=3.0
 
@@ -19,17 +20,33 @@ def DisplayTemperature(channel, reading):
   print 'channel %d %03X %5.2f celsius' % (channel, reading, temperature)
 
 
+def ReadSerial():
+  with open('/tmp/powerlog.txt', 'w') as log:
+    with open('/dev/ttyACM0', 'r') as fd:
+      line = ''
+      while True:
+        line += fd.read(1)
+        if line[-1] == '\n':
+          log.write('%d %s' % (time.time(), line))
+          log.flush()
+          for word in line.split():
+            val = int(word, 16)
+            if val == 0:
+              continue
+            channel = val >> 12
+            reading = val & 0x0FFF
+            if channel in (0, 2):
+              DisplayVoltage(channel, reading)
+            elif channel in (1, 3):
+              DisplayCurrent(channel, reading)
+            elif channel in (4,):
+              DisplayTemperature(channel, reading)
+          print ''
+          line = ''
+
+
 def main():
-  for line in sys.stdin:
-    val = int(line, 16)
-    channel = val >> 12
-    reading = val & 0x0FFF
-    if channel in (0, 2):
-      DisplayVoltage(channel, reading)
-    elif channel in (1, 3):
-      DisplayCurrent(channel, reading)
-    elif channel in (4,):
-      DisplayTemperature(channel, reading)
+  ReadSerial()
 
 
 if __name__ == '__main__':

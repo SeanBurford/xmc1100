@@ -53,10 +53,20 @@ static unsigned int ch0TxBuffEnd = 0;
 static const char hex_digits[] = "0123456789abcdef";
 
 void toHex(const unsigned int val, char *buff) {
-        unsigned int index = 0;
+        unsigned int index;
 
         for (index = 0; index < 8; index++) {
                 unsigned int x = (val >> (4 * (7 - index)));
+                buff[index] = hex_digits[(x & 0x0f)];
+        }
+        buff[index] = '\0';
+}
+
+void toHexShort(const unsigned int val, char *buff) {
+        unsigned int index;
+
+        for (index = 0; index < 4; index++) {
+                unsigned int x = (val >> (4 * (3 - index)));
                 buff[index] = hex_digits[(x & 0x0f)];
         }
         buff[index] = '\0';

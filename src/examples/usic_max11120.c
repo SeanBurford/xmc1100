@@ -40,28 +40,6 @@
 unsigned int ch0_cbase = 0;
 unsigned int ch1_cbase = 0;
 
-unsigned int max112xToASC(const unsigned int adc_cbase) {
-	// Send already buffered words from the ADC to serial.
-	unsigned int last_result = 0;
-	char buff[16];
-	unsigned int rbufsr = USIC0_RBUFSR(adc_cbase);
-	if (rbufsr & (BIT13 | BIT14)) {
-		buff[8] = '\r';
-		buff[9] = '\n';
-		buff[10] = '\0';
-		while (rbufsr & (BIT13 | BIT14)) {
-			last_result = USIC0_RBUF(adc_cbase);
-
-			toHex(last_result, &buff[0]);
-			buff[8] = '\r';
-			usicBufferedSendCh0(&buff[4]);
-			rbufsr = USIC0_RBUFSR(adc_cbase);
-		}
-		USIC0_PSR(adc_cbase) = 0;
-	}
-	return last_result;
-}
-
 void SPISend(const unsigned int cbase, const unsigned short word) {
 	// USIC0_TBUF[15] to set frame length to 16 bits.
 	USIC0_TBUF(cbase)[15] = word;
@@ -76,18 +54,31 @@ void tickleMax1112x(void) {
 	// CS if SWCNV is set in the ADC Mode Control Register (SWCNV is
 	// then cleared after each round of sampling) or it the CNVST pin
 	// is pulled low.
+	unsigned int buff_index=0;
+	char buff[64];
 	unsigned int i;
 	for (i = 0; i < 8; i++) {
 		SPISend(USIC0_CH1_BASE, 0);  // Clock in a word
-		max112xToASC(USIC0_CH1_BASE);
+		unsigned int rbufsr = USIC0_RBUFSR(USIC0_CH1_BASE);
+		while (rbufsr & (BIT13 | BIT14)) {
+			unsigned int result = USIC0_RBUF(USIC0_CH1_BASE);
+			toHexShort(result, &buff[buff_index]);
+			buff_index += 4;
+			buff[buff_index] = ' ';
+			buff_index += 1;
+			rbufsr = USIC0_RBUFSR(USIC0_CH1_BASE);
+		}
+		USIC0_PSR(USIC0_CH1_BASE) = 0;
 	}
-	usicBufferedSendCh0("\r\n");
+	buff[buff_index++] = '\r';
+	buff[buff_index++] = '\n';
+	buff[buff_index++] = '\0';
+	usicBufferedSendCh0(buff);
 }
 
 void configureMax1112x(const unsigned int adc_cbase) {
 	// Config: Reset.
 	SPISend(adc_cbase, (2 << 5)); // RESET reset all registers to defaults.
-	max112xToASC(adc_cbase);
 
 	// Config: ADC configuration.
 	SPISend(adc_cbase,
@@ -98,14 +89,11 @@ void configureMax1112x(const unsigned int adc_cbase) {
 	        (0 << 5)     |  // NSCAN scans N and returns 4 results.
 	        (0 << 3)     |  // SPM all circuitry powered all the time.
 	        (0 << 2));      // ECHO disabled.
-	max112xToASC(adc_cbase);
 
 	// Config: Unipolar.
 	SPISend(adc_cbase, (0x12 << 11));  // All channels unipolar.
-	max112xToASC(adc_cbase);
 	SPISend(adc_cbase, (0x11 << 11) |  // All channels unipolar.
                            (1 << 2));      // Reference all channels to REF-.
-	max112xToASC(adc_cbase);
 
 	// Config: ADC mode control.
 	SPISend(adc_cbase,
@@ -115,7 +103,6 @@ void configureMax1112x(const unsigned int adc_cbase) {
 	        (0 << 5)  |  // RESET the FIFO only.
 	        (0 << 3)  |  // PM power management normal.
 	        (1 << 2));   // CHAN_ID set to 1 in ext mode to get chan id.
-	max112xToASC(adc_cbase);
 
 	// Defaults are good for:
 	// Config: Bipolar.
@@ -124,10 +111,10 @@ void configureMax1112x(const unsigned int adc_cbase) {
 	// Config: Custom scan 1.
 	// Config: Sample set.
 
-	usicBufferedSendCh0("Configured\r\n");
-
 	// Flush anything buffered.
-	max112xToASC(adc_cbase);
+	tickleMax1112x();
+
+	usicBufferedSendCh0("Configured\r\n");
 }
 
 void configureCCU(void) {
@@ -138,7 +125,7 @@ void configureCCU(void) {
 		ccuEvent0(EVIS_INyI, EVEM_RISING, EVLM_HIGH, EVLPFM_0),
 		STRTS_EV0,
 		CMOD_COMPARE | CLST_ENABLE | STRM_BOTH,
-		PSC_FCCU_1024,  // Prescaler 32MHz / 1024 = 31,250Hz
+		PSC_FCCU_1024,  // Prescaler 64MHz / 1024 = 62,500Hz
 		31249, 31249,   // 2 Hz with 15uS of trigger time
 		0, 0, 1);       // No interrupts, passive level high
 	ccuStartSlices(BIT0);

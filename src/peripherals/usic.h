@@ -36,6 +36,7 @@ void usicSendCh0(void);
 void usicBufferedSendCh0(const char *msg);
 
 void toHex(const unsigned int val, char *buff);
+void toHexShort(const unsigned int val, char *buff);
 
 #define USIC0_ID            REGISTER_32(USIC0_CH0_BASE + 0x08)
 
