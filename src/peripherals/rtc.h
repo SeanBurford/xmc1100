@@ -44,4 +44,17 @@ unsigned int rtcClearAlarm(void);
                      MSKSR_MPMI | MSKSR_MPSE)
 #define MSKSR_MAI  BIT8
 
+// Interrupts are enabled through setting SCU_* bits in SCU_SRMSK
+// CTR mirror register updated
+#define SCU_RTC_CTR    BIT24
+// ATIM0 mirror register updated
+#define SCU_RTC_ATIM0  BIT25
+// ATIM1 mirror register updated
+#define SCU_RTC_ATIM1  BIT26
+// TIM0 mirror register updated
+#define SCU_RTC_TIM0   BIT27
+// TIM1 mirror register updated
+#define SCU_RTC_TIM1   BIT28
+
+
 #endif

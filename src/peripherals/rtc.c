@@ -16,6 +16,11 @@ unsigned int rtcEnable(const unsigned int year,
                        const unsigned int hour,
                        const unsigned int minute,
                        const unsigned int second) {
+	// Available clock sources selected by SCU_CLKCR.RTCCLKSEL are:
+	// DCO2 standby clock (default)
+	// ERU0 IOUT0
+	// ACMPx OUT (3 sources) (not present in the XMC1100)
+
 	// Ungate the RTC clock.
 	scuUngatePeripheralClock(CGATCLR0_RTC);
 
@@ -24,17 +29,8 @@ unsigned int rtcEnable(const unsigned int year,
 		return 1;
 	}
 
-	// Set the start time.
-	rtcSetDateTime(year, month, day, hour, minute, second);
-
-	// RTC is in reset after power up until reset is released.
-	// 0x7fff:  prescaler (32768Hz clock/0x7fff = 1 update/second).
-	// SUS BIT1: 0: Module is not suspended during debug
-	// ENB BIT0: 1: Enable module
-	WAIT_FOR_SERIAL;
-	RTC_CTR = (0x7fff << 16) | BIT0;
-
-	return 0;
+	// Set the time and start the clock.
+	return rtcSetDateTime(year, month, day, hour, minute, second);
 }
 
 unsigned int rtcDisable(void) {
@@ -49,10 +45,20 @@ unsigned int rtcSetDateTime(const unsigned int year,
                             const unsigned int hour,
                             const unsigned int minute,
                             const unsigned int second) {
+	// Time values can only be written when RTC is disabled.
+	rtcDisable();
+
 	// Program TIM0 then TIM1
 	WAIT_FOR_SERIAL;
 	RTC_TIM0 = TIME0(day, hour, minute, second);
 	RTC_TIM1 = TIME1(year, month);
+
+	// 0x7fff:  prescaler (32768Hz clock/0x7fff = 1 update/second).
+	// SUS BIT1: 0: Module is not suspended during debug
+	// ENB BIT0: 1: Enable module
+	WAIT_FOR_SERIAL;
+	RTC_CTR = (0x7fff << 16) | BIT0;
+
 	return 0;
 }
 

@@ -62,6 +62,8 @@
 #define SCS_BASE		0xe000ed00
 #define STK_BASE		0xe000e010
 #define WDT_BASE 		0x40020000
+#define ORC_BASE 		0x40010500
+#define ACMP_BASE 		0x4001105c
 #define RTC_BASE 		0x40010a00
 #define SCU_BASE 		0x40010000
 #define TSE_BASE		0x40010000
