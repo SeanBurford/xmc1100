@@ -19,7 +19,7 @@ unsigned int rtcEnable(const unsigned int year,
 	// Available clock sources selected by SCU_CLKCR.RTCCLKSEL are:
 	// DCO2 standby clock (default)
 	// ERU0 IOUT0
-	// ACMPx OUT (3 sources) (not present in the XMC1100)
+	// ACMPx OUT (3 sources) (not documented for the XMC1100)
 
 	// Ungate the RTC clock.
 	scuUngatePeripheralClock(CGATCLR0_RTC);

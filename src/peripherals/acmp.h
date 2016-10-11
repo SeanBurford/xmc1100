@@ -1,7 +1,7 @@
 // Support for the XMC1x00 ACMP (analog comparator)
 //
-// XMC1200 ACMP pin connections:
-// Analog inputs:
+// XMC1100 and XMC1200 ACMP pin connections:
+// Analog Inputs:
 //   P2.1:            ACMP2.INP
 //   P2.2:  ORC0.AIN  ACMP2.INN
 //   P2.3:  ORC1.AIN
@@ -12,10 +12,11 @@
 //   P2.8:  ORC6.AIN  ACMP0.INN
 //   P2.9:  ORC7.AIN  ACMP0.INP
 //   P2.11:           ACMP.REF
-// ORC outputs:
+// ACMP Outputs:
 //   ACMP0.OUT: P0.10 alt4              P2.10 alt6  ERU0.0A0  BCCU0.IN5
 //   ACMP1.OUT:             P1.0 alt 6  P2.5pull    ERU0.1A0  BCCU0.IN0
 //   ACMP2.OUT: P0.5 alt 6  P1.2 alt 6  P2.3pull    ERU0.2A0  BCCU0.IN3
+// ORC Outputs:
 //   ORC0.OUT:  ERU0.0B2
 //   ORC1.OUT:  ERU0.1B2
 //   ORC2.OUT:  ERU0.0A2 ERU0.2B2
@@ -33,8 +34,34 @@
 #define ACMP_ORCCTRL    REGISTER_32(ORC_BASE)
 #define ACMP_ANACMP(x)  REGISTER_32(ACMP_BASE + (x * 4))
 
-unsigned int acmpEnable(void) {}
-unsigned int acmpDisable(void) {}
+// Analog comparator flags
+// enable
+#define ACMP_CMP_EN           BIT0
+// disable filter
+#define ACMP_CMP_FLT_OFF      BIT1
+// invert output
+#define ACMP_CMP_INV_OUT      BIT3
+// select mV of hysteresis
+#define ACMP_CMP_HYST_ADJ_0   0
+#define ACMP_CMP_HYST_ADJ_10  BIT4
+#define ACMP_CMP_HYST_ADJ_15  BIT5
+#define ACMP_CMP_HYST_ADJ_20  BIT5 | BIT4
+// ref voltage from resistor divider is applied to ACMP1.INP
+#define ACMP_CMP1_DIV_EN      BIT6
+// connect ACMP1.INP to ACMP0.INN or ACMP2.INP
+// used to supply ref voltage to both pins
+#define ACMP_CMP0_SEL         BIT6
+#define ACMP_CMP2_SEL         BIT6
+// enable low power mode for all comparators
+// default is high power mode for better performance.
+#define ACMP_CMP0_LPWR        BIT8
+// output monitor bit (read only)
+// Vminus > Vplus: 0
+// Vminus < Vplus: 1
+#define ACMP_CMP_OUT          BIT15
+
+void acmpEnable(void) {}
+void acmpDisable(void) {}
 // Configure the out of range comparators.
 //   enable is a bitwise or of the desired ORC_ENORCx + ORC_CNFx flags.
 //   ORC_CNFx sets the trigger on the rising edge (falling edge is default).
@@ -46,7 +73,7 @@ void acmpConfigure(unsigned int channel, unsigned int flags) {
 	ACMP_ANACMP(channel) = flags;
 }
 // Read the analog comparator channel result.
-bool acmpRead(unsigned int channel) {
+int acmpRead(unsigned int channel) {
 	return ACMP_ANACMP(channel) & ACMP_CMP_OUT;
 }
 
@@ -69,32 +96,6 @@ bool acmpRead(unsigned int channel) {
 #define ORC_CNF5 BIT21
 #define ORC_CNF6 BIT22
 #define ORC_CNF7 BIT23
-
-// Analog comparator flags
-// enable
-#define ACMP_CMP_EN           BIT0
-// disable filter
-#define ACMP_CMP_FLT_OFF      BIT1
-// invert output
-#define ACMP_CMP_INV_OUT      BIT3
-// select mV of hysteresis
-#define ACMP_CMP_HYST_ADJ_0   0
-#define ACMP_CMP_HYST_ADJ_10  BIT4
-#define ACMP_CMP_HYST_ADJ_15  BIT5
-#define ACMP_CMP_HYST_ADJ_20  BIT5 | BIT4
-// ref voltage from resistor divider is applied to ACMP1
-#define ACMP_CMP1_DIV_EN      BIT6
-// connect ACMP1.INP to ACMP0.INN or ACMP2.INP
-// used to supply ref voltage to both pins
-#define ACMP_CMP0_SEL         BIT6
-#define ACMP_CMP2_SEL         BIT6
-// enable low power mode for all comparators
-// default is high power mode for better performance.
-#define ACMP_CMP0_LPWR        BIT8
-// output monitor bit (read only)
-// Vminus > Vplus: 0
-// Vminus < Vplus: 1
-#define ACMP_CMP_OUT          BIT15
 
 // Interrupts are enabled through setting SCU_* bits in SCU_SRMSK
 #define SCU_ACMP0I  BIT4
